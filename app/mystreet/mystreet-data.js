@@ -1,14 +1,9 @@
 // ============================================================
 // MyStreet - Infrastructure Issues Data
 // Location: Yoganand Vihar, Roorkee, Uttarakhand
-// Generated from MyStreet.csv
 // ============================================================
 
-// Coordinate reference:
-// Starting Point: 29.8723938, 77.881257
-// Stem runs NORTH (76.8m), Branch runs EAST-WEST (52.31m)
-
-export const STREET_CENTER = [29.8727388, 77.8812570]; // mid-stem
+export const STREET_CENTER = [29.8727388, 77.8812570];
 export const STREET_START = [29.8723938, 77.881257];
 export const STREET_CONFIG = {
   name: "MyStreet",
@@ -18,7 +13,6 @@ export const STREET_CONFIG = {
   documentedDate: "8 Feb 2026",
 };
 
-// Severity color mapping
 export const SEVERITY_COLORS = {
   Critical: "#FF1744",
   High: "#FF6D00",
@@ -28,39 +22,27 @@ export const SEVERITY_COLORS = {
 
 export const SEVERITY_ORDER = { Critical: 4, High: 3, Medium: 2, Low: 1 };
 
-// Issue type icons
 export const ISSUE_ICONS = {
   "Road crack": "🔱",
   Pothole: "⚠️",
   "Broken Uneven": "⛰️",
 };
 
-// ============================================================
-// GROUPED LOCATIONS
-// Each location = one pin on map
-// Multiple issues/photos grouped per location
-// ============================================================
-
 export const LOCATIONS = [
-  // ──────────────────────────────────────────────────────────
-  // LEFT BRANCH - LEFT SIDE (LB_LS)
-  // South side of branch, facing north
-  // 01 = farthest west, 03 = closest to stem
-  // ──────────────────────────────────────────────────────────
   {
     id: "LB_LS-01",
     label: "LB · Left Side · House 01",
     zone: "Left Branch",
     coords: [29.8730774, 77.8810402],
     issues: [
-      { id: "RK_ST_01", type: "Road crack", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1q-ePqcN-XrU_QNHJvilJcFO_EFyYMg6E/view?usp=drive_link" },
-      { id: "RK_ST_02", type: "Road crack", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1I3KGq8KVEFwz8epS048jnFQno7OUjZnj/view?usp=drive_link" },
-      { id: "RK_ST_03", type: "Road crack", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1hTnrY98ZJJ2tUDIPh3Q9DBPcnBxtI_vJ/view?usp=drive_link" },
-      { id: "RK_ST_04", type: "Pothole",    severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1j_pFGFDj9acGWQmewrCO_IfMahwykXmI/view?usp=drive_link" },
-      { id: "RK_ST_05", type: "Road crack", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1ojPBv6XEmWdRgHCqro7ELw2p_ON4kGuG/view?usp=drive_link" },
-      { id: "RK_ST_06", type: "Road crack", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1f1AOfCbOTb7I0mfozivcT70EBpDgef8a/view?usp=drive_link" },
-      { id: "RK_ST_07", type: "Road crack", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1LxAzb_f7DzOkukQ-QrGfbeE7E9rZFHWS/view?usp=drive_link" },
-      { id: "RK_ST_08", type: "Road crack", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1mA7vwY__wldVDCoC8RQFodVF3-VlHiTg/view?usp=drive_link" },
+      { id: "RK_ST_01", type: "Road crack",    severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1q-ePqcN-XrU_QNHJvilJcFO_EFyYMg6E/view?usp=drive_link" },
+      { id: "RK_ST_02", type: "Road crack",    severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1I3KGq8KVEFwz8epS048jnFQno7OUjZnj/view?usp=drive_link" },
+      { id: "RK_ST_03", type: "Road crack",    severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1hTnrY98ZJJ2tUDIPh3Q9DBPcnBxtI_vJ/view?usp=drive_link" },
+      { id: "RK_ST_04", type: "Pothole",       severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1j_pFGFDj9acGWQmewrCO_IfMahwykXmI/view?usp=drive_link" },
+      { id: "RK_ST_05", type: "Road crack",    severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1ojPBv6XEmWdRgHCqro7ELw2p_ON4kGuG/view?usp=drive_link" },
+      { id: "RK_ST_06", type: "Road crack",    severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1f1AOfCbOTb7I0mfozivcT70EBpDgef8a/view?usp=drive_link" },
+      { id: "RK_ST_07", type: "Road crack",    severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1LxAzb_f7DzOkukQ-QrGfbeE7E9rZFHWS/view?usp=drive_link" },
+      { id: "RK_ST_08", type: "Road crack",    severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1mA7vwY__wldVDCoC8RQFodVF3-VlHiTg/view?usp=drive_link" },
       { id: "RK_ST_09", type: "Broken Uneven", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/189dY7srQWHqmGVVbv4q349ePVW1qHjgF/view?usp=drive_link" },
     ],
   },
@@ -70,10 +52,10 @@ export const LOCATIONS = [
     zone: "Left Branch",
     coords: [29.8730774, 77.8810944],
     issues: [
-      { id: "RK_ST_15", type: "Broken Uneven", severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1N06IdO7bhKUuX6T-tkfYhXfQTkkAVRP9/view?usp=drive_link" },
-      { id: "RK_ST_16", type: "Broken Uneven", severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1E1d_bVPVZCmMeHXp0cudHJ7WygHOwmnc/view?usp=drive_link" },
-      { id: "RK_ST_17", type: "Road crack",    severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1aFmuQLLKni7RoaqUFdP47hSC2dOE1TOl/view?usp=drive_link" },
-      { id: "RK_ST_18", type: "Broken Uneven", severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1knid8gjIEFEClAPStB8lwK24ACoXZQw8/view?usp=drive_link" },
+      { id: "RK_ST_15", type: "Broken Uneven", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1N06IdO7bhKUuX6T-tkfYhXfQTkkAVRP9/view?usp=drive_link" },
+      { id: "RK_ST_16", type: "Broken Uneven", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1E1d_bVPVZCmMeHXp0cudHJ7WygHOwmnc/view?usp=drive_link" },
+      { id: "RK_ST_17", type: "Road crack",    severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1aFmuQLLKni7RoaqUFdP47hSC2dOE1TOl/view?usp=drive_link" },
+      { id: "RK_ST_18", type: "Broken Uneven", severity: "High",   status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1knid8gjIEFEClAPStB8lwK24ACoXZQw8/view?usp=drive_link" },
       { id: "RK_ST_19", type: "Broken Uneven", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1tr4gPgktKO1-Glu-rbk7dfKMGm6w8r9Q/view?usp=drive_link" },
     ],
   },
@@ -86,12 +68,6 @@ export const LOCATIONS = [
       { id: "RK_ST_26", type: "Broken Uneven", severity: "Low", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1N0p4eQb3_VH6Wrpxw5ki5Fz3LGHrbhpe/view?usp=drive_link" },
     ],
   },
-
-  // ──────────────────────────────────────────────────────────
-  // LEFT BRANCH - RIGHT SIDE (LB_RS)
-  // North side of branch, facing south
-  // 01 = farthest west, 04 = closest to stem
-  // ──────────────────────────────────────────────────────────
   {
     id: "LB_RS-01",
     label: "LB · Right Side · House 01",
@@ -135,12 +111,6 @@ export const LOCATIONS = [
       { id: "RK_ST_25", type: "Road crack", severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/125gQpiN4dFypUFNakMjHy4HfWhM7xrF3/view?usp=drive_link" },
     ],
   },
-
-  // ──────────────────────────────────────────────────────────
-  // STEM - LEFT SIDE (S_LS)
-  // West side of stem, houses face east (inward)
-  // 01 = closest to entrance, 06 = closest to branch
-  // ──────────────────────────────────────────────────────────
   {
     id: "S_LS-02",
     label: "Stem · Left Side · House 02",
@@ -185,12 +155,6 @@ export const LOCATIONS = [
       { id: "RK_ST_31", type: "Road crack", severity: "High", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1FKnVqhCy0ux0KAFZMENVYcEZ4neaE_Ym/view?usp=drive_link" },
     ],
   },
-
-  // ──────────────────────────────────────────────────────────
-  // STEM - RIGHT SIDE (S_RS)
-  // East side of stem, houses face west (inward) — School is here
-  // 01 = closest to entrance, 05 = closest to branch
-  // ──────────────────────────────────────────────────────────
   {
     id: "S_RS-01",
     label: "Stem · Right Side · House 01",
@@ -246,10 +210,6 @@ export const LOCATIONS = [
       { id: "RK_ST_32", type: "Road crack", severity: "Medium", status: "Not Fixed", date: "8-Feb-2026", photo: "https://drive.google.com/file/d/1vG0ificopxXKx76Wx5G2HFnquDgLZHvc/view?usp=drive_link" },
     ],
   },
-
-  // ──────────────────────────────────────────────────────────
-  // OUTSIDE STREET VIEW (at entrance)
-  // ──────────────────────────────────────────────────────────
   {
     id: "OUTSIDE",
     label: "Outside Street Entrance",
@@ -266,7 +226,6 @@ export const LOCATIONS = [
   },
 ];
 
-// Helper: get worst severity for a location
 export function getWorstSeverity(issues) {
   return issues.reduce((worst, issue) => {
     return SEVERITY_ORDER[issue.severity] > SEVERITY_ORDER[worst]
@@ -275,12 +234,10 @@ export function getWorstSeverity(issues) {
   }, "Low");
 }
 
-// Helper: get unique issue types for a location
 export function getIssueTypes(issues) {
   return [...new Set(issues.map((i) => i.type))];
 }
 
-// Summary stats
 export const STATS = {
   total: LOCATIONS.reduce((sum, l) => sum + l.issues.length, 0),
   critical: LOCATIONS.reduce((sum, l) => sum + l.issues.filter(i => i.severity === "Critical").length, 0),
@@ -289,12 +246,54 @@ export const STATS = {
   low: LOCATIONS.reduce((sum, l) => sum + l.issues.filter(i => i.severity === "Low").length, 0),
 };
 
-// Additional tracking info
 export const TRACKING_INFO = {
-  privateRepairHouses: 4,   // households that paid privately for repairs
-  totalHouses: 22,          // total households on the street
-  oldestIssueDate: "20-Nov-2025",
-  lastUpdated: "21-02-2026",
+  privateRepairHouses: 4,
+  totalHouses: 22,
+  oldestIssueDate: "8-Feb-2026",
+  lastUpdated: "15-Feb-2026",
+  lastVerified: "Feb 19, 2026, 11:46 PM",
   fixedCount: 0,
   notFixedCount: 67,
 };
+
+export const ABOUT_TEXT = [
+  {
+    type: "intro",
+    text: "This website exists because Nagar Nigam Roorkee forgot how the RTI Act, 2005 works.",
+  },
+  {
+    type: "body",
+    text: "I am a resident of Ward No. 5, Roorkee. Recently, brick paver reconstruction was done on this street. As a tax-paying citizen, I filed an online RTI on November 20, 2025, simply asking for the work orders, budget, and contractor details. Instead of transparency, I was met with 3 months of illegal silence and bizarre cover-ups.",
+  },
+  {
+    type: "heading",
+    text: "The Facts on Record",
+  },
+  {
+    type: "fact",
+    label: "Statutory Deadlines Missed",
+    text: "The PIO failed the mandatory 30-day limit. My First Appeal (filed Jan 22, 2026) has also been completely ignored.",
+  },
+  {
+    type: "fact",
+    label: "Official Misconduct",
+    text: "When I called the PIO's office to inquire, the officer refused to listen, told me to \"come to the office\" (violating the digital RTI process), and cut the call. 12 subsequent calls were ignored.",
+  },
+  {
+    type: "fact",
+    label: "The \"Ghost Road\" Lie",
+    text: "An official later called me informally to claim that \"no road work was done in this area last year.\" The photos on this website prove otherwise.",
+  },
+  {
+    type: "body",
+    text: "Under Section 7(6) of the RTI Act, this delayed information must now be provided completely free of cost. But this is no longer just about a ₹10 RTI application. It is about demanding accountability for public funds.",
+  },
+  {
+    type: "body",
+    text: "Since the Nagar Nigam Roorkee refuses to answer a legal digital portal, I built my own. This matter is now being escalated to the Uttarakhand State Information Commission (Dehradun) for a Section 20 penalty against the officers involved.",
+  },
+  {
+    type: "closing",
+    text: "Public money requires public answers.",
+  },
+];
