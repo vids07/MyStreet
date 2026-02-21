@@ -288,3 +288,13 @@ export const STATS = {
   medium: LOCATIONS.reduce((sum, l) => sum + l.issues.filter(i => i.severity === "Medium").length, 0),
   low: LOCATIONS.reduce((sum, l) => sum + l.issues.filter(i => i.severity === "Low").length, 0),
 };
+
+// Additional tracking info
+export const TRACKING_INFO = {
+  privateRepairHouses: 4,   // households that paid privately for repairs
+  totalHouses: 22,          // total households on the street
+  oldestIssueDate: "20-Nov-2025",
+  lastUpdated: "21-02-2026",
+  fixedCount: 0,
+  notFixedCount: 67,
+};

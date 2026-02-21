@@ -7,6 +7,7 @@ import {
   STREET_CONFIG,
   SEVERITY_COLORS,
   STATS,
+  TRACKING_INFO,
   getWorstSeverity,
 } from "./mystreet-data";
 
@@ -133,9 +134,7 @@ export default function MyStreetMap() {
         fontFamily: "'Poppins', sans-serif",
       }}>
 
-        {/* ═══════════════════════════════════════════ */}
         {/* HEADER */}
-        {/* ═══════════════════════════════════════════ */}
         <div style={{
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           padding: "20px 24px",
@@ -220,9 +219,101 @@ export default function MyStreetMap() {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════ */}
+        {/* SUMMARY DASHBOARD */}
+        <div style={{
+          background: "white",
+          padding: "24px",
+          borderBottom: "3px solid #f0f3f8",
+        }}>
+          <div style={{ 
+            maxWidth: "1200px", 
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "16px",
+          }}>
+            {/* Critical & High Count */}
+            <div style={{
+              background: "linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%)",
+              border: "2px solid #ffcdd2",
+              borderRadius: "16px",
+              padding: "20px",
+            }}>
+              <div style={{ fontSize: "13px", fontWeight: "700", color: "#d32f2f", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                🚨 URGENT ISSUES
+              </div>
+              <div style={{ fontSize: "32px", fontWeight: "900", color: "#d32f2f" }}>
+                {STATS.critical + STATS.high}
+              </div>
+              <div style={{ fontSize: "13px", color: "#e57373", fontWeight: "600", marginTop: "4px" }}>
+                {STATS.critical} Critical · {STATS.high} High
+              </div>
+            </div>
+
+            {/* Private Repairs */}
+            <div style={{
+              background: "linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%)",
+              border: "2px solid #ffe0a3",
+              borderRadius: "16px",
+              padding: "20px",
+            }}>
+              <div style={{ fontSize: "13px", fontWeight: "700", color: "#f57c00", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                🏠 PRIVATE REPAIRS
+              </div>
+              <div style={{ fontSize: "32px", fontWeight: "900", color: "#f57c00" }}>
+                {TRACKING_INFO.privateRepairHouses}/{TRACKING_INFO.totalHouses}
+              </div>
+              <div style={{ fontSize: "13px", color: "#ffb74d", fontWeight: "600", marginTop: "4px" }}>
+                Households paid for private fixes
+              </div>
+            </div>
+
+            {/* Issue Age */}
+            <div style={{
+              background: "linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)",
+              border: "2px solid #ce93d8",
+              borderRadius: "16px",
+              padding: "20px",
+            }}>
+              <div style={{ fontSize: "13px", fontWeight: "700", color: "#8e24aa", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                ⏰ OLDEST ISSUE
+              </div>
+              <div style={{ fontSize: "32px", fontWeight: "900", color: "#8e24aa" }}>
+                {(() => {
+                  const oldest = new Date(TRACKING_INFO.oldestIssueDate.split('-').reverse().join('-'));
+                  const today = new Date();
+                  const days = Math.floor((today - oldest) / (1000 * 60 * 60 * 24));
+                  if (days < 30) return `${days}d`;
+                  const months = Math.floor(days / 30);
+                  return `${months}mo`;
+                })()}
+              </div>
+              <div style={{ fontSize: "13px", color: "#ba68c8", fontWeight: "600", marginTop: "4px" }}>
+                Since {TRACKING_INFO.oldestIssueDate}
+              </div>
+            </div>
+
+            {/* Last Updated */}
+            <div style={{
+              background: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
+              border: "2px solid #a5d6a7",
+              borderRadius: "16px",
+              padding: "20px",
+            }}>
+              <div style={{ fontSize: "13px", fontWeight: "700", color: "#2e7d32", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                📅 LAST UPDATED
+              </div>
+              <div style={{ fontSize: "26px", fontWeight: "900", color: "#2e7d32", lineHeight: "1.2" }}>
+                {TRACKING_INFO.lastUpdated}
+              </div>
+              <div style={{ fontSize: "13px", color: "#66bb6a", fontWeight: "600", marginTop: "4px" }}>
+                {TRACKING_INFO.fixedCount} fixed · {TRACKING_INFO.notFixedCount} pending
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* MAP CONTAINER */}
-        {/* ═══════════════════════════════════════════ */}
         <div style={{ flex: 1, position: "relative", display: "flex" }}>
           
           {/* Map */}
@@ -261,9 +352,7 @@ export default function MyStreetMap() {
             </div>
           )}
 
-          {/* ═══════════════════════════════════════════ */}
-          {/* SIDE PANEL (Selected Location) */}
-          {/* ═══════════════════════════════════════════ */}
+          {/* SIDE PANEL */}
           {selected && (
             <div style={{
               width: "400px",
@@ -349,11 +438,10 @@ export default function MyStreetMap() {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    display: "block",
+                    display: "flex",
                     background: "linear-gradient(135deg, #f5f7fa 0%, #e8ebf3 100%)",
                     borderRadius: "16px",
                     height: "200px",
-                    display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
@@ -454,13 +542,10 @@ export default function MyStreetMap() {
                       transition: "all 0.2s",
                       display: "flex",
                       gap: "14px",
-                      alignItems: "center",
+                      alignItems: "flex-start",
                     }}
                   >
-                    <div style={{
-                      fontSize: "28px",
-                      flexShrink: 0,
-                    }}>
+                    <div style={{ fontSize: "28px", flexShrink: 0 }}>
                       {severityEmoji[issue.severity]}
                     </div>
                     <div style={{ flex: 1 }}>
@@ -468,7 +553,31 @@ export default function MyStreetMap() {
                         {issue.type}
                       </div>
                       <div style={{ fontSize: "12px", color: "#8894ac", marginTop: "4px", fontWeight: "500" }}>
-                        {issue.id} · {issue.severity} · {issue.date}
+                        {issue.id} · {issue.severity}
+                      </div>
+                      <div style={{ 
+                        fontSize: "12px", 
+                        color: "#5a6c88", 
+                        marginTop: "8px",
+                        padding: "8px 10px",
+                        background: i === photoIndex ? "rgba(102,126,234,0.08)" : "#f8f9fc",
+                        borderRadius: "8px",
+                        lineHeight: "1.5",
+                      }}>
+                        <div style={{ fontWeight: "600", marginBottom: "4px" }}>
+                          📅 {issue.date}
+                        </div>
+                        <div style={{ 
+                          display: "inline-block",
+                          padding: "2px 8px",
+                          background: issue.status === "Fixed" ? "#c8e6c9" : "#ffcdd2",
+                          color: issue.status === "Fixed" ? "#2e7d32" : "#c62828",
+                          borderRadius: "12px",
+                          fontSize: "11px",
+                          fontWeight: "700",
+                        }}>
+                          {issue.status === "Fixed" ? "✓ Fixed" : "⏳ Not Fixed"}
+                        </div>
                       </div>
                     </div>
                     <a
@@ -496,9 +605,7 @@ export default function MyStreetMap() {
           )}
         </div>
 
-        {/* ═══════════════════════════════════════════ */}
-        {/* FLOATING HINT (when nothing selected) */}
-        {/* ═══════════════════════════════════════════ */}
+        {/* FLOATING HINT */}
         {!selected && leafletLoaded && (
           <div style={{
             position: "absolute",
