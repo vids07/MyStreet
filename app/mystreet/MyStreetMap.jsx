@@ -160,6 +160,22 @@ export default function MyStreetMap() {
 
             {/* Logo & Title */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              {/* Back button */}
+              <button
+                onClick={() => { window.location.href = "/"; }}
+                style={{
+                  width: "40px", height: "40px",
+                  background: "rgba(255,255,255,0.2)",
+                  border: "2px solid rgba(255,255,255,0.3)",
+                  borderRadius: "12px", color: "white",
+                  fontSize: "20px", cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.35)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
+                title="Back to home"
+              >←</button>
               <div style={{
                 width: "52px", height: "52px", background: "white",
                 borderRadius: "16px", display: "flex", alignItems: "center",
