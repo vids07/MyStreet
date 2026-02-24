@@ -272,65 +272,161 @@ export default function MyStreetMap() {
         </div>
 
         {/* ══════════════════════════════════════════ */}
-        {/* ABOUT PANEL (expandable) */}
+        {/* ══════════════════════════════════════════ */}
+        {/* ABOUT MODAL OVERLAY */}
         {/* ══════════════════════════════════════════ */}
         {showAbout && (
-          <div style={{
-            background: "#1a1a2e",
-            color: "#e8eaf6",
-            padding: "32px 24px",
-            borderBottom: "4px solid #667eea",
-            maxHeight: "420px",
-            overflowY: "auto",
-            animation: "slideDown 0.3s ease",
-          }}>
-            <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
-            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-              <div style={{ fontSize: "18px", fontWeight: "800", color: "#667eea", marginBottom: "20px", letterSpacing: "0.5px" }}>
-                📋 Why I Built This
+          <div
+            onClick={() => setShowAbout(false)}
+            style={{
+              position: "fixed", inset: 0, zIndex: 9999,
+              background: "rgba(0,0,0,0.5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "16px",
+              animation: "fadeIn 0.2s ease",
+            }}
+          >
+            <style>{`
+              @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+              .about-modal::-webkit-scrollbar { width: 6px; }
+              .about-modal::-webkit-scrollbar-track { background: #f0f3f8; border-radius: 4px; }
+              .about-modal::-webkit-scrollbar-thumb { background: #c5d0e8; border-radius: 4px; }
+            `}</style>
+
+            {/* Modal box — stop click from closing */}
+            <div
+              className="about-modal"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "white",
+                borderRadius: "24px",
+                width: "100%",
+                maxWidth: "600px",
+                maxHeight: "88vh",
+                overflowY: "auto",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
+                animation: "slideUp 0.3s ease",
+                fontFamily: "'Poppins', sans-serif",
+              }}
+            >
+              {/* Modal header */}
+              <div style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: "24px 24px 0 0",
+                padding: "24px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <div>
+                  <div style={{ fontSize: "22px", fontWeight: "900", color: "white" }}>
+                    📋 Why does this website exist?
+                  </div>
+                  <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)", marginTop: "4px", fontWeight: "500" }}>
+                    The story behind MyStreet
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAbout(false)}
+                  style={{
+                    width: "36px", height: "36px",
+                    background: "rgba(255,255,255,0.2)", border: "none",
+                    borderRadius: "50%", color: "white", fontSize: "22px",
+                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >×</button>
               </div>
-              {ABOUT_TEXT.map((block, i) => {
-                if (block.type === "intro") return (
-                  <p key={i} style={{ fontSize: "16px", fontWeight: "700", color: "#fff", marginBottom: "16px", lineHeight: "1.6" }}>
-                    {block.text}
-                  </p>
-                );
-                if (block.type === "heading") return (
-                  <div key={i} style={{
-                    fontSize: "13px", fontWeight: "800", color: "#667eea",
-                    letterSpacing: "1px", marginTop: "24px", marginBottom: "12px",
-                    textTransform: "uppercase", borderLeft: "3px solid #667eea", paddingLeft: "10px",
-                  }}>
-                    {block.text}
+
+              {/* Modal body */}
+              <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+
+                {/* Intro statement */}
+                <div style={{
+                  background: "linear-gradient(135deg, #f0f3ff, #e8ecff)",
+                  border: "2px solid #c5d0e8",
+                  borderRadius: "16px", padding: "20px",
+                  textAlign: "center",
+                }}>
+                  <div style={{ fontSize: "36px", marginBottom: "10px" }}>🏛️</div>
+                  <div style={{ fontSize: "15px", fontWeight: "700", color: "#2c3e50", lineHeight: "1.6" }}>
+                    Nagar Nigam Roorkee was asked a simple question about road work.<br />
+                    <span style={{ color: "#667eea" }}>They refused to answer for over 3 months.</span>
                   </div>
-                );
-                if (block.type === "fact") return (
-                  <div key={i} style={{
-                    background: "rgba(102,126,234,0.1)", border: "1px solid rgba(102,126,234,0.3)",
-                    borderRadius: "12px", padding: "14px 16px", marginBottom: "10px",
-                  }}>
-                    <div style={{ fontSize: "13px", fontWeight: "700", color: "#a5b4fc", marginBottom: "6px" }}>
-                      ⚡ {block.label}
-                    </div>
-                    <div style={{ fontSize: "14px", color: "#c7d2fe", lineHeight: "1.6" }}>{block.text}</div>
+                </div>
+
+                {/* What is RTI — simple explainer */}
+                <div style={{
+                  background: "#f8f9fc", borderRadius: "16px", padding: "18px",
+                  border: "2px solid #f0f3f8",
+                }}>
+                  <div style={{ fontSize: "13px", fontWeight: "800", color: "#667eea", letterSpacing: "0.5px", marginBottom: "12px", textTransform: "uppercase" }}>
+                    💡 What is an RTI?
                   </div>
-                );
-                if (block.type === "closing") return (
-                  <p key={i} style={{
-                    fontSize: "18px", fontWeight: "900", color: "#fff",
-                    marginTop: "24px", textAlign: "center",
-                    padding: "16px", background: "rgba(102,126,234,0.2)",
-                    borderRadius: "12px", letterSpacing: "0.5px",
-                  }}>
-                    {block.text}
+                  <p style={{ fontSize: "14px", color: "#5a6c88", lineHeight: "1.7" }}>
+                    The <strong style={{ color: "#2c3e50" }}>Right to Information Act, 2005</strong> is an Indian law that lets any citizen ask the government for information. The government <strong style={{ color: "#2c3e50" }}>must reply within 30 days</strong>. If they don't, it is illegal.
                   </p>
-                );
-                return (
-                  <p key={i} style={{ fontSize: "14px", color: "#94a3b8", lineHeight: "1.8", marginBottom: "12px" }}>
-                    {block.text}
-                  </p>
-                );
-              })}
+                </div>
+
+                {/* Visual timeline */}
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: "800", color: "#667eea", letterSpacing: "0.5px", marginBottom: "14px", textTransform: "uppercase" }}>
+                    📅 What happened, step by step
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {[
+                      { icon: "📝", date: "Nov 20, 2025", title: "RTI Filed Online", body: "Asked for work orders, budget & contractor details for the brick paver road work on this street.", color: "#e8f5e9", border: "#a5d6a7", textColor: "#2e7d32", badge: "DONE", badgeColor: "#2e7d32", badgeBg: "#c8e6c9" },
+                      { icon: "⏰", date: "Dec 20, 2025", title: "30-Day Deadline Missed", body: "The government officer (PIO) did not reply. By law, this is a violation of the RTI Act.", color: "#fff5f5", border: "#ffcdd2", textColor: "#c62828", badge: "VIOLATION", badgeColor: "#c62828", badgeBg: "#ffcdd2" },
+                      { icon: "📵", date: "January 2026", title: "12 Calls — All Ignored", body: "The PIO's office was called 12 times. The officer cut the call and told me to visit in person — which is not allowed under the digital RTI process.", color: "#fff9e6", border: "#ffe0a3", textColor: "#e65100", badge: "MISCONDUCT", badgeColor: "#e65100", badgeBg: "#ffe0b2" },
+                      { icon: "🤥", date: "Jan 22, 2026", title: "First Appeal Filed + Lie Told", body: "Filed a formal First Appeal. An official then claimed \"no road work was done here last year.\" Every photo on this map proves that is false.", color: "#fff5f5", border: "#ffcdd2", textColor: "#c62828", badge: "ALSO IGNORED", badgeColor: "#c62828", badgeBg: "#ffcdd2" },
+                      { icon: "💻", date: "Feb 8, 2026", title: "This Website Built", body: "Since Nagar Nigam refuses to use a legal government portal, I built my own. The evidence is now public.", color: "#f0f3ff", border: "#c5d0e8", textColor: "#667eea", badge: "LIVE", badgeColor: "#667eea", badgeBg: "#e8ecff" },
+                      { icon: "⚖️", date: "In Progress", title: "Escalating to State Commission", body: "This matter is being taken to the Uttarakhand State Information Commission (Dehradun) for a penalty under Section 20 of the RTI Act.", color: "#f3e5f5", border: "#ce93d8", textColor: "#7b1fa2", badge: "NEXT STEP", badgeColor: "#7b1fa2", badgeBg: "#e1bee7" },
+                    ].map((step, i) => (
+                      <div key={i} style={{
+                        display: "flex", gap: "14px", alignItems: "flex-start",
+                        background: step.color, border: `2px solid ${step.border}`,
+                        borderRadius: "14px", padding: "14px 16px",
+                      }}>
+                        <div style={{ fontSize: "28px", flexShrink: 0, marginTop: "2px" }}>{step.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "4px" }}>
+                            <span style={{ fontSize: "11px", fontWeight: "700", color: step.textColor, fontFamily: "monospace" }}>{step.date}</span>
+                            <span style={{ fontSize: "10px", fontWeight: "800", color: step.badgeColor, background: step.badgeBg, padding: "2px 8px", borderRadius: "20px" }}>{step.badge}</span>
+                          </div>
+                          <div style={{ fontSize: "14px", fontWeight: "700", color: "#2c3e50", marginBottom: "4px" }}>{step.title}</div>
+                          <div style={{ fontSize: "13px", color: "#5a6c88", lineHeight: "1.6" }}>{step.body}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Closing line */}
+                <div style={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  borderRadius: "16px", padding: "20px", textAlign: "center",
+                }}>
+                  <div style={{ fontSize: "24px", marginBottom: "8px" }}>⚖️</div>
+                  <div style={{ fontSize: "16px", fontWeight: "900", color: "white", lineHeight: "1.4" }}>
+                    Public money requires public answers.
+                  </div>
+                  <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)", marginTop: "6px", fontWeight: "500" }}>
+                    Under Section 7(6) of the RTI Act, this information must now be provided free of cost.
+                  </div>
+                </div>
+
+                {/* Close button */}
+                <button
+                  onClick={() => setShowAbout(false)}
+                  style={{
+                    width: "100%", padding: "14px",
+                    background: "#f0f3ff", border: "2px solid #c5d0e8",
+                    borderRadius: "12px", fontSize: "15px",
+                    fontWeight: "700", color: "#667eea", cursor: "pointer",
+                  }}
+                >
+                  Close ✕
+                </button>
+              </div>
             </div>
           </div>
         )}
