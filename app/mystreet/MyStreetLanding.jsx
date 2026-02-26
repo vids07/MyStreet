@@ -152,6 +152,180 @@ export default function MyStreetLanding() {
             ))}
           </div>
 
+          {/* ── ACCOUNTABILITY TRACKER ── */}
+          <div className="f4" style={{ background: "white", borderRadius: "20px", border: "2px solid #f0f3f8", overflow: "hidden", boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}>
+
+            {/* Header */}
+            <div style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "18px 20px" }}>
+              <div style={{ fontSize: "15px", fontWeight: "900", color: "white" }}>🏛️ Government Response Tracker</div>
+              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", marginTop: "3px" }}>We asked. They didn't answer. Here's the full story.</div>
+            </div>
+
+            <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
+
+              {/* 3 horizontal step cards */}
+              {(() => {
+                const rtiDays  = Math.floor((new Date() - new Date("2025-11-20")) / 86400000);
+                const app1Days = Math.floor((new Date() - new Date("2026-01-22")) / 86400000);
+                const app2Days = Math.floor((new Date() - new Date("2026-02-25")) / 86400000);
+
+                const steps = [
+                  {
+                    num: "1",
+                    emoji: "📝",
+                    label: "RTI Filed",
+                    date: "Nov 20, 2025",
+                    days: rtiDays,
+                    deadline: 30,
+                    note: "Legal reply deadline: 30 days",
+                    status: "NO REPLY",
+                    statusBg: "#ffcdd2", statusColor: "#c62828",
+                    ring: "#ef4444", ringBg: "#fff5f5",
+                    border: "#ffcdd2",
+                  },
+                  {
+                    num: "2",
+                    emoji: "📢",
+                    label: "1st Appeal",
+                    date: "Jan 22, 2026",
+                    days: app1Days,
+                    deadline: 30,
+                    note: "Legal reply deadline: 30 days",
+                    status: "NO REPLY",
+                    statusBg: "#ffcdd2", statusColor: "#c62828",
+                    ring: "#ef4444", ringBg: "#fff5f5",
+                    border: "#ffcdd2",
+                  },
+                  {
+                    num: "3",
+                    emoji: "⚖️",
+                    label: "2nd Appeal",
+                    date: "Feb 25, 2026",
+                    days: app2Days,
+                    deadline: 90,
+                    note: "Portal says: No Record Found ⚠️",
+                    status: "1 DAY OLD",
+                    statusBg: "#e1bee7", statusColor: "#7b1fa2",
+                    ring: "#9c27b0", ringBg: "#f3e5f5",
+                    border: "#ce93d8",
+                  },
+                ];
+
+                return (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
+                    {steps.map((s, i) => {
+                      // SVG circular progress
+                      const r = 26;
+                      const circ = 2 * Math.PI * r;
+                      const pct = Math.min(s.days / s.deadline, 1);
+                      const dash = pct * circ;
+
+                      return (
+                        <div key={i} style={{
+                          background: s.ringBg, border: `2px solid ${s.border}`,
+                          borderRadius: "16px", padding: "14px 10px",
+                          display: "flex", flexDirection: "column", alignItems: "center",
+                          gap: "8px", textAlign: "center",
+                        }}>
+                          {/* Step number */}
+                          <div style={{ fontSize: "10px", fontWeight: "800", color: s.statusColor, background: s.statusBg, padding: "2px 8px", borderRadius: "20px", letterSpacing: "0.5px" }}>
+                            STEP {s.num}
+                          </div>
+
+                          {/* Circular progress ring */}
+                          <div style={{ position: "relative", width: "68px", height: "68px" }}>
+                            <svg width="68" height="68" style={{ transform: "rotate(-90deg)" }}>
+                              {/* Track */}
+                              <circle cx="34" cy="34" r={r} fill="none" stroke="#e8ebf3" strokeWidth="5" />
+                              {/* Progress */}
+                              <circle
+                                cx="34" cy="34" r={r} fill="none"
+                                stroke={s.ring} strokeWidth="5"
+                                strokeDasharray={`${dash} ${circ}`}
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            {/* Emoji in center */}
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>
+                              {s.emoji}
+                            </div>
+                          </div>
+
+                          {/* Label */}
+                          <div style={{ fontSize: "13px", fontWeight: "800", color: "#2c3e50" }}>{s.label}</div>
+
+                          {/* Date */}
+                          <div style={{ fontSize: "11px", color: "#8894ac", fontWeight: "500" }}>{s.date}</div>
+
+                          {/* Days counter — big */}
+                          <div style={{ background: "white", borderRadius: "10px", padding: "6px 10px", width: "100%", border: `1px solid ${s.border}` }}>
+                            <div style={{ fontSize: "22px", fontWeight: "900", color: s.statusColor, lineHeight: 1 }}>{s.days}</div>
+                            <div style={{ fontSize: "10px", color: "#8894ac", fontWeight: "600", marginTop: "2px" }}>DAYS WAITING</div>
+                          </div>
+
+                          {/* Status pill */}
+                          <div style={{ fontSize: "10px", fontWeight: "800", color: s.statusColor, background: s.statusBg, padding: "3px 10px", borderRadius: "20px" }}>
+                            {s.status}
+                          </div>
+
+                          {/* Note */}
+                          <div style={{ fontSize: "10px", color: "#8894ac", lineHeight: "1.4", fontWeight: "500" }}>{s.note}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
+              {/* Progress bar — overall journey */}
+              <div style={{ background: "#f8f9fc", borderRadius: "14px", padding: "14px 16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "#2c3e50" }}>📍 Where we are now</span>
+                  <span style={{ fontSize: "11px", color: "#8894ac" }}>Step 3 of 3 escalations done</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  {["RTI Filed ✅", "1st Appeal ✅", "2nd Appeal ✅", "Waiting for CIC..."].map((label, i) => (
+                    <div key={i} style={{ flex: 1, textAlign: "center" }}>
+                      <div style={{
+                        height: "8px", borderRadius: "4px",
+                        background: i < 3 ? "linear-gradient(135deg, #667eea, #764ba2)" : "#e8ebf3",
+                        marginBottom: "6px",
+                      }} />
+                      <div style={{ fontSize: "9px", color: i < 3 ? "#667eea" : "#aaa", fontWeight: i < 3 ? "700" : "500", lineHeight: "1.3" }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Govt vs Citizens */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div style={{ background: "#fff5f5", border: "2px solid #ffcdd2", borderRadius: "14px", padding: "14px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", marginBottom: "6px" }}>🏛️</div>
+                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#c62828", marginBottom: "10px" }}>GOVERNMENT</div>
+                  <div style={{ fontSize: "28px", fontWeight: "900", color: "#c62828" }}>{Math.floor((new Date() - new Date("2025-11-20")) / 86400000)}</div>
+                  <div style={{ fontSize: "10px", color: "#e57373", fontWeight: "600" }}>DAYS, ZERO REPLY</div>
+                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#e57373" }}>0 documents shared 🔴</div>
+                </div>
+                <div style={{ background: "#e8f5e9", border: "2px solid #a5d6a7", borderRadius: "14px", padding: "14px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", marginBottom: "6px" }}>🙋</div>
+                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#2e7d32", marginBottom: "10px" }}>CITIZENS</div>
+                  <div style={{ fontSize: "28px", fontWeight: "900", color: "#2e7d32" }}>14</div>
+                  <div style={{ fontSize: "10px", color: "#66bb6a", fontWeight: "600" }}>DAYS, 67 ISSUES MAPPED</div>
+                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#66bb6a" }}>100% transparent ✅</div>
+                </div>
+              </div>
+
+              {/* Empty official response box */}
+              <div style={{ border: "2px dashed #e8ebf3", borderRadius: "14px", padding: "28px 16px", textAlign: "center" }}>
+                <div style={{ fontSize: "36px", opacity: 0.3, marginBottom: "8px" }}>📭</div>
+                <div style={{ fontSize: "14px", fontWeight: "700", color: "#c5d0e8" }}>Official Responses Received</div>
+                <div style={{ fontSize: "28px", fontWeight: "900", color: "#d0d8e8", margin: "6px 0" }}>0</div>
+                <div style={{ fontSize: "12px", color: "#c5d0e8" }}>Waiting since Nov 20, 2025. When they reply, it will appear here.</div>
+              </div>
+
+            </div>
+          </div>
+
           {/* WhatsApp share */}
           <div className="f4" style={{ textAlign: "center" }}>
             <p style={{ fontSize: "13px", color: "#8894ac", marginBottom: "12px", fontWeight: "500" }}>
