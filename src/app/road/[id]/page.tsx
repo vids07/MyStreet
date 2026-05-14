@@ -34,7 +34,7 @@ export default async function RoadPage({
 
   // Finding the Tender Event
   const tenderEvent = events.find(
-    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && e.evidence?.isTender === true
+    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && (e.evidence as any)?.isTender === true
   ) ?? events.find(e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED);
 
   const completionEvent = events.find(e => e.eventType === EVENT_TYPES.COMPLETION_CLAIMED);
@@ -43,8 +43,8 @@ export default async function RoadPage({
   // Financial Values
   const paymentEvidence = paymentEvent?.evidence as Record<string, unknown> | null;
   const netDisbursed = Number(paymentEvidence?.netDisbursed ?? 0);
-  const sanctionedBudget = Number(tenderEvent?.evidence?.estimatedValue ?? 0);
-  const contractValue = Number(tenderEvent?.evidence?.contractValue ?? 0);
+  const sanctionedBudget = Number((tenderEvent?.evidence as any)?.estimatedValue ?? 0);
+  const contractValue = Number((tenderEvent?.evidence as any)?.contractValue ?? 0);
 
   // Finding the Primary Certifier (Lowest rank official on completion)
   const completionParticipants = completionEvent?.participants ?? [];

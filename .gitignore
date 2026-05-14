@@ -54,3 +54,5 @@ drizzle/meta/_journal.json
 
 .claude
 *.tsbuildinfo
+.vercel
+.env*.local
