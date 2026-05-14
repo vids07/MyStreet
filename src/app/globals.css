@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+body {
+  background-color: #FAFAF8;
+  color: #1A1A1A;
+}
+
+.mona {
+  font-family: "Mona Sans", system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 125;
+}
+
+.roboto {
+  font-family: "Roboto", system-ui, sans-serif;
+  font-optical-sizing: auto;
+}
