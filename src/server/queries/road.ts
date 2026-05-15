@@ -90,21 +90,35 @@ export async function getParticipantsByEventId(eventId: string) {
 }
 
 export async function getPhotosByRoadId(roadId: string) {
-  return db
-    .select()
+  const result = await db
+    .select({
+      photo: photos,
+      person: persons,
+    })
     .from(photos)
+    .leftJoin(persons, eq(photos.personId, persons.id))
     .where(eq(photos.roadId, roadId))
     .orderBy(desc(photos.capturedAt));
+
+  return result.map(r => ({
+    ...r.photo,
+    person: r.person,
+  }));
 }
 
 export async function getHeroPhoto(roadId: string) {
   const result = await db
-    .select()
+    .select({
+      photo: photos,
+      person: persons,
+    })
     .from(photos)
+    .leftJoin(persons, eq(photos.personId, persons.id))
     .where(and(eq(photos.roadId, roadId), eq(photos.isHero, true)))
     .limit(1);
 
-  return result[0] ?? null;
+  if (result.length === 0) return null;
+  return { ...result[0].photo, person: result[0].person };
 }
 
 export async function getConfirmationCount(roadId: string) {

@@ -62,6 +62,7 @@ export default async function RoadPage({
   const contractorPerson = contractorParticipant?.person;
 
   const conditionEvents = events.filter(e => ISSUE_EVENT_TYPES.includes(e.eventType as any));
+  const section1Photos = photos.filter(p => !p.isHero && p.eventId === null);
 
   return (
     <main className="bg-surface min-h-screen">
@@ -69,6 +70,7 @@ export default async function RoadPage({
       <HeroSection 
         road={road} 
         heroPhoto={heroPhoto}
+        section1Photos={section1Photos}
         builtAgo={builtMonthsAgo(tenderEvent)}
         daysLasted={daysLasted(completionEvent, road.healthStatus)}
         netDisbursed={formatCurrency(netDisbursed)}
