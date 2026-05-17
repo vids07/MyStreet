@@ -67,6 +67,18 @@ Format: Decision | Why | Tradeoff Accepted | Revisit Trigger
 - **Tradeoff**: Database accumulates flagged events. UI must filter them.
 - **Revisit**: Never — this is the core principle.
 
+### Photo storage is Cloudinary, not Google Drive
+- **Decision**: All road photos are hosted on Cloudinary. Google Drive links are not used.
+- **Why**: Google Drive does not serve images reliably as direct `<img src>` targets — links expire, require login, or return HTML instead of image bytes. Cloudinary serves optimised images via stable CDN URLs with `q_auto/f_auto` transforms.
+- **Tradeoff**: Photos must be uploaded to Cloudinary before seeding. Extra step but required for reliable display.
+- **Revisit**: Never — Google Drive is not a viable image host.
+
+### Section 1 photos are those with eventId === null
+- **Decision**: Section 1 carousel shows all photos where `eventId` is null. Section 3 cards show photos filtered by their linked event's type.
+- **Why**: Photos documenting general road condition (not tied to a specific event) belong in the hero scroll. Photos linked to crack_found, pothole_found, drain_blocked events belong in their respective Section 3 cards. This is structural — it works for any road without URL path hacks.
+- **Tradeoff**: A photo must be explicitly linked to an event to appear in Section 3. Unlinked photos always land in Section 1.
+- **Revisit**: Never — URL-based filtering was the wrong approach.
+
 ### Photos as separate table, not JSONB in events
 - **Decision**: Photos live in their own `photos` table with roadId, segmentId, eventId, source, location, and isHero flag.
 - **Why**: JSONB evidence field is unstructured. Photos need to be queryable by road, segment, event, and hero status. Separate table enables all of this.

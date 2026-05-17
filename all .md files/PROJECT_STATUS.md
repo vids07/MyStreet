@@ -48,8 +48,11 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - 1 road — displayName exactly as written in RTI: "Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee"
 - 1 segment — area 363.30 SQM, thickness 80mm. Length and width null (not in RTI documents).
 - 1 drain — all dimension fields null (not in RTI documents). Status null — physical existence not yet field verified.
-- 11 events — all from Section 3, chronological order. Evidence JSONB copied exactly from WARD28_VERIFIED_DATA.md.
-- 21 event participants — all from Section 4. LOW confidence participants inserted with code comments.
+- 14 events — 11 original RTI events + 3 citizen field observation events added May 2026 (crack_found, pothole_found, drain_blocked — 8 Feb 2026, linked to segment).
+- 24 event participants — 21 original + Vidushi added as reporter on all 3 condition events.
+- 29 photos seeded May 2026 — hosted on Cloudinary. 8 Section 1 (eventId null), 6 crack, 3 pothole, 12 drain. All captured 19 Nov 2025.
+- Sachin Kumar: jobDescription populated, accountabilityStatus set to waiting_for_audit, participant role corrected to reporter on payment_released.
+- Gurukesh Singh: monthlySalary set to ₹55,000 — required for Section 4 JE benchmark calculation.
 
 ### Utility Functions ✓
 - `src/lib/utils/road-display.ts` — all computed value logic lives here, not in `page.tsx`
@@ -74,8 +77,6 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 
 ### UI Interactions — IN PROGRESS
 - Witness tap, Share, and Document buttons exist but are currently static.
-- Photo migration from Google Drive — IN PROGRESS.
-- Linking photos to condition events in seed data — IN PROGRESS.
 
 ---
 
@@ -135,11 +136,7 @@ All locked in DESIGN_SYSTEM.md (in progress — being locked now).
 
 ## Known Issues
 
-1. Google Drive photo links — Google Drive is not a proper image host. Direct image display may not work. Photos need to be migrated to proper storage (Cloudinary, Vercel Blob, or S3) before UI launch.
-
-2. Photos not linked to events — all 5 Ward 28 photos have `event_id: null`. Section 3 condition cards (cracks, potholes, drains) filter photos by `event_id`. Until at least one photo is linked to a condition event, Section 3 cards render with zero images. Do not build Section 3 until this is resolved.
-
-3. `designationPlain` is nullable — needs to be populated for all persons before UI goes live.
+1. `designationPlain` is nullable — needs to be populated for all persons before UI goes live.
 
 4. Migration strategy — currently using `drizzle-kit push`. Should switch to generate + migrate before any production deployment.
 
@@ -161,4 +158,4 @@ All locked in DESIGN_SYSTEM.md (in progress — being locked now).
 
 | Road System ID | Display Name | Health Status | Events | Drains |
 |----------------|-------------|---------------|--------|--------|
-| UK-RKE-29.8723-77.8813 | Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee | NULL — not determinable from RTI alone | 11 | 1 (status null — field verification required) |
+| UK-RKE-29.8723-77.8813 | Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee | critical | 14 (incl. 3 citizen field observations) | 1 (status null — field verification required) |

@@ -388,7 +388,7 @@ Per photo. Fetched via `getPhotosByRoadId(road.id)`, ordered `captured_at DESC`.
 | `{{image.updated_date}}` | ⏭️ Skip MVP | — | No update tracking on photos. Not rendered. | — | — |
 | `{{image.updated_by}}` | ⏭️ Skip MVP | — | Same. Not rendered. | — | — |
 
-**Condition card image filtering:** Cracks card = photos where `event_id` matches `crack_found` events. Potholes card = `pothole_found` events. Drains card = photos linked to drain segment events. Photos with null `event_id` appear in Section 1 scroll only.
+**Condition card image filtering:** Cracks card = photos where `event_id` matches `crack_found` events. Potholes card = `pothole_found` events. Drains card = photos linked to `drain_blocked` events. Photos with null `event_id` appear in Section 1 scroll only — filter: `photos.filter(p => p.eventId === null)`. Do NOT filter by URL string — URLs change when photos are re-uploaded.
 
 ---
 
@@ -426,9 +426,13 @@ In Ward 28: Gurudayal Singh (JE, ₹55,000/month). Prem Kumar Sharma (AE) is sho
 const completionParticipants = completionEvent.participants
 const certifiers = completionParticipants.filter(p => p.role === 'certifier')
 const officials = certifiers.filter(p => p.person?.personCategory === 'official')
-const primaryCertifier = officials.sort(
-  (a, b) => Number(a.person?.monthlySalary ?? 0) - Number(b.person?.monthlySalary ?? 0)
-)[0]
+const primaryCertifier = officials.sort((a, b) => {
+  const salA = a.person?.monthlySalary != null ? Number(a.person.monthlySalary) : Infinity
+  const salB = b.person?.monthlySalary != null ? Number(b.person.monthlySalary) : Infinity
+  return salA - salB
+})[0]
+// Note: null salary must sort LAST (Infinity), not first. ?? 0 causes persons with unknown
+// salary to rank below any known salary, picking the wrong certifier.
 const certifierPerson = primaryCertifier?.person
 ```
 
@@ -688,6 +692,7 @@ export function getActionLabel(role: string, eventType: string): string {
     'authoriser::work_order_issued':               'Authorised work order',
     'assignee::work_order_issued':                 'Assigned as lead contractor',
     'assignee::repair_done':                       'Assigned to carry out repairs',
+    'reporter::payment_released':                  'Drafted and submitted the payment request note sheet',
     'reporter::rti_filed':                         'Filed RTI application',
     'reporter::pothole_found':                     'Reported pothole',
     'reporter::crack_found':                       'Reported surface crack',
@@ -834,7 +839,8 @@ BUGS FIXED IN THIS VERSION
 4. WHISTLEBOWER_REPORT typo — fixed to WHISTLEBLOWER_REPORT
 5. Drains missing from getFullRoadData — now included in parallel fetch
 6. isTender flag — add to seed before tenderEvent logic is relied on
-7. Photos not linked to events in seed — required before Section 3 renders
+7. Photos not linked to events in seed — RESOLVED May 2026: 29 photos seeded on Cloudinary, linked to crack_found / pothole_found / drain_blocked events. Section 3 cards render correctly.
+8. Certifier sort used ?? 0 for null salary — RESOLVED May 2026: sort now uses Infinity for null so lowest known salary wins.
 ```
 
 ---
