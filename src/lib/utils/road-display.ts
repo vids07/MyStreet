@@ -141,6 +141,7 @@ export function getActionLabel(role: string, eventType: string): string {
     'authoriser::work_order_issued': 'Authorised work order',
     'assignee::work_order_issued': 'Assigned as lead contractor',
     'assignee::repair_done': 'Assigned to carry out repairs',
+    'reporter::payment_released': 'Drafted and submitted the payment request note sheet',
     'reporter::rti_filed': 'Filed RTI application',
     'reporter::pothole_found': 'Reported pothole',
     'reporter::crack_found': 'Reported surface crack',

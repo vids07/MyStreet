@@ -54,13 +54,15 @@ export default async function RoadPage({
   const completionParticipants = completionEvent?.participants ?? [];
   const certifiers = completionParticipants.filter(p => p.role === 'certifier');
   const officialCertifiers = certifiers.filter(p => p.person?.personCategory === 'official');
-  const primaryCertifierParticipant = officialCertifiers.sort(
-    (a, b) => Number(a.person?.monthlySalary ?? 0) - Number(b.person?.monthlySalary ?? 0)
-  )[0];
+  const primaryCertifierParticipant = officialCertifiers.sort((a, b) => {
+    const salA = a.person?.monthlySalary != null ? Number(a.person.monthlySalary) : Infinity;
+    const salB = b.person?.monthlySalary != null ? Number(b.person.monthlySalary) : Infinity;
+    return salA - salB;
+  })[0];
   const certifierPerson = primaryCertifierParticipant?.person;
 
   const conditionEvents = events.filter(e => ISSUE_EVENT_TYPES.includes(e.eventType as any));
-  const section1Photos = photos.filter(p => !p.isHero && p.url.includes('section1'));
+  const section1Photos = photos.filter(p => p.eventId === null);
 
   // --- SECTION 5 DERIVATIONS ---
 
@@ -105,7 +107,7 @@ export default async function RoadPage({
 
   const financialChain: FaceCardData[] = [
     toFaceCard(findPerson('Prashant Kumar'), 'authoriser', EVENT_TYPES.PAYMENT_RELEASED, false),
-    toFaceCard(findPerson('Sachin Kumar'),   'certifier',  EVENT_TYPES.PAYMENT_RELEASED, false),
+    toFaceCard(findPerson('Sachin Kumar'),   'reporter',   EVENT_TYPES.PAYMENT_RELEASED, false),
     toFaceCard(findPerson('Mohan Singh'),    'certifier',  EVENT_TYPES.PAYMENT_RELEASED, false),
     toFaceCard(findPerson('Narendra Singh Rawat'), 'certifier', EVENT_TYPES.PAYMENT_RELEASED, false),
   ].filter((c): c is FaceCardData => c !== null);

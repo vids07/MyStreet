@@ -6,6 +6,7 @@ import { drains } from './schema/drain';
 import { events } from './schema/event';
 import { eventParticipants } from './schema/event-participants';
 import { persons } from './schema/person';
+import { photos } from './schema/photo';
 
 async function seed() {
   console.log('Clearing existing data...');
@@ -150,8 +151,8 @@ async function seed() {
     salarySource: null,
     photoUrl: null,
     photoSource: null,
-    accountabilityStatus: null,
-    jobDescription: null,
+    accountabilityStatus: 'waiting_for_audit',
+    jobDescription: 'Drafted and submitted the official note sheet to the Municipal Commissioner, formally initiating the payment release process after work completion.',
     licenseNumber: null,
   }).returning();
 
@@ -769,7 +770,46 @@ async function seed() {
     isFlagged: false,
   }).returning();
 
-  console.log('Events seeded:', 11);
+  // crackEvent — Surface Cracks Documented — 08.02.2026
+  const [crackEvent] = await db.insert(events).values({
+    roadId: road.id,
+    segmentId: segment.id,
+    eventType: 'crack_found',
+    timestamp: new Date('2026-02-08'),
+    description: 'Surface cracks documented by citizen field visit on 8 February 2026. Multiple cracks visible across interlocking tile surface in Ward No. 28.',
+    severity: 'critical',
+    evidence: null,
+    evidenceSource: 'citizen',
+    isFlagged: false,
+  }).returning();
+
+  // potholeEvent — Potholes Documented — 08.02.2026
+  const [potholeEvent] = await db.insert(events).values({
+    roadId: road.id,
+    segmentId: segment.id,
+    eventType: 'pothole_found',
+    timestamp: new Date('2026-02-08'),
+    description: 'Potholes documented by citizen field visit on 8 February 2026. Tile surface breaking up in multiple locations in Ward No. 28.',
+    severity: 'critical',
+    evidence: null,
+    evidenceSource: 'citizen',
+    isFlagged: false,
+  }).returning();
+
+  // drainEvent — Drain Condition Documented — 08.02.2026
+  const [drainEvent] = await db.insert(events).values({
+    roadId: road.id,
+    segmentId: segment.id,
+    eventType: 'drain_blocked',
+    timestamp: new Date('2026-02-08'),
+    description: 'Drain condition documented by citizen field visit on 8 February 2026. Drain billed and certified complete — physical existence on site unverified.',
+    severity: 'medium',
+    evidence: null,
+    evidenceSource: 'citizen',
+    isFlagged: false,
+  }).returning();
+
+  console.log('Events seeded:', 14);
 
   // ============================================================
   // EVENT PARTICIPANTS — Section 4, WARD28_VERIFIED_DATA.md
@@ -808,7 +848,7 @@ async function seed() {
     { eventId: docEvent7.id, personId: shubhamSharma.id, personType: 'contractor', role: 'assignee' }, // HIGH
 
     // docEvent9 — Payment 30.06.2025
-    { eventId: docEvent9.id, personId: sachinKumar.id, personType: 'official', role: 'certifier' }, // HIGH
+    { eventId: docEvent9.id, personId: sachinKumar.id, personType: 'official', role: 'reporter' }, // HIGH
     { eventId: docEvent9.id, personId: prashantKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
     { eventId: docEvent9.id, personId: jitendraKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
 
@@ -817,6 +857,11 @@ async function seed() {
 
     // docEvent11 — RTI Response 05.02.2026
     { eventId: docEvent11.id, personId: pio.id, personType: 'official', role: 'authoriser' }, // HIGH role / NULL name — see WARD28_VERIFIED_DATA.md Section 4
+
+    // Condition events — Field observations 08.02.2026
+    { eventId: crackEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
+    { eventId: potholeEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
+    { eventId: drainEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
   ]);
 
   // suppress unused-variable warnings for events with no participants in Section 4
@@ -824,7 +869,7 @@ async function seed() {
   void docEvent5;
   void docEvent8;
 
-  console.log('Event participants seeded:', 21);
+  console.log('Event participants seeded:', 24);
 
   // ============================================================
   // PAY SCALES — 7th Pay Commission official values
@@ -845,7 +890,205 @@ async function seed() {
     db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200' }).where(eq(persons.fullName, 'Jitendra Kumar')),    // Commissioner — Level 14
   ]);
 
+  await db.update(persons)
+    .set({ monthlySalary: '55000' })
+    .where(eq(persons.fullName, 'Gurukesh Singh'));
+
   console.log('Pay scales seeded: 8');
+
+  // ============================================================
+  // PHOTOS — 29 field photos. capturedAt: 19 November 2025.
+  // Section 1: eventId null, no segmentId.
+  // Section 3: eventId links to condition event, segmentId = segment.id.
+  // ============================================================
+
+  console.log('Seeding photos...');
+
+  await db.insert(photos).values([
+    // --- SECTION 1 — 8 photos ---
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/v1778830416/mystreet/ward28/section1/RK_ST_28.jpg',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829998/mystreet/ward28/section1/RK_ST_67.jpg',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829995/mystreet/ward28/section1/RK_ST_62.jpg',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829993/mystreet/ward28/section1/RK_ST_59.heic',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829989/mystreet/ward28/section1/RK_ST_34.heic',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829985/mystreet/ward28/section1/RK_ST_21.heic',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829982/mystreet/ward28/section1/RK_ST_04.jpg',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: null, eventId: null, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778829978/mystreet/ward28/section1/RK_ST_02.heic',
+      source: 'citizen', status: 'critical', locationLabel: 'Ward 28, Roorkee',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+
+    // --- SECTION 3 CRACKS — 6 photos ---
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833722/mystreet/ward28/section3/RK_ST_19.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833724/mystreet/ward28/section3/RK_ST_23.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833727/mystreet/ward28/section3/RK_ST_27.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833731/mystreet/ward28/section3/RK_ST_64.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833733/mystreet/ward28/section3/RK_ST_65.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833736/mystreet/ward28/section3/RK_ST_66.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+
+    // --- SECTION 3 POTHOLES — 3 photos ---
+    {
+      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833713/mystreet/ward28/section3/RK_ST_14.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833716/mystreet/ward28/section3/RK_ST_40.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833719/mystreet/ward28/section3/RK_ST_52.jpg',
+      source: 'citizen', status: 'critical',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+
+    // --- SECTION 3 DRAINS — 12 photos ---
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832560/mystreet/ward28/section3/RK_ST_08.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832549/mystreet/ward28/section3/RK_ST_20.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832581/mystreet/ward28/section3/RK_ST_24.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832564/mystreet/ward28/section3/RK_ST_25.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832584/mystreet/ward28/section3/RK_ST_26.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832567/mystreet/ward28/section3/RK_ST_33.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832569/mystreet/ward28/section3/RK_ST_41.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832572/mystreet/ward28/section3/RK_ST_43.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832575/mystreet/ward28/section3/RK_ST_45.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832552/mystreet/ward28/section3/RK_ST_57.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832578/mystreet/ward28/section3/RK_ST_60.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832557/mystreet/ward28/section3/RK_ST_61.jpg',
+      source: 'citizen', status: 'warning',
+      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
+    },
+  ]);
+
+  console.log('Photos seeded: 29');
   console.log('');
   console.log('Seeding complete. Database is ready.');
 }
