@@ -1,0 +1,30 @@
+meta {
+  name: Road API - POST Not Allowed - 405
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/road/{{roadSystemId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("status should be 405 for unsupported method", function () {
+    expect(res.getStatus()).to.equal(405);
+  });
+
+  test("allow header, when present, should include GET", function () {
+    const allowHeader = res.getHeader("allow") || "";
+    if (allowHeader) {
+      expect(allowHeader.toUpperCase()).to.include("GET");
+    } else {
+      expect(allowHeader).to.equal("");
+    }
+  });
+}

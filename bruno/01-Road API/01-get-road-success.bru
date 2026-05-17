@@ -1,0 +1,61 @@
+meta {
+  name: Get Road By System Id - 200
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/road/{{roadSystemId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("status should be 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("content-type should be application/json", function () {
+    const header = res.getHeader("content-type") || "";
+    expect(header.toLowerCase()).to.include("application/json");
+  });
+
+  test("response envelope should match contract", function () {
+    let body = res.getBody();
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
+    expect(body).to.be.an("object");
+    expect(body.success).to.equal(true);
+    expect(body.data).to.be.an("object");
+    expect(body.data.road).to.be.an("object");
+    expect(body.data.road.roadSystemId).to.equal(bru.getVar("roadSystemId"));
+    expect(body.data.segments).to.be.an("array");
+    expect(body.data.events).to.be.an("array");
+    expect(body.data.photos).to.be.an("array");
+    expect(body.data.drains).to.be.an("array");
+    expect(body.data.confirmationCount).to.be.a("number");
+    expect(body.data).to.have.property("heroPhoto");
+
+    bru.setVar("roadUuid", body.data.road.id);
+  });
+
+  test("events should be sorted newest-first", function () {
+    let body = res.getBody();
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
+    const events = body.data.events || [];
+    for (let i = 1; i < events.length; i++) {
+      const prevTs = new Date(events[i - 1].timestamp).getTime();
+      const nextTs = new Date(events[i].timestamp).getTime();
+      expect(prevTs).to.be.at.least(nextTs);
+    }
+  });
+}

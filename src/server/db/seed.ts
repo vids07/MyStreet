@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { db } from './index';
 import { roads } from './schema/road';
 import { segments } from './schema/segment';
@@ -44,10 +45,9 @@ async function seed() {
   }).returning();
 
   // Person 2 — Junior Engineer (JE)
-  // fullName: NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
-  // No personal name on any Ward 28 document. Possible: Gurukesh Singh (Page 11 — other works only).
+  // fullName: Gurukesh Singh — verified from RTI documents (Page 11).
   const [juniorEngineer] = await db.insert(persons).values({
-    fullName: 'NEEDS VERIFICATION', // NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
+    fullName: 'Gurukesh Singh',
     designation: 'Junior Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -58,16 +58,15 @@ async function seed() {
     salarySource: null,
     photoUrl: null,
     photoSource: null,
-    accountabilityStatus: null,
-    jobDescription: null,
+    accountabilityStatus: 'response_pending',
+    jobDescription: 'Responsible for on-site quality verification and signing off construction as complete and standard-compliant.',
     licenseNumber: null,
   }).returning();
 
   // Person 3 — Assistant Engineer (AE)
-  // fullName: NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
-  // No personal name on any Ward 28 document. Possible: Prem Kumar Sharma (Page 11 — other works only).
+  // fullName: Prem Kumar Sharma — verified from RTI documents (Page 11).
   const [assistantEngineer] = await db.insert(persons).values({
-    fullName: 'NEEDS VERIFICATION', // NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
+    fullName: 'Prem Kumar Sharma',
     designation: 'Assistant Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -78,16 +77,15 @@ async function seed() {
     salarySource: null,
     photoUrl: null,
     photoSource: null,
-    accountabilityStatus: null,
-    jobDescription: null,
+    accountabilityStatus: 'response_pending',
+    jobDescription: 'Responsible for supervising the Junior Engineer and verifying technical compliance before signing off.',
     licenseNumber: null,
   }).returning();
 
   // Person 4 — Executive Engineer (EE)
-  // fullName: NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
-  // No personal name on any Ward 28 document. Possible: Aashray Singh Mishra (Page 11 — other works only).
+  // fullName: Aashray Singh Mishra — verified from RTI documents (Page 11).
   const [executiveEngineer] = await db.insert(persons).values({
-    fullName: 'NEEDS VERIFICATION', // NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
+    fullName: 'Aashray Singh Mishra',
     designation: 'Executive Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -98,8 +96,8 @@ async function seed() {
     salarySource: null,
     photoUrl: null,
     photoSource: null,
-    accountabilityStatus: null,
-    jobDescription: null,
+    accountabilityStatus: 'waiting_for_audit',
+    jobDescription: 'Responsible for final administrative authorisation of project completion and quality sign-off.',
     licenseNumber: null,
   }).returning();
 
@@ -827,6 +825,27 @@ async function seed() {
   void docEvent8;
 
   console.log('Event participants seeded:', 21);
+
+  // ============================================================
+  // PAY SCALES — 7th Pay Commission official values
+  // Applied after insert so the update logic is readable per person.
+  // Shubham Sharma (contractor) has no government pay scale — remains null.
+  // ============================================================
+
+  console.log('Seeding pay scales...');
+
+  await Promise.all([
+    db.update(persons).set({ payScale: '₹44,900 – ₹1,42,400' }).where(eq(persons.fullName, 'Gurukesh Singh')),       // JE — Level 7
+    db.update(persons).set({ payScale: '₹47,600 – ₹1,51,100' }).where(eq(persons.fullName, 'Prem Kumar Sharma')),    // AE — Level 8
+    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700' }).where(eq(persons.fullName, 'Aashray Singh Mishra')), // EE — Level 11
+    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700' }).where(eq(persons.fullName, 'Prashant Kumar')),       // SFO — Level 11
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Sachin Kumar')),           // Clerk — Level 2
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Mohan Singh')),            // Clerk — Level 2
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Narendra Singh Rawat')),   // Clerk — Level 2
+    db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200' }).where(eq(persons.fullName, 'Jitendra Kumar')),    // Commissioner — Level 14
+  ]);
+
+  console.log('Pay scales seeded: 8');
   console.log('');
   console.log('Seeding complete. Database is ready.');
 }

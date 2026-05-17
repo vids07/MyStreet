@@ -576,6 +576,7 @@ When something looks wrong, follow this sequence exactly. Fix one thing. Stop. R
 **Step 3:** Does it use the wrong spacing token?
 → Adjust spacing only. Do not touch other properties.
 
+
 **Step 4:** Does it use wrong border radius?
 → Fix radius only.
 
@@ -583,6 +584,128 @@ When something looks wrong, follow this sequence exactly. Fix one thing. Stop. R
 → Restore the pattern. Do not modify other sections.
 
 **If none of the above:** The problem is in the content or data, not the design. Check what information is being displayed.
+
+---
+
+## PART 7 — SHARED COMPONENTS
+
+These components live in `src/components/shared/`. Use them in every section. Never re-implement the same pattern in a section file.
+
+---
+
+### PhotoCarousel — LOCKED ✅
+
+**File:** `src/components/shared/PhotoCarousel.tsx`
+**Purpose:** All photo carousels in the product. One component, two visual variants.
+
+**Props:**
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `photos` | `PhotoData[]` | required | Raw photos — HEIC filtered internally |
+| `height` | `string` | `'h-64'` | Tailwind height class on the photo area |
+| `maxPhotos` | `number` | no limit | Slice limit applied after HEIC filter |
+| `variant` | `'card' \| 'hero'` | `'card'` | Controls arrows, badge, dots, gradient |
+| `renderSlideBottom` | `(photo) => ReactNode` | — | Hero only: inject bottom overlay per slide |
+| `onActivePhotoChange` | `(photo \| null) => void` | — | Called on scroll/arrow; not on mount |
+
+**variant="card"** — used inside ConditionCard and any future multi-card sections:
+- Photo area: `h-64 rounded-sm overflow-hidden`
+- Badge: top-left, default variant
+- Arrows: size 20, `p-2xs`, `left-xs` / `right-xs`, `hover:bg-black/60`
+- Gradient: `h-16 from-black/60` bottom only
+- Location label: `bottom-xs left-xs text-label roboto text-white/80 uppercase`
+- Dots: rendered **below** photo area in flow (two separate DOM elements — fragment)
+- Dot active: `w-sm bg-text-primary`, inactive: `w-xs bg-text-muted/30`, `gap-2xs`
+
+**variant="hero"** — used in HeroSection:
+- Photo area: fills parent height (pass `height="h-screen"`)
+- Badge: top-right, `variant="solid"`
+- Arrows: size 24, `w-10 h-10`, `left-sm` / `right-sm`, `hover:bg-black/70`
+- Gradient: `inset-0 from-black/80 via-black/30` full slide
+- Dots: absolute `bottom-sm center`, `bg-white` / `bg-white/40`, `gap-xs`
+- Use `renderSlideBottom` to inject road name + location label over the gradient
+
+**Key rules:**
+- Never re-implement scroll/snap/arrows/dots in a section file — always use this component
+- `onActivePhotoChange` is called synchronously (not via useEffect) — no flash
+- Initialise parent's `activePhoto` state from `photos.find(heic filter)` to avoid null flash on mount
+- Card variant returns a React fragment — both children (photo div + dots div) become direct grid children. This is intentional for the subgrid layout.
+
+**Usage — card:**
+```tsx
+const [activePhoto, setActivePhoto] = useState<PhotoData | null>(
+  () => photos.find(p => !p.url.toLowerCase().endsWith('.heic')) ?? null
+);
+
+<PhotoCarousel
+  photos={photos}
+  height="h-64"
+  maxPhotos={5}
+  onActivePhotoChange={setActivePhoto}
+/>
+```
+
+**Usage — hero:**
+```tsx
+<PhotoCarousel
+  photos={allPhotos}
+  height="h-screen"
+  variant="hero"
+  renderSlideBottom={(photo) => (
+    <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
+      <h2 className="text-title mona text-white font-bold">{displayName}</h2>
+      {photo.locationLabel && (
+        <p className="text-label roboto text-white/60 uppercase tracking-widest">
+          {photo.locationLabel}
+        </p>
+      )}
+    </div>
+  )}
+/>
+```
+
+---
+
+### StatusBadge — LOCKED ✅
+
+**File:** `src/components/shared/StatusBadge.tsx`
+**Purpose:** Health/accountability/photo status pill. Used on photo overlays and face cards.
+
+**Props:** `status: string | null`, `variant?: 'default' | 'solid'`
+- Default: semi-transparent background (for overlays on photos)
+- Solid: opaque background (for hero overlay where contrast is needed)
+
+---
+
+### ConditionCard Subgrid Pattern — LOCKED ✅
+
+Used in Section 3. Apply this pattern to any future 3-column card grid where rows must align horizontally.
+
+**Parent grid container:**
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-3 gap-md items-start"
+     style={{ gridTemplateRows: 'auto' }}>
+```
+
+**Card wrapper:**
+```tsx
+<div className="bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow overflow-hidden grid"
+     style={{ gridRow: 'span 6', gridTemplateRows: 'subgrid' }}>
+```
+
+**Card body (spans 4 of the 6 rows — rows 3–6, after photo and dots):**
+```tsx
+<div className="p-sm grid gap-sm"
+     style={{ gridTemplateRows: 'subgrid', gridRow: 'span 4' }}>
+  {/* ROW 1: headline */}
+  {/* ROW 2: body sentence */}
+  {/* ROW 3: location + reported lines grouped in one div */}
+  {/* ROW 4: drain stats OR empty <div /> — always present to hold the row */}
+</div>
+```
+
+**Rule:** ROW 4 must always render a div (even if empty) so all three cards occupy the same 4 rows. Without it, the subgrid collapses that row and the cards misalign.
 
 ---
 
@@ -606,6 +729,9 @@ When something looks wrong, follow this sequence exactly. Fix one thing. Stop. R
 | Motion | OPEN | v1.3 pending |
 | Section 1 Hero | LOCKED | v1.0 |
 | Sections 2–6 | See product spec | — |
+| PhotoCarousel component | LOCKED | v1.2 |
+| StatusBadge component | LOCKED | v1.2 |
+| ConditionCard subgrid pattern | LOCKED | v1.2 |
 
 ---
 

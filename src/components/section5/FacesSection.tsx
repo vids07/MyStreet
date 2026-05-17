@@ -1,97 +1,107 @@
 import React from 'react';
-import { User, ShieldCheck, Hammer, BadgeAlert } from 'lucide-react';
-import type { PersonData } from '@/types/road';
-import { getInitials, getAccountabilityLabel } from '@/lib/utils/road-display';
+import FaceCard from './FaceCard';
 
-type FacesSectionProps = {
-  certifier: PersonData | undefined;
-  contractor: PersonData | undefined;
+export type FaceCardData = {
+  fullName: string;
+  designation: string;
+  jobDescription: string | null;
+  actionLabel: string;
+  isFailureChain: boolean;
+  payScale: string | null;
+  accountabilityStatus: string | null;
+  photoUrl?: string | null;
 };
 
-export default function FacesSection({ certifier, contractor }: FacesSectionProps) {
+type FacesSectionProps = {
+  technicalChain: FaceCardData[];
+  financialChain: FaceCardData[];
+  administrativeChain: FaceCardData[];
+  contractor: FaceCardData | null;
+  failureDuration: string;
+};
+
+type ChainGroupProps = {
+  label: string;
+  cards: FaceCardData[];
+  failureDuration: string;
+};
+
+function ChainGroup({ label, cards, failureDuration }: ChainGroupProps) {
+  if (cards.length === 0) return null;
+  return (
+    <div>
+      <p className="text-label roboto uppercase text-text-muted mt-xl mb-sm">{label}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+        {cards.map((card) => (
+          <FaceCard
+            key={card.fullName}
+            fullName={card.fullName}
+            designation={card.designation}
+            jobDescription={card.jobDescription}
+            actionLabel={card.actionLabel}
+            failureDuration={card.isFailureChain ? failureDuration : null}
+            payScale={card.payScale}
+            accountabilityStatus={card.accountabilityStatus}
+            photoUrl={card.photoUrl}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function FacesSection({
+  technicalChain,
+  financialChain,
+  administrativeChain,
+  contractor,
+  failureDuration,
+}: FacesSectionProps) {
   return (
     <section id="section5" className="py-xl bg-surface">
-      <div className="max-w-7xl mx-auto px-container-mobile md:px-container-desktop">
-        <div className="space-y-lg mb-xl">
-          <h2 className="text-headline mona text-text-primary uppercase">The Faces</h2>
-          <p className="text-body mona text-text-muted max-w-2xl">
-            Accountability is personal. These are the individuals responsible for the construction and certification of this project.
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto px-sm md:px-md">
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
-          {/* Official Card */}
-          {certifier && (
-            <div className="bg-card shadow-card rounded-md overflow-hidden flex flex-col md:flex-row">
-              <div className="md:w-1/3 bg-gray-100 flex items-center justify-center p-8">
-                <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center text-display mona text-text-muted border-2 border-border shadow-sm">
-                  {getInitials(certifier.fullName)}
-                </div>
-              </div>
-              <div className="md:w-2/3 p-md flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <p className="text-label roboto text-text-muted">THE CERTIFIER</p>
-                      <h3 className="text-title mona text-text-primary">{certifier.fullName}</h3>
-                      <p className="text-meta roboto text-text-muted">{certifier.designationPlain ?? certifier.designation}</p>
-                    </div>
-                    <div className={`px-3 py-1 rounded-xs text-label roboto ${
-                      certifier.accountabilityStatus === 'charged' ? 'bg-failure-bg text-failure' : 'bg-warning-bg text-warning'
-                    }`}>
-                      {getAccountabilityLabel(certifier.accountabilityStatus)}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-label roboto text-text-muted">DEPARTMENT</p>
-                      <p className="text-body-bold mona text-text-primary">{certifier.department}</p>
-                    </div>
-                    <div>
-                      <p className="text-label roboto text-text-muted">RESPONSIBILITY</p>
-                      <p className="text-body mona text-text-muted text-sm">{certifier.jobDescription}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+        <h2 className="text-headline mona text-text-primary">The Faces</h2>
+        <p className="text-body mona text-text-muted mt-xs">
+          Every person whose signature is on this project.
+        </p>
 
-          {/* Contractor Card */}
-          {contractor && (
-            <div className="bg-card shadow-card rounded-md overflow-hidden flex flex-col md:flex-row">
-              <div className="md:w-1/3 bg-gray-100 flex items-center justify-center p-8">
-                <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center text-display mona text-text-muted border-2 border-border shadow-sm">
-                  {getInitials(contractor.fullName)}
-                </div>
-              </div>
-              <div className="md:w-2/3 p-md flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <p className="text-label roboto text-text-muted">THE CONTRACTOR</p>
-                      <h3 className="text-title mona text-text-primary">{contractor.fullName}</h3>
-                      <p className="text-meta roboto text-text-muted">{contractor.department}</p>
-                    </div>
-                    <div className="px-3 py-1 bg-warning-bg text-warning rounded-xs text-label roboto uppercase">
-                      {getAccountabilityLabel(contractor.accountabilityStatus)}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-label roboto text-text-muted">LICENSE NUMBER</p>
-                      <p className="text-body-bold mona text-text-primary">{contractor.licenseNumber ?? 'Not disclosed'}</p>
-                    </div>
-                    <div>
-                      <p className="text-label roboto text-text-muted">RESPONSIBILITY</p>
-                      <p className="text-body mona text-text-muted text-sm">{contractor.jobDescription}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <ChainGroup
+          label="Technical Chain"
+          cards={technicalChain}
+          failureDuration={failureDuration}
+        />
+
+        <ChainGroup
+          label="Financial Chain"
+          cards={financialChain}
+          failureDuration={failureDuration}
+        />
+
+        <ChainGroup
+          label="Administrative Chain"
+          cards={administrativeChain}
+          failureDuration={failureDuration}
+        />
+
+        {contractor && (
+          <div className="mt-xl pt-xl border-t border-border">
+            <p className="text-label roboto uppercase text-text-muted mb-sm">Contractor</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+              <FaceCard
+                fullName={contractor.fullName}
+                designation={contractor.designation}
+                jobDescription={contractor.jobDescription}
+                actionLabel={contractor.actionLabel}
+                failureDuration={contractor.isFailureChain ? failureDuration : null}
+                payScale={contractor.payScale}
+                accountabilityStatus={contractor.accountabilityStatus}
+                photoUrl={contractor.photoUrl}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
       </div>
     </section>
   );

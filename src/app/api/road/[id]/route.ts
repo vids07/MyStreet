@@ -1,53 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/db';
-import { roads } from '@/server/db/schema/road';
-import { segments } from '@/server/db/schema/segment';
-import { drains } from '@/server/db/schema/drain';
-import { events } from '@/server/db/schema/event';
-import { eventParticipants } from '@/server/db/schema/event-participants';
-import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+import { getFullRoadData } from '@/server/queries/road';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const dynamic = 'force-dynamic';
+
+const MAX_ID_LENGTH = 128;
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+function isValidRoadSystemId(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.length > 0 && trimmed.length <= MAX_ID_LENGTH;
+}
+
+export async function GET(_: Request, context: RouteContext) {
+  const { id } = await context.params;
+  const roadSystemId = id?.trim();
+
+  if (!isValidRoadSystemId(roadSystemId)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'INVALID_ROAD_ID',
+          message: 'Road id must be a non-empty string up to 128 characters.',
+        },
+      },
+      { status: 400 },
+    );
+  }
+
   try {
-    const { id } = await params;
-    const road = await db.query.roads.findFirst({
-      where: eq(roads.roadSystemId, id),
-    });
+    const data = await getFullRoadData(roadSystemId);
 
-    if (!road) {
-      return NextResponse.json({ error: 'Road not found' }, { status: 404 });
+    if (!data) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'ROAD_NOT_FOUND',
+            message: `No road found for id: ${roadSystemId}`,
+          },
+        },
+        { status: 404 },
+      );
     }
 
-    const roadSegments = await db.query.segments.findMany({
-      where: eq(segments.roadId, road.id),
-    });
-
-    const roadEvents = await db.query.events.findMany({
-      where: eq(events.roadId, road.id),
-      orderBy: (events, { asc }) => [asc(events.timestamp)],
-    });
-
-    const roadParticipants = await Promise.all(
-      roadEvents.map(event =>
-        db.query.eventParticipants.findMany({
-          where: eq(eventParticipants.eventId, event.id),
-        })
-      )
+    return NextResponse.json(
+      {
+        success: true,
+        data,
+      },
+      { status: 200 },
     );
-
-    return NextResponse.json({
-      road,
-      segments: roadSegments,
-      events: roadEvents.map((event, index) => ({
-        ...event,
-        participants: roadParticipants[index],
-      })),
-    });
   } catch (error) {
-    console.error('Error fetching road:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('GET /api/road/[id] failed:', error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unexpected error while loading road data.',
+        },
+      },
+      { status: 500 },
+    );
   }
 }

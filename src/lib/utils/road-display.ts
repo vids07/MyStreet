@@ -160,6 +160,18 @@ export function getInitials(fullName: string): string {
   );
 }
 
+// months < 2 → "a month", < 12 → "X months", else → "over a year"
+export function formatFailureDuration(completionDate: Date | string | null | undefined): string {
+  if (!completionDate) return 'an unknown period';
+  const months = Math.floor(
+    (new Date().getTime() - new Date(completionDate).getTime())
+    / (1000 * 60 * 60 * 24 * 30.44),
+  );
+  if (months < 2) return 'a month';
+  if (months < 12) return `${months} months`;
+  return 'over a year';
+}
+
 // Uses dlpEndDate from evidence (field name per DATA_MODEL.md and seed).
 export function dlpStatusLabel(dlpEvent: EventData | undefined): string {
   if (!dlpEvent) return 'No DLP recorded';

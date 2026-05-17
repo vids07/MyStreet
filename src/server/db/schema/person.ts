@@ -23,6 +23,7 @@ export const persons = pgTable('persons', {
   contactOrId: text('contact_or_id'),
   jurisdiction: text('jurisdiction'),
   monthlySalary: numeric('monthly_salary'),
+  payScale: text('pay_scale'),
   salarySource: text('salary_source'),
   photoUrl: text('photo_url'),
   photoSource: text('photo_source'),

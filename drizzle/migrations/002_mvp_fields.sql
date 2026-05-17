@@ -30,11 +30,11 @@ UPDATE persons SET
   license_number = NULL
 WHERE full_name = 'Shubham Sharma' AND person_category = 'contractor';
 
--- Gurudayal Singh (JE — certifier on completion)
+-- Gurukesh Singh (JE — certifier on completion)
 UPDATE persons SET
   accountability_status = 'response_pending',
   job_description = 'Responsible for on-site quality verification and signing off construction as complete and standard-compliant.'
-WHERE full_name = 'Gurudayal Singh';
+WHERE full_name = 'Gurukesh Singh';
 
 -- Prem Kumar Sharma (AE — certifier on completion)
 UPDATE persons SET
@@ -42,11 +42,11 @@ UPDATE persons SET
   job_description = 'Responsible for supervising the Junior Engineer and verifying technical compliance before signing off.'
 WHERE full_name = 'Prem Kumar Sharma';
 
--- Alok Singh Mishravaan (EE — authoriser on completion)
+-- Aashray Singh Mishra (EE — authoriser on completion)
 UPDATE persons SET
   accountability_status = 'waiting_for_audit',
   job_description = 'Responsible for final administrative authorisation of project completion and quality sign-off.'
-WHERE full_name = 'Alok Singh Mishravaan';
+WHERE full_name = 'Aashray Singh Mishra';
 
 -- Prashant Kumar (Finance — authoriser on payment)
 UPDATE persons SET
@@ -110,3 +110,10 @@ UPDATE photos SET
   location_label = 'Ward 28, Near Ajay Raj House, Roorkee',
   person_id = NULL
 WHERE road_id = (SELECT id FROM roads WHERE road_system_id = 'UK-RKE-29.8723-77.8813');
+
+-- ============================================================
+-- MIGRATION 5 — persons table pay_scale column
+-- ============================================================
+
+ALTER TABLE persons
+  ADD COLUMN pay_scale TEXT;

@@ -53,8 +53,8 @@ export async function getFullRoadData(systemId: string) {
   const road = await getRoadBySystemId(systemId)
   if (!road) return null
 
-  // Parallel fetch — all five in one round-trip
-  const [roadSegments, roadEvents, roadPhotos, confirmationCount, roadDrains] = await Promise.all([
+  // Parallel fetch — all four in one round-trip
+  const [segments, events, photos, confirmationCount, drains] = await Promise.all([
     getSegmentsByRoadId(road.id),
     getEventsByRoadId(road.id),
     getPhotosByRoadId(road.id),
@@ -63,7 +63,7 @@ export async function getFullRoadData(systemId: string) {
   ])
 
   // Fetch ALL participants for ALL events in ONE query
-  const eventIds = roadEvents.map(e => e.id)
+  const eventIds = events.map(e => e.id)
   const allParticipants = eventIds.length > 0
     ? await db
         .select()
@@ -73,7 +73,7 @@ export async function getFullRoadData(systemId: string) {
     : []
 
   // Map participants to their events in memory — zero additional DB calls
-  const eventsWithParticipants = roadEvents.map(event => ({
+  const eventsWithParticipants = events.map(event => ({
     ...event,
     participants: allParticipants
       .filter(p => p.event_participants.eventId === event.id)
@@ -83,16 +83,16 @@ export async function getFullRoadData(systemId: string) {
       })),
   }))
 
-  const heroPhoto = roadPhotos.find(p => p.isHero) ?? null
+  const heroPhoto = photos.find(p => p.isHero) ?? null
 
   return {
     road,
-    segments: roadSegments,
+    segments,
     events: eventsWithParticipants,
-    photos: roadPhotos,
+    photos,
     heroPhoto,
     confirmationCount,
-    drains: roadDrains,                // ← now returned
+    drains,                            // ← now returned
   }
 }
 ```
@@ -101,7 +101,7 @@ export async function getFullRoadData(systemId: string) {
 
 ### Bug Fix 2 — `getDrainsByRoadId` wrong query
 
-**Location:** `src/server/queries/road.ts`
+**Location:** `src/lib/queries/road.ts`
 
 **Problem:** Current code passes `roadId` where `segmentId` is expected. Returns zero results every time.
 
@@ -132,7 +132,7 @@ export async function getDrainsByRoadId(roadId: string) {
 
 ### Bug Fix 3 — Events sort order
 
-**Location:** `src/server/queries/road.ts` — `getEventsByRoadId`
+**Location:** `src/lib/queries/road.ts` — `getEventsByRoadId`
 
 **Problem:** Events are sorted ASC (oldest first). The timeline in Section 3 should show newest first (DESC).
 
@@ -298,7 +298,7 @@ WHERE road_id = (SELECT id FROM roads WHERE road_system_id = 'UK-RKE-29.8723-77.
 
 ---
 
-## Seed updates required (src/server/db/seed.ts)
+## Seed updates required (src/db/seed.ts)
 
 After running migrations, update seed.ts for the following:
 
@@ -721,8 +721,7 @@ export function getInitials(fullName: string): string {
 ```typescript
 export function dlpStatusLabel(dlpEvent: EventData | undefined): string {
   if (!dlpEvent) return 'No DLP recorded'
-  const evidence = dlpEvent.evidence as Record<string, unknown> | null
-  const expiryDate: string | undefined = evidence?.dlpEndDate as string | undefined
+  const expiryDate: string | undefined = dlpEvent.evidence?.dlpExpiryDate
   if (!expiryDate) return 'DLP active'
   const expiry    = new Date(expiryDate)
   const now       = new Date()
@@ -843,4 +842,3 @@ BUGS FIXED IN THIS VERSION
 *Version 2.0 — single source of truth.*
 *Schema changes first. Bugs fixed. Then frontend.*
 *Any change to schema or derivation logic: update this document first, get approval, then change the code.*
-*

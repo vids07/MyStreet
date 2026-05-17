@@ -1,0 +1,33 @@
+meta {
+  name: Get Road By System Id - 400 Invalid
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/road/{{invalidRoadId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("status should be 400", function () {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("error payload should describe invalid id", function () {
+    let body = res.getBody();
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
+    expect(body.success).to.equal(false);
+    expect(body.error).to.be.an("object");
+    expect(body.error.code).to.equal("INVALID_ROAD_ID");
+    expect(body.error.message).to.include("Road id must be a non-empty string");
+  });
+}
