@@ -4,6 +4,12 @@
 
 ---
 
+> ⚠️ **SUPERSEDED** — This file contains outdated person names and stale schema.
+> Do not use for data decisions.
+> Use `all .md files/ward28/ward28skill.md` instead — it routes you to the correct source file for any data task.
+
+---
+
 ## HOW TO READ THIS DOCUMENT
 
 **Part 1 — Schema Changes + Bug Fixes** — run before frontend touches a single query.

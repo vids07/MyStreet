@@ -44,6 +44,17 @@ export const EVENT_TYPES = {
 
 export type EventType = typeof EVENT_TYPES[keyof typeof EVENT_TYPES];
 
+export type FaceCardData = {
+  fullName: string;
+  designation: string | null;
+  jobDescription: string | null;
+  actionLabel: string;
+  isFailureChain: boolean;
+  payScale: string | null;
+  accountabilityStatus: string | null;
+  photoUrl?: string | null;
+};
+
 // Health status constants
 export const HEALTH_STATUS = {
   GOOD: 'good',

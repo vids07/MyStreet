@@ -3,7 +3,7 @@ import { getInitials, getAccountabilityLabel } from '@/lib/utils/road-display';
 
 export type FaceCardProps = {
   fullName: string;
-  designation: string;
+  designation: string | null;
   jobDescription: string | null;
   actionLabel: string;
   failureDuration: string | null;
@@ -63,7 +63,7 @@ export default function FaceCard({
       {/* Name + designation */}
       <div>
         <h3 className="text-title mona text-text-primary">{fullName}</h3>
-        <p className="text-meta roboto text-text-muted">{designation}</p>
+        <p className="text-meta roboto text-text-muted">{designation ?? '—'}</p>
       </div>
 
       <div className="border-t-[0.5px] border-border" />

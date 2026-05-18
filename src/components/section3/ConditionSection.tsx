@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Clock, MapPin, User } from 'lucide-react';
 import type { EventData, PhotoData, DrainData } from '@/types/road';
+import { EVENT_TYPES } from '@/types/road';
 import { formatDate } from '@/lib/utils/road-display';
 import PhotoCarousel from '@/components/shared/PhotoCarousel';
 
@@ -127,9 +128,9 @@ export default function ConditionSection({
   contractValue,
   healthStatus,
 }: ConditionSectionProps) {
-  const crackEvents = events.filter(e => e.eventType === 'crack_found');
-  const potholeEvents = events.filter(e => e.eventType === 'pothole_found');
-  const drainEvents = events.filter(e => e.eventType === 'drain_blocked');
+  const crackEvents = events.filter(e => e.eventType === EVENT_TYPES.CRACK_FOUND);
+  const potholeEvents = events.filter(e => e.eventType === EVENT_TYPES.POTHOLE_FOUND);
+  const drainEvents = events.filter(e => e.eventType === EVENT_TYPES.DRAIN_BLOCKED);
 
   const crackPhotos = photos.filter(p => crackEvents.some(e => e.id === p.eventId));
   const potholePhotos = photos.filter(p => potholeEvents.some(e => e.id === p.eventId));

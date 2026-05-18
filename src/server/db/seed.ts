@@ -237,9 +237,9 @@ async function seed() {
   // department: NULL per document — schema requires NOT NULL — using descriptive placeholder.
   const [vidushi] = await db.insert(persons).values({
     fullName: 'Vidushi',
-    designation: 'RTI Applicant', // NULL per WARD28_VERIFIED_DATA.md — schema requires NOT NULL
+    designation: null,
     designationPlain: null,
-    department: 'Citizen', // NULL per WARD28_VERIFIED_DATA.md — schema requires NOT NULL
+    department: null,
     personCategory: 'citizen',
     contactOrId: null,
     jurisdiction: 'House No. 247/7, Purvi Deen Dayal, Roorkee, District Haridwar, Uttarakhand',
@@ -270,9 +270,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // suppress unused-variable warnings — persons seeded but not in Section 4 participants
-  void mohanSingh;
-  void narendraSinghRawat;
+  // karmendrasingh seeded but not linked to any event — ambiguous role, see Ward28 05 conflicts.md Conflict 7
   void karmendrasingh;
 
   console.log('Persons seeded:', 13);
@@ -649,7 +647,8 @@ async function seed() {
       "ghostDrainNote": "MAPPING.md states Rs. 98,293 billed for a ghost drain. This figure does NOT appear anywhere in the 41 RTI pages. Drain-related items at schedule rates total Rs. 1,15,219.92. After 36.10% discount: Rs. 73,625.52. After 18% GST: approximately Rs. 86,878. None equal Rs. 98,293. Source of Rs. 98,293 must be provided by founder before any public display of this figure."
     },
     evidenceSource: 'official',
-    isFlagged: false,
+    isFlagged: true,
+    flaggedReason: 'Drain cost figure ₹98,293 cited in platform context does not appear anywhere in the 41 RTI pages. Drain items at schedule rates total ₹1,15,219.92 (after 36.10% discount: ₹73,625.52; after 18% GST: ~₹86,878). None equal ₹98,293. Do not display any drain cost figure publicly until founder confirms and documents the source. See Ward28 05 conflicts.md, Conflict 5.',
   }).returning();
 
   // docEvent8 — DLP Started — 03.04.2025
@@ -822,46 +821,46 @@ async function seed() {
 
   await db.insert(eventParticipants).values([
     // docEvent2 — Tender Award 13.12.2024
-    { eventId: docEvent2.id, personId: shubhamSharma.id, personType: 'contractor', role: 'assignee' }, // HIGH
-    { eventId: docEvent2.id, personId: juniorEngineer.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
-    { eventId: docEvent2.id, personId: assistantEngineer.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
-    { eventId: docEvent2.id, personId: executiveEngineer.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
-    { eventId: docEvent2.id, personId: prashantKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
-    { eventId: docEvent2.id, personId: jitendraKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
+    { eventId: docEvent2.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
+    { eventId: docEvent2.id, personId: juniorEngineer.id,   personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: assistantEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: prashantKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: jitendraKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
 
     // docEvent3 — Work Order 23.02.2025
-    { eventId: docEvent3.id, personId: executiveEngineer.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4 (role HIGH, name LOW)
-    { eventId: docEvent3.id, personId: shubhamSharma.id, personType: 'contractor', role: 'assignee' }, // HIGH
+    { eventId: docEvent3.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent3.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
 
     // docEvent4 — Agreement 01.02.2025
-    { eventId: docEvent4.id, personId: shubhamSharma.id, personType: 'contractor', role: 'assignee' }, // HIGH
-    { eventId: docEvent4.id, personId: assistantEngineer.id, personType: 'official', role: 'certifier' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4 (role HIGH, name LOW)
-    { eventId: docEvent4.id, personId: jitendraKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
+    { eventId: docEvent4.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
+    { eventId: docEvent4.id, personId: assistantEngineer.id,personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
+    { eventId: docEvent4.id, personId: jitendraKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
 
     // docEvent6 — Lab Test 30.03.2025
-    { eventId: docEvent6.id, personId: pranavDixit.id, personType: 'official', role: 'certifier' }, // HIGH
+    { eventId: docEvent6.id, personId: pranavDixit.id,      personType: 'official',   role: 'certifier',  dataConfidence: 'verified'   },
 
     // docEvent7 — Completion 03.04.2025
-    { eventId: docEvent7.id, personId: juniorEngineer.id, personType: 'official', role: 'certifier' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4 (role HIGH, name LOW)
-    { eventId: docEvent7.id, personId: assistantEngineer.id, personType: 'official', role: 'certifier' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4 (role HIGH, name LOW)
-    { eventId: docEvent7.id, personId: executiveEngineer.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4 (role HIGH, name LOW)
-    { eventId: docEvent7.id, personId: shubhamSharma.id, personType: 'contractor', role: 'assignee' }, // HIGH
+    { eventId: docEvent7.id, personId: juniorEngineer.id,   personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
+    { eventId: docEvent7.id, personId: assistantEngineer.id,personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
+    { eventId: docEvent7.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent7.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
 
     // docEvent9 — Payment 30.06.2025
-    { eventId: docEvent9.id, personId: sachinKumar.id, personType: 'official', role: 'reporter' }, // HIGH
-    { eventId: docEvent9.id, personId: prashantKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
-    { eventId: docEvent9.id, personId: jitendraKumar.id, personType: 'official', role: 'authoriser' }, // LOW CONFIDENCE — see WARD28_VERIFIED_DATA.md Section 4
+    { eventId: docEvent9.id, personId: sachinKumar.id,      personType: 'official',   role: 'reporter',   dataConfidence: 'verified'   },
+    { eventId: docEvent9.id, personId: prashantKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent9.id, personId: jitendraKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
 
     // docEvent10 — RTI Filed 17.11.2025
-    { eventId: docEvent10.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' }, // HIGH
+    { eventId: docEvent10.id, personId: vidushi.id,         personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
 
-    // docEvent11 — RTI Response 05.02.2026
-    { eventId: docEvent11.id, personId: pio.id, personType: 'official', role: 'authoriser' }, // HIGH role / NULL name — see WARD28_VERIFIED_DATA.md Section 4
+    // docEvent11 — RTI Response 05.02.2026 — role verified, name not disclosed in RTI
+    { eventId: docEvent11.id, personId: pio.id,             personType: 'official',   role: 'authoriser', dataConfidence: 'probable'   },
 
-    // Condition events — Field observations 08.02.2026
-    { eventId: crackEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
-    { eventId: potholeEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
-    { eventId: drainEvent.id, personId: vidushi.id, personType: 'citizen', role: 'reporter' },
+    // Condition events — first-hand citizen field observations 08.02.2026
+    { eventId: crackEvent.id,   personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
+    { eventId: potholeEvent.id, personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
+    { eventId: drainEvent.id,   personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
   ]);
 
   // suppress unused-variable warnings for events with no participants in Section 4
@@ -880,19 +879,19 @@ async function seed() {
   console.log('Seeding pay scales...');
 
   await Promise.all([
-    db.update(persons).set({ payScale: '₹44,900 – ₹1,42,400' }).where(eq(persons.fullName, 'Gurukesh Singh')),       // JE — Level 7
-    db.update(persons).set({ payScale: '₹47,600 – ₹1,51,100' }).where(eq(persons.fullName, 'Prem Kumar Sharma')),    // AE — Level 8
-    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700' }).where(eq(persons.fullName, 'Aashray Singh Mishra')), // EE — Level 11
-    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700' }).where(eq(persons.fullName, 'Prashant Kumar')),       // SFO — Level 11
-    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Sachin Kumar')),           // Clerk — Level 2
-    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Mohan Singh')),            // Clerk — Level 2
-    db.update(persons).set({ payScale: '₹19,900 – ₹63,200' }).where(eq(persons.fullName, 'Narendra Singh Rawat')),   // Clerk — Level 2
-    db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200' }).where(eq(persons.fullName, 'Jitendra Kumar')),    // Commissioner — Level 14
+    db.update(persons).set({ payScale: '₹44,900 – ₹1,42,400',   salarySource: '7th Pay Commission, Level 7'  }).where(eq(persons.id, juniorEngineer.id)),
+    db.update(persons).set({ payScale: '₹47,600 – ₹1,51,100',   salarySource: '7th Pay Commission, Level 8'  }).where(eq(persons.id, assistantEngineer.id)),
+    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700',   salarySource: '7th Pay Commission, Level 11' }).where(eq(persons.id, executiveEngineer.id)),
+    db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700',   salarySource: '7th Pay Commission, Level 11' }).where(eq(persons.id, prashantKumar.id)),
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, sachinKumar.id)),
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, mohanSingh.id)),
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, narendraSinghRawat.id)),
+    db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200', salarySource: '7th Pay Commission, Level 14' }).where(eq(persons.id, jitendraKumar.id)),
   ]);
 
   await db.update(persons)
     .set({ monthlySalary: '55000' })
-    .where(eq(persons.fullName, 'Gurukesh Singh'));
+    .where(eq(persons.id, juniorEngineer.id));
 
   console.log('Pay scales seeded: 8');
 

@@ -1,5 +1,40 @@
 import type { EventData, PersonData } from '@/types/road';
 
+// ============================================================
+// EVIDENCE EXTRACTORS
+// Safe accessors for JSONB evidence fields. Never use `as any`
+// on evidence outside these functions.
+// ============================================================
+
+function asRecord(v: unknown): Record<string, unknown> {
+  if (v !== null && v !== undefined && typeof v === 'object' && !Array.isArray(v)) {
+    return v as Record<string, unknown>;
+  }
+  return {};
+}
+
+export function extractTenderEvidence(evidence: unknown): {
+  isTender: boolean;
+  estimatedValue: number;
+  contractValue: number;
+} {
+  const e = asRecord(evidence);
+  return {
+    isTender: e.isTender === true,
+    estimatedValue: Number(e.estimatedValue ?? 0),
+    contractValue: Number(e.contractValue ?? 0),
+  };
+}
+
+export function extractPaymentEvidence(evidence: unknown): {
+  netDisbursed: number;
+} {
+  const e = asRecord(evidence);
+  return {
+    netDisbursed: Number(e.netDisbursed ?? 0),
+  };
+}
+
 // All issue event types — used to derive conditionEvents count and filter.
 export const ISSUE_EVENT_TYPES = [
   'pothole_found',

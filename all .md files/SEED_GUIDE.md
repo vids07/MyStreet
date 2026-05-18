@@ -172,11 +172,14 @@ For each event where a specific person was involved — add an event_participant
 ```typescript
 await db.insert(eventParticipants).values({
   eventId: completionEvent.id,
-  personId: gurudayalSingh.id, // UUID from persons table
+  personId: gurukeshSingh.id, // UUID from persons table — use .returning() result, never query by name
   personType: 'official',
-  role: 'certifier', // reporter/certifier/authoriser/assignee/witness
+  role: 'certifier',          // reporter/certifier/authoriser/assignee/witness
+  dataConfidence: 'verified', // verified/probable/unconfirmed — see DATA_MODEL.md
 });
 ```
+
+**Always set `dataConfidence` explicitly.** Never rely on the default (`unconfirmed`). If the RTI document directly names the person for this event → `verified`. If role is clear but name is inferred → `probable`. If name is assumed from general project involvement → `unconfirmed`.
 
 ---
 

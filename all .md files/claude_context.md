@@ -11,7 +11,7 @@
 - **Database**: PostgreSQL via NeonDB
 - **ORM**: Drizzle ORM
 - **Styling**: Tailwind CSS 4.0
-- **Fonts**: Google Fonts (Outfit)
+- **Fonts**: Mona Sans (headings/narrative) + Roboto (labels/metadata) — Outfit is not used
 
 ---
 

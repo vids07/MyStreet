@@ -16,9 +16,9 @@ export const accountabilityStatusEnum = pgEnum('accountability_status', [
 export const persons = pgTable('persons', {
   id: uuid('id').defaultRandom().primaryKey(),
   fullName: text('full_name').notNull(),
-  designation: text('designation').notNull(),
+  designation: text('designation'),
   designationPlain: text('designation_plain'),
-  department: text('department').notNull(),
+  department: text('department'),
   personCategory: personCategoryEnum('person_category').notNull(),
   contactOrId: text('contact_or_id'),
   jurisdiction: text('jurisdiction'),

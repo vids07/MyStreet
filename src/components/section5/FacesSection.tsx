@@ -1,16 +1,8 @@
 import React from 'react';
 import FaceCard from './FaceCard';
+import type { FaceCardData } from '@/types/road';
 
-export type FaceCardData = {
-  fullName: string;
-  designation: string;
-  jobDescription: string | null;
-  actionLabel: string;
-  isFailureChain: boolean;
-  payScale: string | null;
-  accountabilityStatus: string | null;
-  photoUrl?: string | null;
-};
+export type { FaceCardData };
 
 type FacesSectionProps = {
   technicalChain: FaceCardData[];

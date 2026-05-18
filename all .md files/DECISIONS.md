@@ -131,7 +131,7 @@ Format: Decision | Why | Tradeoff Accepted | Revisit Trigger
 
 ### No ratings, no likes, no dislikes
 - **Decision**: MyStreet has no rating system for officials or contractors.
-- **Why**: Ratings can be manipulated. The permanent record cannot. Gurudayal Singh's rating doesn't matter. His signature on a false oath on 3 April 2025 is what matters.
+- **Why**: Ratings can be manipulated. The permanent record cannot. Gurukesh Singh's rating doesn't matter. His signature on a false oath on 3 April 2025 is what matters.
 - **Tradeoff**: Less engagement-friendly.
 - **Revisit**: Never — this is a truth platform not a social platform.
 

@@ -61,6 +61,7 @@ Drain records linked to specific segments. A segment may have zero, one, or mult
 | width | numeric | Metres |
 | depth | numeric | Metres — accountability field, shallow drain = contractor cut costs |
 | area | numeric | Square metres |
+| status | enum nullable | not_built/broken/blocked/functional — null means field verification pending |
 
 **Drain condition** is never stored. It is derived from drain-related timeline events. A drain_blocked event means the drain is blocked. A new drain_blocked event with severity downgraded means it was cleared.
 
@@ -104,8 +105,16 @@ Links people to events with their specific role. One event can have many partici
 | personId | UUID FK | Which person — restricts delete (cannot delete person if they have event records) |
 | personType | enum | citizen/official/contractor/system/sensor |
 | role | enum | reporter/certifier/authoriser/assignee/witness |
+| dataConfidence | enum | verified/probable/unconfirmed — how certain we are this person was involved in this event |
 
-**This table is the accountability chain**. Gurudayal Singh → certifier → completionEvent → drain certified as built → drain does not exist. That chain exists because of this table.
+**dataConfidence values:**
+- `verified` — name and role both directly confirmed in the RTI document for this event
+- `probable` — role is clear from document, name inferred from context (e.g. PIO: role obvious, name withheld)
+- `unconfirmed` — name assumed from general involvement; not explicitly named for this specific event
+
+**Default is `unconfirmed`** — the conservative safe default. Upgrade to `verified` only when RTI document directly names the person for the event.
+
+**This table is the accountability chain**. Gurukesh Singh → certifier → completionEvent → drain certified as built → drain does not exist. That chain exists because of this table.
 
 ---
 
@@ -115,21 +124,25 @@ Everyone who has ever touched a road's accountability chain. Officials, contract
 | Field | Type | Purpose |
 |-------|------|---------|
 | id | UUID | Internal primary key |
-| fullName | text | Full name as on official documents |
-| designation | text | Official title e.g. "Sahayak Abhiyanta" |
+| fullName | text NOT NULL | Full name as on official documents |
+| designation | text nullable | Official title e.g. "Sahayak Abhiyanta" — nullable because citizens have no official designation |
 | designationPlain | text nullable | Plain language e.g. "The engineer whose job was to check the work" — for Sunita layer |
-| department | text | Which department or company |
+| department | text nullable | Which department or company — nullable for citizens |
 | personCategory | enum | official/contractor/citizen |
 | contactOrId | text nullable | Government service ID for officials, GST for contractors |
 | jurisdiction | text nullable | Ward, city, district they operate in |
 | monthlySalary | numeric nullable | Monthly salary in INR — public information for government officials |
-| salarySource | text nullable | Where salary figure came from e.g. "UKPSC 7th Pay Commission Level 7" |
+| salarySource | text nullable | Where salary figure came from e.g. "7th Pay Commission, Level 7" |
+| payScale | text nullable | Full pay band range e.g. "₹44,900 – ₹1,42,400" |
 | photoUrl | text nullable | Official photo URL |
 | photoSource | text nullable | Where photo was obtained |
+| accountabilityStatus | enum nullable | waiting_for_audit/response_pending/responded/charged |
+| jobDescription | text nullable | What this person was responsible for on this project |
+| licenseNumber | text nullable | Professional license number if applicable |
 
-**designationPlain is nullable** until populated. UI falls back to formal designation when null. Make non-null once all persons have plain language descriptions.
+**designation and department are nullable** — citizens (e.g. RTI applicants) have no official designation or department. Never use placeholder strings like "Citizen" or "RTI Applicant" — use null.
 
-**monthlySalary is public information** for government officials — pay scales are published by UKPSC under 7th Pay Commission. This is not private data.
+**monthlySalary is public information** for government officials — pay scales are published under 7th Pay Commission. This is not private data.
 
 ---
 

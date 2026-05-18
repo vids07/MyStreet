@@ -20,11 +20,10 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - All relationships properly defined with foreign keys and cascade rules
 - Event types, severity, health status — all typed as PostgreSQL enums
 - TypeScript types exported from schema — no magic strings anywhere
-- 4 schema migrations applied (May 2026 — see drizzle/migrations/002_mvp_fields.sql):
-  - `persons`: `accountability_status` enum, `job_description`, `license_number`
-  - `roads`: `ward`, `city`
-  - `drains`: `drain_status` enum, `status`
-  - `photos`: `photo_status` enum, `status`, `location_label`, `person_id` FK
+- 6 schema migrations applied (see `drizzle/migrations/`):
+  - `002_mvp_fields.sql`: `persons` accountability_status/job_description/license_number; `roads` ward/city; `drains` status enum; `photos` status/location_label/person_id
+  - `003_nullable_person_fields.sql`: `persons.designation` and `persons.department` made nullable — citizens have no official designation
+  - `004_data_confidence.sql`: `event_participants.data_confidence` enum (verified/probable/unconfirmed) — replaces confidence annotations that were only in code comments
 
 ### Query Architecture ✓
 - Centralized query layer: `src/server/queries/road.ts`
@@ -42,9 +41,9 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - New exported types: `PersonData`, `DrainData` (added May 2026)
 
 ### Real Data Seeded ✓
-- **Reseeded May 2026 from verified RTI data per WARD28_VERIFIED_DATA.md.**
+- **Reseeded from verified RTI data. Source: `all .md files/ward28/` (5 files). ward28skill.md is the routing guide.**
 - Ward 28, Roorkee — `UK-RKE-29.8723-77.8813`
-- 13 persons — all from Section 2 of WARD28_VERIFIED_DATA.md. Names, designations, and departments exactly as written in RTI documents. fullName NEEDS VERIFICATION for JE, AE, EE (no personal name on any Ward 28 document). PIO name not disclosed in 41 pages.
+- 13 persons — all verified against RTI documents. Names for JE (Gurukesh Singh), AE (Prem Kumar Sharma), EE (Aashray Singh Mishra) are HIGH confidence per Ward28 02 persons.md. PIO name confirmed absent from all 41 pages — placeholder used intentionally.
 - 1 road — displayName exactly as written in RTI: "Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee"
 - 1 segment — area 363.30 SQM, thickness 80mm. Length and width null (not in RTI documents).
 - 1 drain — all dimension fields null (not in RTI documents). Status null — physical existence not yet field verified.

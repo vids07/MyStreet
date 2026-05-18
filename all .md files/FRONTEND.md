@@ -12,9 +12,9 @@
 | Framework | Next.js App Router | `latest` (package.json) |
 | Language | TypeScript | `6.0.3` (package.json) |
 | UI Library | React | `latest` (package.json) |
-| Component Library | shadcn/ui | — (design_system.md, LOCKED) |
+| Component Library | Custom only | No component library — all components hand-built per design_system.md |
 | Styling | Tailwind CSS | `^4.2.4` (package.json) |
-| Icon Library | Lucide React | comes with shadcn/ui (design_system.md, LOCKED) |
+| Icon Library | Lucide React | stroke only, strokeWidth 1.5 (design_system.md, LOCKED) |
 | Heading / Body font | Mona Sans | Google Fonts (design_system.md, LOCKED) |
 | Label / Meta font | Roboto | Google Fonts (design_system.md, LOCKED) |
 
@@ -272,7 +272,7 @@ export default async function RoadPage({ params }) {
 
   // --- All derived values computed here ---
   const tenderEvent = data.events.find(
-    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && e.evidence?.isTender === true
+    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && extractTenderEvidence(e.evidence).isTender
   ) ?? data.events.find(e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED);
 
   // ... all other derivations ...
@@ -430,19 +430,12 @@ The component renders without errors using the actual live data from NeonDB for 
 
 ---
 
-### Condition 2 — Every MAPPING.md placeholder is populated
+### Condition 2 — Every data field is verified against ward28 source files
 
-Every `{{placeholder}}` listed under that section in `MAPPING.md` resolves to real data. No placeholder renders as `undefined`, `null`, `NaN`, or an empty string where a value is expected.
+Every value rendered in a section must be traceable to the RTI documents via the ward28 files. No field renders as `undefined`, `null`, `NaN`, or an empty string where a value is expected.
 
-**Reference — placeholders by section:**
-
-| Section | Placeholders that must resolve |
-|---|---|
-| Section 1 | `road.name`, `road.money_spent`, `road.days_lasted`, `image.status`, `image.location`, `image.source`, `image.reported_date`, `image.reported_by` |
-| Section 3 | `drain.count`, `drain.not_built`, `drain.broken`, `drain.blocked`, `drain.functional`, `cracks.subheading`, `potholes.subheading` |
-| Section 4 | `section4.title`, `road.amount_allocated`, `road.amount_contracted`, `road.money_spent`, `road.benchmark_bags`, `road.benchmark_je_months`, `road.months_ago`, `road.days_lasted`, `road.issues_count` |
-| Section 5 | `official.name`, `official.initials`, `official.role`, `official.department`, `official.salary`, `official.action`, `official.action_date`, `official.accountability_status`, `official.job_description`, `contractor.name`, `contractor.initials`, `contractor.company`, `contractor.license`, `contractor.amount_paid`, `contractor.dlp_status`, `contractor.accountability_status`, `contractor.job_description` |
-| Section 6 | `road.witness_count` |
+**Reference — use `all .md files/ward28/ward28skill.md` to route to the correct source file for each section.**
+`MAPPING.md` is superseded — do not use it for placeholder verification.
 
 ---
 
@@ -457,7 +450,7 @@ Run `npx tsc --noEmit` from the project root. Output must be clean. No `any` typ
 Check the component for:
 - No hex color strings (`#C0392B`, `rgba(...)`) — only Tailwind token classes
 - No hardcoded spacing values (`mt-[13px]`) — only spacing token classes
-- No hardcoded strings that should come from the database (`"Gurudayal Singh"`, `"Ward 28"`, `"₹3,54,581"`)
+- No hardcoded strings that should come from the database (`"Gurukesh Singh"`, `"Ward 28"`, `"₹3,54,581"`)
 - No hardcoded benchmark constants (`300`) — those live in `road-display.ts` only
 - No display logic written inline that belongs in `road-display.ts`
 

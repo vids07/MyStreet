@@ -36,7 +36,9 @@ This is not a complaint app. It is not a government portal. It is a permanent pu
 | Document | Read when |
 |---|---|
 | `all .md files/design_system.md` | Before ANY visual or frontend work |
-| `all .md files/MAPPING.md` | Before ANY data, query, or schema work |
+| `all .md files/ward28/ward28skill.md` | Before ANY data, query, or schema work — routes you to the correct ward28 file |
+
+> `all .md files/MAPPING.md` is superseded by the ward28 files. It contains outdated person names and stale schema. Do not use it.
 
 These documents are the source of truth. If this file conflicts with them, those files win.
 
@@ -197,6 +199,23 @@ Every task, no exceptions:
 - [ ] No hardcoded colours / pixel values / font sizes
 - [ ] `PhotoCarousel` used for any carousel — never re-implemented
 - [ ] If a new shared component or pattern was introduced → `design_system.md` Part 7 updated
+
+---
+
+## EVIDENCE JSONB — EXTRACTION RULE
+
+Never access `event.evidence` fields with `as any`. Always use the typed extractors in `src/lib/utils/road-display.ts`:
+
+```ts
+// ✅ Correct
+const { netDisbursed } = extractPaymentEvidence(paymentEvent?.evidence);
+const { estimatedValue, contractValue } = extractTenderEvidence(tenderEvent?.evidence);
+
+// ❌ Never do this
+const val = (event.evidence as any)?.someField;
+```
+
+When a new event type needs evidence fields extracted — add a new named extractor to `road-display.ts`. Never inline the cast.
 
 ---
 
