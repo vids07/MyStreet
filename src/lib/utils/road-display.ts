@@ -218,7 +218,7 @@ export function getHeroCrops(url: string): { mobile: string; laptop: string; des
   if (!url.includes('/upload/q_auto')) return { mobile: url, laptop: url, desktop: url };
   const crop = (t: string) => url.replace('/upload/', `/upload/${t}/`);
   return {
-    mobile:  crop('c_fill,ar_0.67,g_auto'),
+    mobile:  url,
     laptop:  crop('c_fill,ar_1.6,g_auto'),
     desktop: crop('c_fill,ar_1.78,g_auto'),
   };

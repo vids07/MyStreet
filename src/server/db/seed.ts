@@ -920,7 +920,6 @@ async function seed() {
     { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310842/008_r9xxdd.png', isHero: false },
     { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310841/009_ge6qvr.jpg', isHero: false },
     { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310843/010_tfhjwk.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310846/011_cd4nij.png', isHero: false },
   ];
 
   const section1PhotoValues = SECTION1_PHOTOS.map((p, index) => ({
