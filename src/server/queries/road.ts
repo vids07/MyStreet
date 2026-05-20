@@ -98,7 +98,7 @@ export async function getPhotosByRoadId(roadId: string) {
     .from(photos)
     .leftJoin(persons, eq(photos.personId, persons.id))
     .where(eq(photos.roadId, roadId))
-    .orderBy(desc(photos.capturedAt));
+    .orderBy(desc(photos.capturedAt), photos.uploadedAt);
 
   return result.map(r => ({
     ...r.photo,

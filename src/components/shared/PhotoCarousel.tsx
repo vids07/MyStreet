@@ -34,6 +34,8 @@ type Props = {
   variant?: PhotoCarouselVariant;
   /** Hero only: bottom overlay rendered inside each slide (road name, ward, etc.) */
   renderSlideBottom?: (photo: PhotoData) => React.ReactNode;
+  /** Hero only: replaces the default image layers (blurred bg + foreground). Use for art-directed <picture> elements. */
+  renderPhoto?: (photo: PhotoData) => React.ReactNode;
   /**
    * Called synchronously when the visible photo changes (scroll or arrow click).
    * Not called on mount — initialise parent state from photos[0] instead.
@@ -44,9 +46,10 @@ type Props = {
 export default function PhotoCarousel({
   photos,
   height = 'h-64',
-  maxPhotos,
   variant = 'card',
+  maxPhotos,
   renderSlideBottom,
+  renderPhoto,
   onActivePhotoChange,
 }: Props) {
   const filtered = photos
@@ -56,7 +59,6 @@ export default function PhotoCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const activePhoto = filtered[activeIndex] ?? null;
-
   const isHero = variant === 'hero';
 
   function handleScroll() {
@@ -91,13 +93,36 @@ export default function PhotoCarousel({
     >
       {filtered.map((photo, i) => (
         <div key={photo.id ?? i} className="relative flex-none w-full h-full snap-start overflow-hidden">
-          <img
-            src={photo.thumbnailUrl ?? photo.url}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
           {isHero ? (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <>
+              {renderPhoto ? renderPhoto(photo) : (
+                <>
+                  {/* Blurred background — fills gaps for any photo orientation */}
+                  <img
+                    src={photo.thumbnailUrl ?? photo.url}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
+                  />
+                  {/* Sharp foreground — uses original url, never pre-cropped; preserve framing by aligning top */}
+                  <img
+                    src={photo.url}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-contain"
+                    style={{ objectPosition: 'top' }}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <img
+              src={photo.thumbnailUrl ?? photo.url}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover object-bottom"
+            />
+          )}
+          {isHero ? (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           ) : (
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           )}
@@ -149,52 +174,25 @@ export default function PhotoCarousel({
     </button>
   );
 
-  if (isHero) {
-    return (
-      <div className={`relative w-full ${height} overflow-hidden`}>
-        {slides}
-        {badge}
-        {prevArrow}
-        {nextArrow}
-        {filtered.length > 1 && (
-          <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex gap-xs">
-            {filtered.map((_, i) => (
-              <div
-                key={i}
-                onClick={() => scrollToIndex(i)}
-                className={`h-2xs rounded-full transition-all duration-300 cursor-pointer ${
-                  i === activeIndex ? 'w-md bg-white' : 'w-xs bg-white/40'
-                }`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Card variant: photo area then dots in flow — both become direct grid children
   return (
-    <>
-      <div className={`relative ${height} rounded-sm overflow-hidden`}>
-        {slides}
-        {badge}
-        {prevArrow}
-        {nextArrow}
-      </div>
-      {filtered.length > 1 && (
-        <div className="flex justify-center gap-2xs pt-xs">
+    <div className={`relative w-full ${height}`}>
+      {slides}
+      {badge}
+      {prevArrow}
+      {nextArrow}
+
+      {isHero && filtered.length > 1 && (
+        <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex items-center gap-2xs">
           {filtered.map((_, i) => (
-            <div
+            <button
               key={i}
               onClick={() => scrollToIndex(i)}
-              className={`h-2xs rounded-full transition-all duration-300 cursor-pointer ${
-                i === activeIndex ? 'w-sm bg-text-primary' : 'w-xs bg-text-muted/30'
-              }`}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`w-2 h-2 rounded-full transition-colors ${i === activeIndex ? 'bg-white' : 'bg-white/40'}`}
             />
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

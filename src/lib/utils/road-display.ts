@@ -208,6 +208,22 @@ export function formatFailureDuration(completionDate: Date | string | null | und
   return 'over a year';
 }
 
+// ============================================================
+// HERO IMAGE ART DIRECTION
+// ============================================================
+
+// Generates 3 Cloudinary crop URLs from the stored `url` (which has q_auto,f_auto).
+// Returns the original url for all sizes if the URL doesn't match the expected pattern.
+export function getHeroCrops(url: string): { mobile: string; laptop: string; desktop: string } {
+  if (!url.includes('/upload/q_auto')) return { mobile: url, laptop: url, desktop: url };
+  const crop = (t: string) => url.replace('/upload/', `/upload/${t}/`);
+  return {
+    mobile:  crop('c_fill,ar_0.67,g_auto'),
+    laptop:  crop('c_fill,ar_1.6,g_auto'),
+    desktop: crop('c_fill,ar_1.78,g_auto'),
+  };
+}
+
 // Uses dlpEndDate from evidence (field name per DATA_MODEL.md and seed).
 export function dlpStatusLabel(dlpEvent: EventData | undefined): string {
   if (!dlpEvent) return 'No DLP recorded';
