@@ -307,7 +307,9 @@ Barely visible. Almost non-existent. You feel the separation without seeing the 
 
 | Icon | Lucide name | Used for |
 |---|---|---|
-| Location | `MapPin` | Road location, ward |
+| Location | `MapPin` | Road location, ward, address |
+| Governing body | `Landmark` | Public body responsible — used in hero overlay |
+| Verify / external | `ExternalLink` | Open original photo for verification — hero overlay |
 | Warning | `AlertTriangle` | Critical status |
 | Person | `User` | Officials, contractors |
 | Share | `Share2` | Share Truth action |
@@ -318,6 +320,7 @@ Barely visible. Almost non-existent. You feel the separation without seeing the 
 | ChevronRight | `ChevronRight` | See full record arrow |
 | Download | `Download` | Download report |
 | Map | `Map` | Map section |
+| Left/Right | `ChevronLeft` / `ChevronRight` | Carousel navigation arrows |
 
 **Icon rules:**
 - Never use filled icons and stroke icons in the same view
@@ -396,47 +399,39 @@ If you are tempted to use glassmorphism in another section — do not. The hero 
 
 **Purpose:** In 5 seconds, Sunita must feel: "This is my road. Someone knows."
 
-**Video:**
-- Full bleed. Edge to edge. No letterboxing.
-- Autoplays on load. Sound ON by default.
-- Shot landscape. Real road footage.
-- Contains at least one citizen moment — unscripted human interaction with the road. No staging. No interviews.
-- Desktop: landscape video fills viewport width to height ratio.
-- Mobile: full screen portrait.
+**Implementation:** Full-bleed photo carousel. `h-screen`. `variant="hero"` on PhotoCarousel. Photos are citizen field photos with `eventId: null` in the database — this is the query join condition, not a convention.
 
-**5-second text sequence — appears over video, bottom-left anchored:**
+**Photo display — art-directed per device:**
+- Mobile (`< 768px`): original Cloudinary URL, no crop. Source photos are portrait (phone-shot) — they already match mobile aspect ratio. `object-cover` handles the minor fill.
+- Laptop (`768px–1279px`): Cloudinary `c_fill,ar_1.6,g_auto` crop. Landscape fill.
+- Desktop (`≥ 1280px`): Cloudinary `c_fill,ar_1.78,g_auto` crop. Landscape fill.
 
-All text sits directly on video inside the glassmorphism panel. No opaque card. No background box outside the glass panel.
+Use `getHeroCrops(photo.url)` from `road-display.ts` to generate all three URLs. Pass result via `renderPhoto` prop on PhotoCarousel.
 
-| Second | Content | Style |
-|---|---|---|
-| 1 | Road name | Level 2 Headline, white, fades in |
-| 2 | "₹[amount] spent here" | Level 1 Display, white |
-| 3 | "This road lasted [X] days." | Level 2 Headline, failure red |
-| 4 | Citizen moment plays in video | No text |
-| 5 | One button appears | See button spec below |
+**Gradient overlay:** `bg-gradient-to-t from-black/60 via-black/5 to-transparent` — darkens only near the bottom where text sits. Intentionally light so road damage is visible through most of the frame.
 
-**The one button:**
-- Broken road label: "Who did this?"
-- Good road label: "Who built this right?"
-- Never: "View Report", "See Details", "Learn More", "Explore", "Find Out"
-- Color: amber (empowerment color) — this is the first and only empowerment moment in the hero
-- Size: Level 4 Body Bold
-- Radius: radius-sm (8px) — button is not a card
+**Bottom overlay — 4 lines, bottom-left, `pb-xl pl-sm`:**
+
+| Line | Content | Source | Style |
+|---|---|---|---|
+| 1 | Street name | `photo.locationLabel.split(' — ')[0]` | `text-headline mona text-white` |
+| 2 | Location | `photo.locationLabel.split(' — ')[1]` + `MapPin` icon | `text-label roboto text-white/60` |
+| 3 | Governing body | `road.governingBody` + `Landmark` icon, prefixed "Under:" | `text-label roboto text-white/80` — brighter than location, this is accountability data |
+| 4 | Photo date + verify link | `capturedAt` formatted + `ExternalLink` icon, opens original photo URL | `text-label roboto text-white/40 uppercase` — dimmed, verification affordance |
+
+**`locationLabel` format contract:** `"street name — ward, city, pincode"` — split on ` — `. Everything before = headline. Everything after = location line. This format is enforced in seed.ts via the `Section1Photo` type.
+
+**StatusBadge:** top-right, `variant="solid"`. Shows photo-level status (critical/warning/good/informational), not road health status.
 
 **What does NOT appear in the hero:**
-- Navigation bar
+- Navigation bar or header
 - Logo
 - Search bar
-- Any badge or tag
-- Any grid or card layout
-- Any other button
+- Grid or card layout
+- Glassmorphism panel (reserved for future video implementation)
 - Any rating, star, or social proof element
 
-**Good road vs broken road:**
-- Same structure. Same 5 seconds. Same video format.
-- Only the button label and the failure color on second 3 change.
-- Good road: second 3 text changes to something affirmative. Color changes from failure red to evidence green.
+**Fallback:** If `photo.locationLabel` is null, headline falls back to `road.ward` or `road.roadDisplayName`. Always render something.
 
 ---
 
@@ -606,6 +601,7 @@ These components live in `src/components/shared/`. Use them in every section. Ne
 | `height` | `string` | `'h-64'` | Tailwind height class on the photo area |
 | `maxPhotos` | `number` | no limit | Slice limit applied after HEIC filter |
 | `variant` | `'card' \| 'hero'` | `'card'` | Controls arrows, badge, dots, gradient |
+| `renderPhoto` | `(photo) => ReactNode` | — | Hero only: replaces default image layers entirely. Use for art-directed `<picture>` elements with device-specific Cloudinary crops. |
 | `renderSlideBottom` | `(photo) => ReactNode` | — | Hero only: inject bottom overlay per slide |
 | `onActivePhotoChange` | `(photo \| null) => void` | — | Called on scroll/arrow; not on mount |
 
@@ -622,9 +618,10 @@ These components live in `src/components/shared/`. Use them in every section. Ne
 - Photo area: fills parent height (pass `height="h-screen"`)
 - Badge: top-right, `variant="solid"`
 - Arrows: size 24, `w-10 h-10`, `left-sm` / `right-sm`, `hover:bg-black/70`
-- Gradient: `inset-0 from-black/80 via-black/30` full slide
+- Gradient: `inset-0 from-black/60 via-black/5 to-transparent` — intentionally light so photo damage is visible
 - Dots: absolute `bottom-sm center`, `bg-white` / `bg-white/40`, `gap-xs`
-- Use `renderSlideBottom` to inject road name + location label over the gradient
+- Use `renderPhoto` to replace default image layers with art-directed `<picture>` element
+- Use `renderSlideBottom` to inject road name, location, governing body, and photo date over the gradient
 
 **Key rules:**
 - Never re-implement scroll/snap/arrows/dots in a section file — always use this component
@@ -652,16 +649,45 @@ const [activePhoto, setActivePhoto] = useState<PhotoData | null>(
   photos={allPhotos}
   height="h-screen"
   variant="hero"
-  renderSlideBottom={(photo) => (
-    <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
-      <h2 className="text-title mona text-white font-bold">{displayName}</h2>
-      {photo.locationLabel && (
-        <p className="text-label roboto text-white/60 uppercase tracking-widest">
-          {photo.locationLabel}
-        </p>
-      )}
-    </div>
-  )}
+  renderPhoto={(photo) => {
+    const crops = getHeroCrops(photo.url); // from road-display.ts
+    return (
+      <picture className="absolute inset-0 w-full h-full">
+        <source media="(min-width: 1280px)" srcSet={crops.desktop} />
+        <source media="(min-width: 768px)"  srcSet={crops.laptop} />
+        <img src={crops.mobile} alt="" className="w-full h-full object-cover" />
+      </picture>
+    );
+  }}
+  renderSlideBottom={(photo) => {
+    const [streetName, locationText] = photo.locationLabel
+      ? photo.locationLabel.split(' — ')
+      : [road.ward ?? road.roadDisplayName, null];
+    return (
+      <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
+        <h2 className="text-headline mona text-white">{streetName}</h2>
+        {locationText && (
+          <p className="flex items-center gap-2xs text-label roboto text-white/60">
+            <MapPin size={12} strokeWidth={1.5} />
+            {locationText}
+          </p>
+        )}
+        {road.governingBody && (
+          <p className="flex items-center gap-2xs text-label roboto text-white/80">
+            <Landmark size={12} strokeWidth={1.5} />
+            Under: {road.governingBody}
+          </p>
+        )}
+        {photo.capturedAt && (
+          <a href={photo.url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2xs text-label roboto text-white/40 uppercase tracking-widest hover:text-white/70 transition-colors w-fit">
+            Photographed {formatDate(photo.capturedAt)}
+            <ExternalLink size={12} strokeWidth={1.5} />
+          </a>
+        )}
+      </div>
+    );
+  }}
 />
 ```
 
@@ -727,9 +753,9 @@ Used in Section 3. Apply this pattern to any future 3-column card grid where row
 | Tech Stack | LOCKED | v1.1 |
 | Icon Library — Lucide | LOCKED | v1.1 |
 | Motion | OPEN | v1.3 pending |
-| Section 1 Hero | LOCKED | v1.0 |
+| Section 1 Hero | LOCKED | v1.3 |
 | Sections 2–6 | See product spec | — |
-| PhotoCarousel component | LOCKED | v1.2 |
+| PhotoCarousel component | LOCKED | v1.3 |
 | StatusBadge component | LOCKED | v1.2 |
 | ConditionCard subgrid pattern | LOCKED | v1.2 |
 

@@ -20,7 +20,10 @@ The permanent identity of a road. Created when a work order is issued. Never del
 |-------|------|---------|
 | id | UUID | Internal primary key |
 | roadSystemId | text | Public permanent ID — format: STATE-CITY-LAT-LNG e.g. UK-RKE-29.8723-77.8813 |
-| roadDisplayName | text | Human readable location description |
+| roadDisplayName | text | Human readable location description — official RTI name. Never the colloquial street name. |
+| ward | text nullable | Ward number e.g. "Ward 28" |
+| city | text nullable | City name e.g. "Roorkee" |
+| governingBody | text nullable | The public body responsible for this road — e.g. "Nagar Nigam Roorkee". First-class accountability field. Not derivable from persons table — the institution persists beyond any individual official. |
 | geometry | JSONB | GeoJSON shape of the road |
 | healthStatus | enum | Cached current status — good/warning/critical/dangerous. Updated when health_status_changed event is added |
 | healthStatusUpdatedAt | timestamp | When was status last updated — staleness is visible |
@@ -153,11 +156,14 @@ Visual evidence linked to roads, segments, and events.
 |-------|------|---------|
 | id | UUID | Internal primary key |
 | roadId | UUID FK | Which road — required |
-| segmentId | UUID FK nullable | Which segment |
-| eventId | UUID FK nullable | Which event this photo documents |
-| url | text | Photo URL — currently Google Drive, future: proper storage |
-| thumbnailUrl | text nullable | Compressed version for grid display |
+| segmentId | UUID FK nullable | Which segment — null for Section 1 (road-wide) photos |
+| eventId | UUID FK nullable | Which event this photo documents — **null for Section 1 photos**. This is the join condition that separates hero/condition photos from event-specific photos. |
+| personId | UUID FK nullable | Person who took the photo — null for most citizen uploads |
+| url | text | Full Cloudinary optimised URL — format: `.../upload/q_auto/f_auto/v{version}/{public_id}` |
+| thumbnailUrl | text nullable | Cloudinary crop URL — format: `.../upload/c_fill,ar_3:4,g_auto/q_auto/f_auto/v{version}/{public_id}`. Used in Section 3 condition cards. |
 | source | enum | citizen/official/contractor/system/sensor |
+| status | enum nullable | critical/warning/good/informational — set explicitly by the person who took the photo. Future: set by sensors. Never defaulted. |
+| locationLabel | text nullable | Format: `"street name — ward, city, pincode"`. Split on ` — ` in display: first part = road name headline, second part = location line. |
 | capturedAt | timestamp nullable | When photo was taken — from EXIF or manual entry |
 | locationLat | numeric nullable | GPS latitude |
 | locationLng | numeric nullable | GPS longitude |
@@ -165,7 +171,7 @@ Visual evidence linked to roads, segments, and events.
 | uploadedBy | text nullable | person_id or system identifier |
 | isVerified | boolean | Has this photo been verified by a trusted source |
 | verifiedAt | timestamp nullable | When verified |
-| isHero | boolean | Is this the primary photo for Section 1 — The Mirror. One per road should be true. |
+| isHero | boolean | Is this the primary first photo in the Section 1 carousel. One per road should be true. |
 
 ---
 

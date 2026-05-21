@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Clock, MapPin, User } from 'lucide-react';
+import { Clock, MapPin, User, ExternalLink } from 'lucide-react';
 import type { EventData, PhotoData, DrainData } from '@/types/road';
 import { EVENT_TYPES } from '@/types/road';
 import { formatDate } from '@/lib/utils/road-display';
@@ -43,8 +43,20 @@ function ConditionCard({ headlineCount, headlineColor, bodyText, photos, type, d
       <PhotoCarousel
         photos={photos}
         height="h-64"
-        maxPhotos={5}
         onActivePhotoChange={setActivePhoto}
+        renderSlideBottom={(photo) =>
+          photo.capturedAt ? (
+            <a
+              href={photo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-xs left-xs flex items-center gap-2xs text-label roboto text-white/60 uppercase tracking-widest hover:text-white/90 transition-colors z-10 w-fit"
+            >
+              Photographed {formatDate(photo.capturedAt)}
+              <ExternalLink size={12} strokeWidth={1.5} />
+            </a>
+          ) : null
+        }
       />
 
       {/* CARD BODY */}

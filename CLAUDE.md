@@ -79,7 +79,7 @@ src/
     queries/road.ts             ← All DB queries. Single source of data.
     db/                         ← Drizzle schema and seed files.
   types/road.ts                 ← All shared TypeScript types. Never define types inline in components.
-  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, builtMonthsAgo, daysLasted, etc.
+  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, builtMonthsAgo, daysLasted, getHeroCrops, etc.
 all .md files/
   design_system.md              ← Visual bible. Parts 1–6 locked. Part 7 = shared components.
   MAPPING.md                    ← DB schema → component data map.
@@ -138,15 +138,51 @@ const [activePhoto, setActivePhoto] = useState<PhotoData | null>(
 <PhotoCarousel photos={photos} height="h-64" maxPhotos={5} onActivePhotoChange={setActivePhoto} />
 
 // Hero variant — full-bleed sections. Dots absolute inside container.
-<PhotoCarousel photos={allPhotos} height="h-screen" variant="hero"
-  renderSlideBottom={(photo) => (
-    <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
-      <h2 className="text-title mona text-white font-bold">{displayName}</h2>
-      {photo.locationLabel && (
-        <p className="text-label roboto text-white/60 uppercase tracking-widest">{photo.locationLabel}</p>
-      )}
-    </div>
-  )}
+// renderPhoto: art-directed <picture> with device-specific Cloudinary crops (no crop on mobile to avoid double-crop).
+// renderSlideBottom: 4-line overlay — street name, location + pin, governing body + landmark, photo date + verify link.
+<PhotoCarousel
+  photos={allPhotos}
+  height="h-screen"
+  variant="hero"
+  renderPhoto={(photo) => {
+    const crops = getHeroCrops(photo.url); // from road-display.ts
+    return (
+      <picture className="absolute inset-0 w-full h-full">
+        <source media="(min-width: 1280px)" srcSet={crops.desktop} />
+        <source media="(min-width: 768px)"  srcSet={crops.laptop} />
+        <img src={crops.mobile} alt="" className="w-full h-full object-cover" />
+      </picture>
+    );
+  }}
+  renderSlideBottom={(photo) => {
+    const [streetName, locationText] = photo.locationLabel
+      ? photo.locationLabel.split(' — ')
+      : [road.ward ?? road.roadDisplayName, null];
+    return (
+      <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
+        <h2 className="text-headline mona text-white">{streetName}</h2>
+        {locationText && (
+          <p className="flex items-center gap-2xs text-label roboto text-white/60">
+            <MapPin size={12} strokeWidth={1.5} />
+            {locationText}
+          </p>
+        )}
+        {road.governingBody && (
+          <p className="flex items-center gap-2xs text-label roboto text-white/80">
+            <Landmark size={12} strokeWidth={1.5} />
+            Under: {road.governingBody}
+          </p>
+        )}
+        {photo.capturedAt && (
+          <a href={photo.url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2xs text-label roboto text-white/40 uppercase tracking-widest hover:text-white/70 transition-colors w-fit">
+            Photographed {formatDate(photo.capturedAt)}
+            <ExternalLink size={12} strokeWidth={1.5} />
+          </a>
+        )}
+      </div>
+    );
+  }}
 />
 ```
 

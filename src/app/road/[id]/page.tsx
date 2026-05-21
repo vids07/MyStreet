@@ -145,7 +145,7 @@ export default async function RoadPage({
         events={events}
         photos={photos}
         drains={drains}
-        builtAgo={builtMonthsAgo(tenderEvent)}
+        builtAgo={builtMonthsAgo(completionEvent)}
         sanctionedBudget={formatCurrency(sanctionedBudget)}
         contractValue={formatCurrency(contractValue)}
         healthStatus={road.healthStatus}
@@ -157,7 +157,7 @@ export default async function RoadPage({
         netDisbursed={formatCurrency(netDisbursed)}
         sanctionedBudget={formatCurrency(sanctionedBudget)}
         contractValue={formatCurrency(contractValue)}
-        builtAgo={builtMonthsAgo(tenderEvent)}
+        builtAgo={builtMonthsAgo(completionEvent)}
         daysLasted={daysLasted(completionEvent, road.healthStatus)}
         issuesCount={conditionEvents.length}
         benchmarkBags={benchmarkBags(netDisbursed)}

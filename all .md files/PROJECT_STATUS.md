@@ -24,6 +24,7 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
   - `002_mvp_fields.sql`: `persons` accountability_status/job_description/license_number; `roads` ward/city; `drains` status enum; `photos` status/location_label/person_id
   - `003_nullable_person_fields.sql`: `persons.designation` and `persons.department` made nullable — citizens have no official designation
   - `004_data_confidence.sql`: `event_participants.data_confidence` enum (verified/probable/unconfirmed) — replaces confidence annotations that were only in code comments
+- `roads.governing_body` column added via `drizzle-kit push` — text nullable. Stores the public body responsible for the road (e.g. "Nagar Nigam Roorkee"). First-class accountability field — not derivable from persons.
 
 ### Query Architecture ✓
 - Centralized query layer: `src/server/queries/road.ts`
@@ -49,13 +50,16 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - 1 drain — all dimension fields null (not in RTI documents). Status null — physical existence not yet field verified.
 - 14 events — 11 original RTI events + 3 citizen field observation events added May 2026 (crack_found, pothole_found, drain_blocked — 8 Feb 2026, linked to segment).
 - 24 event participants — 21 original + Vidushi added as reporter on all 3 condition events.
-- 29 photos seeded May 2026 — hosted on Cloudinary. 8 Section 1 (eventId null), 6 crack, 3 pothole, 12 drain. All captured 19 Nov 2025.
+- 31 photos seeded — hosted on Cloudinary. 10 Section 1 (eventId null, re-uploaded with corrected URLs), 6 crack, 3 pothole, 12 drain. All captured 19 Nov 2025.
+- Section 1 photos use hardcoded `SECTION1_PHOTOS` array in seed.ts — `status` and `locationLabel` are required typed fields per entry, enforced by TypeScript. No defaults. See SEED_GUIDE.md Step 8.
+- `locationLabel` format: `"street name — ward, city, pincode"`. Split on ` — ` in HeroSection display.
 - Sachin Kumar: jobDescription populated, accountabilityStatus set to waiting_for_audit, participant role corrected to reporter on payment_released.
 - Gurukesh Singh: monthlySalary set to ₹55,000 — required for Section 4 JE benchmark calculation.
 
 ### Utility Functions ✓
 - `src/lib/utils/road-display.ts` — all computed value logic lives here, not in `page.tsx`
-- Functions: `formatCurrency`, `formatSalary`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`
+- Functions: `formatCurrency`, `formatSalary`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`, `formatFailureDuration`, `getHeroCrops`
+- `getHeroCrops(url)` — generates 3 Cloudinary crop URLs from a stored photo URL. Mobile: original (no crop). Laptop: `c_fill,ar_1.6,g_auto`. Desktop: `c_fill,ar_1.78,g_auto`. Handles both `q_auto/f_auto` (slash) and `q_auto,f_auto` (comma) URL formats.
 - `ISSUE_EVENT_TYPES` constant exported — used to derive `conditionEvents` count
 - Every placeholder in MAPPING.md Part 2 has a corresponding function or direct accessor
 
@@ -84,7 +88,6 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 ### UI Sections (designed, not built)
 - Section 2 — Map comparison — requires multiple roads, build last
 - Full Timeline Section — currently partially built, needs standalone component
-- Photo/Video Slider in Hero — currently using single hero photo
 
 ### Features (designed, not built)
 - Citizen confirmation API endpoint

@@ -76,7 +76,10 @@ const [personVariable] = await db.insert(persons).values({
 ```typescript
 const [road] = await db.insert(roads).values({
   roadSystemId: 'UK-RKE-XX.XXXX-XX.XXXX',
-  roadDisplayName: 'Ward X, From [Landmark A] to [Landmark B], City',
+  roadDisplayName: 'Ward X, From [Landmark A] to [Landmark B], City', // Official RTI name — verbatim
+  ward: 'Ward X',
+  city: 'City Name',
+  governingBody: 'Nagar Nigam [City]', // The public body responsible — required. Not optional. This is accountability data.
   geometry: {
     type: 'LineString',
     coordinates: [[LNG, LAT]], // Note: GeoJSON is [longitude, latitude]
@@ -183,27 +186,53 @@ await db.insert(eventParticipants).values({
 
 ---
 
-## Step 8 — Add Photos
+## Step 8 — Add Section 1 Photos
 
-At minimum add one hero photo — the most powerful image showing current road condition.
+Section 1 photos are general condition photos of the road — not linked to any specific event (`eventId: null`). This `null` is the join condition that tells the query layer these are hero/carousel photos.
+
+Upload photos to Cloudinary first. Use the optimised URL from the Cloudinary dashboard (contains `q_auto/f_auto`).
+
+**The `SECTION1_PHOTOS` pattern — use this exactly:**
 
 ```typescript
-await db.insert(photos).values({
-  roadId: road.id,
-  segmentId: segment.id,
-  eventId: null,
-  url: 'https://your-photo-url.com/photo.jpg',
-  thumbnailUrl: null,
-  source: 'citizen',
-  capturedAt: new Date('YYYY-MM-DD'),
-  locationLat: 'XX.XXXX',
-  locationLng: 'XX.XXXX',
-  uploadedBy: 'your-identifier',
-  isVerified: true,
-  verifiedAt: new Date('YYYY-MM-DD'),
-  isHero: true, // Only one photo per road should be true
-});
+function withTransform(url: string, transform: string): string {
+  return url.replace('/upload/', `/upload/${transform}/`);
+}
+
+type Section1Status = 'critical' | 'warning' | 'good' | 'informational';
+type Section1Photo = { url: string; isHero: boolean; status: Section1Status; locationLabel: string };
+
+// All four fields are REQUIRED — TypeScript will error if any are missing.
+// status: set by whoever took the photo based on what they observed. Never default.
+// locationLabel format: "street name — ward, city, pincode"
+//   → split on ' — ' in display: [0] = headline, [1] = location line with pin icon
+const SECTION1_PHOTOS: Section1Photo[] = [
+  { url: 'https://res.cloudinary.com/.../001.jpg', isHero: true,  status: 'critical', locationLabel: 'Street Name, near Landmark — Ward X, City 123456' },
+  { url: 'https://res.cloudinary.com/.../002.jpg', isHero: false, status: 'warning',  locationLabel: 'Street Name, near Landmark — Ward X, City 123456' },
+  // ... one entry per photo
+];
+
+const section1PhotoValues = SECTION1_PHOTOS.map((p, index) => ({
+  roadId:        road.id,
+  segmentId:     null,
+  eventId:       null,
+  personId:      null,
+  url:           p.url,
+  thumbnailUrl:  withTransform(p.url, 'c_fill,ar_3:4,g_auto'),
+  source:        'citizen' as const,
+  status:        p.status,
+  locationLabel: p.locationLabel,
+  capturedAt:    new Date(BASE_DATE.getTime() + (SECTION1_PHOTOS.length - 1 - index) * 60_000),
+  uploadedBy:    'founder',
+  isHero:        p.isHero,
+}));
 ```
+
+**Rules:**
+- Exactly one photo must have `isHero: true` — it is the first slide in the carousel
+- `status` is editorial data — set it to what you observed, not a default. When sensors exist they will update this column directly
+- `locationLabel` must use the ` — ` separator. Everything before it = road name shown in headline. Everything after = location shown with pin icon
+- `thumbnailUrl` is auto-generated via `withTransform` — do not manually set it
 
 ---
 

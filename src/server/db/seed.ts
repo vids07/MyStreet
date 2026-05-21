@@ -289,6 +289,7 @@ async function seed() {
     roadDisplayName: "Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee",
     ward: 'Ward 28',
     city: 'Roorkee',
+    governingBody: 'Nagar Nigam Roorkee',
     geometry: {}, // NULL per WARD28_VERIFIED_DATA.md — schema requires NOT NULL
     healthStatus: 'critical', // Set by founder based on field observation — not from RTI documents.
     healthStatusUpdatedAt: null,
@@ -909,171 +910,106 @@ async function seed() {
 
   const BASE_DATE = new Date('2025-11-19T00:00:00Z');
 
-  const SECTION1_PHOTOS = [
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310839/001_vc0jdy.jpg',  isHero: true  },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310838/002_oidjyn.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/003_yli37n.png', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310848/004_jdpbqk.png', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310841/005_eysunr.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/006_c0rs6f.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/007_nmyegd.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310842/008_r9xxdd.png', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310841/009_ge6qvr.jpg', isHero: false },
-    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310843/010_tfhjwk.jpg', isHero: false },
+  type Section1Status = 'critical' | 'warning' | 'good' | 'informational';
+  type Section1Photo = { url: string; isHero: boolean; status: Section1Status; locationLabel: string };
+
+  const SECTION1_PHOTOS: Section1Photo[] = [
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310839/001_vc0jdy.jpg',  isHero: true,  status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310838/002_oidjyn.jpg', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/003_yli37n.png', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310848/004_jdpbqk.png', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310841/005_eysunr.jpg', isHero: false, status: 'warning',  locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/006_c0rs6f.jpg', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310840/007_nmyegd.jpg', isHero: false, status: 'warning',  locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310842/008_r9xxdd.png', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310841/009_ge6qvr.jpg', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
+    { url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779310843/010_tfhjwk.jpg', isHero: false, status: 'critical', locationLabel: 'Purvi Deen Dayal, opposite street of Canara Bank, Ward 28 — 247667, Roorkee, Haridwar, Uttarakhand' },
   ];
 
   const section1PhotoValues = SECTION1_PHOTOS.map((p, index) => ({
-    roadId:       road.id,
-    segmentId:    null,
-    eventId:      null,
-    personId:     null,
-    url:          p.url,
-    thumbnailUrl: withTransform(p.url, 'c_fill,ar_3:4,g_auto'),
-    source:       'citizen' as const,
-    status:       'critical' as const,
-    locationLabel: 'Ward 28, Roorkee',
-    capturedAt:   new Date(BASE_DATE.getTime() + (SECTION1_PHOTOS.length - 1 - index) * 60_000),
-    uploadedBy:   'founder',
-    isHero:       p.isHero,
+    roadId:        road.id,
+    segmentId:     null,
+    eventId:       null,
+    personId:      null,
+    url:           p.url,
+    thumbnailUrl:  withTransform(p.url, 'c_fill,ar_3:4,g_auto'),
+    source:        'citizen' as const,
+    status:        p.status,
+    locationLabel: p.locationLabel,
+    capturedAt:    new Date(BASE_DATE.getTime() + (SECTION1_PHOTOS.length - 1 - index) * 60_000),
+    uploadedBy:    'founder',
+    isHero:        p.isHero,
   }));
 
   await db.insert(photos).values([
     ...section1PhotoValues,
 
-    // --- SECTION 3 CRACKS — 6 photos ---
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833722/mystreet/ward28/section3/RK_ST_19.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833724/mystreet/ward28/section3/RK_ST_23.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833727/mystreet/ward28/section3/RK_ST_27.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833731/mystreet/ward28/section3/RK_ST_64.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833733/mystreet/ward28/section3/RK_ST_65.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833736/mystreet/ward28/section3/RK_ST_66.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
+    // --- SECTION 3 CRACKS — 8 photos (001 is hero, highest capturedAt = first in carousel) ---
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376855/001_oaou8t.png', capturedAt: new Date('2025-11-19T01:07:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376853/002_z65u22.jpg', capturedAt: new Date('2025-11-19T01:06:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779397018/003_tu5j2z.jpg', capturedAt: new Date('2025-11-19T01:05:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376855/004_dm3thu.jpg', capturedAt: new Date('2025-11-19T01:04:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376856/005_hotbxc.jpg', capturedAt: new Date('2025-11-19T01:03:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377051/006_q7ue0a.jpg', capturedAt: new Date('2025-11-19T01:02:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377052/007_hjuleb.jpg', capturedAt: new Date('2025-11-19T01:01:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377054/008_kzflgj.jpg', capturedAt: new Date('2025-11-19T01:00:00Z') },
 
-    // --- SECTION 3 POTHOLES — 3 photos ---
-    {
-      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833713/mystreet/ward28/section3/RK_ST_14.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833716/mystreet/ward28/section3/RK_ST_40.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778833719/mystreet/ward28/section3/RK_ST_52.jpg',
-      source: 'citizen', status: 'critical',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
+    // --- SECTION 3 POTHOLES — 10 photos (001 is hero, highest capturedAt = first in carousel) ---
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377082/001_ax50tx.png', capturedAt: new Date('2025-11-19T02:09:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379139/002_pcy6hi.png', capturedAt: new Date('2025-11-19T02:08:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379125/003_o3cqss.jpg', capturedAt: new Date('2025-11-19T02:07:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379126/004_ezgj7z.jpg', capturedAt: new Date('2025-11-19T02:06:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379127/005_pvyx7q.jpg', capturedAt: new Date('2025-11-19T02:05:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379128/006_y42pkd.jpg', capturedAt: new Date('2025-11-19T02:04:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379130/007_a4afxu.jpg', capturedAt: new Date('2025-11-19T02:03:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379131/008_rhzmnw.jpg', capturedAt: new Date('2025-11-19T02:02:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379134/009_ezx4nk.jpg', capturedAt: new Date('2025-11-19T02:01:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379136/010_qnih91.png', capturedAt: new Date('2025-11-19T02:00:00Z') },
 
-    // --- SECTION 3 DRAINS — 12 photos ---
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832560/mystreet/ward28/section3/RK_ST_08.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832549/mystreet/ward28/section3/RK_ST_20.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832581/mystreet/ward28/section3/RK_ST_24.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832564/mystreet/ward28/section3/RK_ST_25.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832584/mystreet/ward28/section3/RK_ST_26.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832567/mystreet/ward28/section3/RK_ST_33.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832569/mystreet/ward28/section3/RK_ST_41.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832572/mystreet/ward28/section3/RK_ST_43.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832575/mystreet/ward28/section3/RK_ST_45.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832552/mystreet/ward28/section3/RK_ST_57.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832578/mystreet/ward28/section3/RK_ST_60.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
-    {
-      roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null,
-      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1778832557/mystreet/ward28/section3/RK_ST_61.jpg',
-      source: 'citizen', status: 'warning',
-      capturedAt: new Date('2025-11-19'), uploadedBy: 'founder', isHero: false,
-    },
+    // --- SECTION 3 DRAINS — 11 photos (001 is hero, highest capturedAt = first in carousel) ---
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379867/001_zna7gn.jpg', capturedAt: new Date('2025-11-19T03:10:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379867/002_pcwqrq.jpg', capturedAt: new Date('2025-11-19T03:09:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379869/003_soa17v.png', capturedAt: new Date('2025-11-19T03:08:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379869/004_yelo45.jpg', capturedAt: new Date('2025-11-19T03:07:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379871/005_yhzmi5.jpg', capturedAt: new Date('2025-11-19T03:06:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379873/006_lqcsms.jpg', capturedAt: new Date('2025-11-19T03:05:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379875/007_lr50iz.jpg', capturedAt: new Date('2025-11-19T03:04:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379878/008_zvonba.jpg', capturedAt: new Date('2025-11-19T03:03:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379879/009_dt3j7y.jpg', capturedAt: new Date('2025-11-19T03:02:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379881/010_ul4re2.jpg', capturedAt: new Date('2025-11-19T03:01:00Z') },
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+      url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379882/011_zax9pg.jpg', capturedAt: new Date('2025-11-19T03:00:00Z') },
   ]);
 
-  console.log(`Photos seeded: ${section1PhotoValues.length} section 1 + 21 section 3 = ${section1PhotoValues.length + 21} total`);
+  console.log(`Photos seeded: ${section1PhotoValues.length} section 1 + 29 section 3 = ${section1PhotoValues.length + 29} total`);
   console.log('');
   console.log('Seeding complete. Database is ready.');
 }

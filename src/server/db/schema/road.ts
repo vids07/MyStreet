@@ -13,6 +13,7 @@ export const roads = pgTable('roads', {
   roadDisplayName: text('road_display_name').notNull(),
   ward: text('ward'),
   city: text('city'),
+  governingBody: text('governing_body'),
   geometry: jsonb('geometry').notNull(),
   healthStatus: healthStatusEnum('health_status'),
   healthStatusUpdatedAt: timestamp('health_status_updated_at'),

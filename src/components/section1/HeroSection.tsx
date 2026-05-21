@@ -2,7 +2,8 @@
 
 import type { RoadData, PhotoData } from '@/types/road';
 import PhotoCarousel from '@/components/shared/PhotoCarousel';
-import { getHeroCrops } from '@/lib/utils/road-display';
+import { getHeroCrops, formatDate } from '@/lib/utils/road-display';
+import { MapPin, Landmark, ExternalLink } from 'lucide-react';
 
 type HeroSectionProps = {
   road: RoadData;
@@ -44,16 +45,39 @@ export default function HeroSection({ road, heroPhoto, section1Photos }: HeroSec
             </picture>
           );
         }}
-        renderSlideBottom={(photo) => (
-          <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
-            <h2 className="text-headline mona text-white">{displayName}</h2>
-            {photo.locationLabel && (
-              <p className="text-label roboto text-white/60 uppercase tracking-widest">
-                {photo.locationLabel.split(' — ')[0]}
-              </p>
-            )}
-          </div>
-        )}
+        renderSlideBottom={(photo) => {
+          const [streetName, locationText] = photo.locationLabel
+            ? photo.locationLabel.split(' — ')
+            : [displayName, null];
+          return (
+            <div className="absolute bottom-0 left-0 w-full pb-xl pl-sm z-10 flex flex-col gap-2xs">
+              <h2 className="text-headline mona text-white">{streetName}</h2>
+              {locationText && (
+                <p className="flex items-center gap-2xs text-label roboto text-white/60">
+                  <MapPin size={12} strokeWidth={1.5} />
+                  {locationText}
+                </p>
+              )}
+              {road.governingBody && (
+                <p className="flex items-center gap-2xs text-label roboto text-white/80">
+                  <Landmark size={12} strokeWidth={1.5} />
+                  Under: {road.governingBody}
+                </p>
+              )}
+              {photo.capturedAt && (
+                <a
+                  href={photo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2xs text-label roboto text-white/40 uppercase tracking-widest hover:text-white/70 transition-colors w-fit"
+                >
+                  Photographed {formatDate(photo.capturedAt)}
+                  <ExternalLink size={12} strokeWidth={1.5} />
+                </a>
+              )}
+            </div>
+          );
+        }}
       />
     </section>
   );

@@ -66,9 +66,9 @@ export function formatSalary(monthly: number | string | null | undefined): strin
 // TIME
 // ============================================================
 
-export function builtMonthsAgo(tenderEvent: EventData | undefined): string {
-  if (!tenderEvent) return 'Date unknown';
-  const start = new Date(tenderEvent.timestamp);
+export function builtMonthsAgo(completionEvent: EventData | undefined): string {
+  if (!completionEvent) return 'Date unknown';
+  const start = new Date(completionEvent.timestamp);
   const now = new Date();
   const months = Math.floor(
     (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30.44),
