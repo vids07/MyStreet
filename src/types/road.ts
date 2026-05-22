@@ -44,6 +44,26 @@ export const EVENT_TYPES = {
 
 export type EventType = typeof EVENT_TYPES[keyof typeof EVENT_TYPES];
 
+export type ApprovedOfficial = {
+  name: string;
+  designation: string;
+};
+
+export type ConditionCardData = {
+  type: 'cracks' | 'potholes' | 'drains';
+  heading: string;
+  count: number;
+  photos: PhotoData[];
+  budgetAmount: number | null;
+  budgetLabel: string | null;
+  certifiedDate: Date | null;
+  inspectedDate: Date | null;
+  inspectedSameDay: boolean;
+  monthsAfterCertification: string | null;
+  approvedBy: ApprovedOfficial[];
+  builtBy: string | null;
+};
+
 export type FaceCardData = {
   fullName: string;
   designation: string | null;

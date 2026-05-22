@@ -28,11 +28,66 @@ export function extractTenderEvidence(evidence: unknown): {
 
 export function extractPaymentEvidence(evidence: unknown): {
   netDisbursed: number;
+  roadSurfaceBudget: number | null;
+  drainBudget: number | null;
 } {
   const e = asRecord(evidence);
   return {
     netDisbursed: Number(e.netDisbursed ?? 0),
+    roadSurfaceBudget: e.roadSurfaceBudget != null ? Number(e.roadSurfaceBudget) : null,
+    drainBudget: e.drainBudget != null ? Number(e.drainBudget) : null,
   };
+}
+
+export function extractCompletionEvidence(evidence: unknown): {
+  inspectionDate: Date | null;
+} {
+  const e = asRecord(evidence);
+  const raw = typeof e.inspectionDate === 'string' ? e.inspectionDate : null;
+  if (!raw) return { inspectionDate: null };
+  // ISO format only: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss
+  if (/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+    const d = new Date(raw);
+    if (!isNaN(d.getTime())) return { inspectionDate: d };
+  }
+  // DD.MM.YYYY format (Indian RTI documents): "03.04.2025"
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
+    const [day, month, year] = raw.split('.').map(Number);
+    const d = new Date(year, month - 1, day);
+    if (!isNaN(d.getTime())) return { inspectionDate: d };
+  }
+  return { inspectionDate: null };
+}
+
+export function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate();
+}
+
+export function monthsApart(from: Date, to: Date): string {
+  const months = Math.floor(
+    (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24 * 30.44),
+  );
+  if (months < 1) return 'less than a month later';
+  if (months === 1) return '1 month later';
+  return `${months} months later`;
+}
+
+export function formatLakh(amount: number): string {
+  if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} Lakh`;
+  return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+}
+
+const DESIGNATION_ABBREVS: Record<string, string> = {
+  'Junior Engineer': 'JE',
+  'Assistant Engineer': 'AE',
+  'Executive Engineer': 'EE',
+  'Municipal Commissioner': 'MC',
+};
+
+export function abbreviateDesignation(designation: string): string {
+  return DESIGNATION_ABBREVS[designation] ?? designation;
 }
 
 // All issue event types — used to derive conditionEvents count and filter.

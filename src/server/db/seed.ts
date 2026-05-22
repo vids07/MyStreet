@@ -45,10 +45,29 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 2 — Junior Engineer (JE)
-  // fullName: Gurukesh Singh — verified from RTI documents (Page 11).
-  const [juniorEngineer] = await db.insert(persons).values({
-    fullName: 'Gurukesh Singh',
+  // Person 2 — Nirman Lipik (Construction Clerk)
+  // RTI Page 11 correction: previously misidentified as JE. Gurubayal Singh is a Nirman Lipik, not an engineer.
+  const [gurubayal] = await db.insert(persons).values({
+    fullName: 'Gurubayal Singh',
+    designation: 'Nirman Lipik (Construction Clerk)',
+    designationPlain: null,
+    department: 'Nagar Nigam Roorkee',
+    personCategory: 'official',
+    contactOrId: null,
+    jurisdiction: null,
+    monthlySalary: null,
+    salarySource: null,
+    photoUrl: null,
+    photoSource: null,
+    accountabilityStatus: 'waiting_for_audit',
+    jobDescription: 'Construction clerk responsible for administrative documentation of the project.',
+    licenseNumber: null,
+  }).returning();
+
+  // Person 3 — Junior Engineer (JE)
+  // fullName: Prem Kumar Sharma — verified from RTI documents (Page 11). Previously listed as AE — corrected.
+  const [premKumar] = await db.insert(persons).values({
+    fullName: 'Prem Kumar Sharma',
     designation: 'Junior Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -64,10 +83,10 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 3 — Assistant Engineer (AE)
-  // fullName: Prem Kumar Sharma — verified from RTI documents (Page 11).
-  const [assistantEngineer] = await db.insert(persons).values({
-    fullName: 'Prem Kumar Sharma',
+  // Person 4 — Assistant Engineer (AE)
+  // fullName: P. Sharma — verified from RTI documents (Page 11). Full first name not fully spelled out in all stamps.
+  const [pSharma] = await db.insert(persons).values({
+    fullName: 'P. Sharma',
     designation: 'Assistant Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -83,10 +102,10 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 4 — Executive Engineer (EE)
-  // fullName: Aashray Singh Mishra — verified from RTI documents (Page 11).
+  // Person 5 — Executive Engineer (EE)
+  // fullName: Anand Singh Mishrawan — verified from RTI documents (Page 11). Previously listed as Aashray Singh Mishra — corrected.
   const [executiveEngineer] = await db.insert(persons).values({
-    fullName: 'Aashray Singh Mishra',
+    fullName: 'Anand Singh Mishrawan',
     designation: 'Executive Engineer',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -102,7 +121,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 5 — Senior Finance Officer
+  // Person 6 — Senior Finance Officer
   const [prashantKumar] = await db.insert(persons).values({
     fullName: 'Prashant Kumar',
     designation: 'Senior Finance Officer',
@@ -120,7 +139,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 6 — Municipal Commissioner
+  // Person 7 — Municipal Commissioner
   const [jitendraKumar] = await db.insert(persons).values({
     fullName: 'Jitendra Kumar',
     designation: 'Municipal Commissioner',
@@ -138,7 +157,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 7 — Construction Clerk (Note Sheet / Payment)
+  // Person 8 — Construction Clerk (Note Sheet / Payment)
   const [sachinKumar] = await db.insert(persons).values({
     fullName: 'Sachin Kumar',
     designation: 'Clerk (Construction)',
@@ -156,7 +175,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 8 — Public Information Officer (PIO)
+  // Person 9 — Public Information Officer (PIO)
   // fullName: NULL per document — no personal name disclosed in any of the 41 pages.
   // Schema requires NOT NULL — using descriptive placeholder.
   const [pio] = await db.insert(persons).values({
@@ -176,7 +195,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 9 — Construction Clerk (Payment Register)
+  // Person 10 — Construction Clerk (Payment Register)
   const [mohanSingh] = await db.insert(persons).values({
     fullName: 'Mohan Singh',
     designation: 'Construction Clerk',
@@ -194,7 +213,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 10 — Construction Clerk (Elimination Sheet)
+  // Person 11 — Construction Clerk (Elimination Sheet)
   const [narendraSinghRawat] = await db.insert(persons).values({
     fullName: 'Narendra Singh Rawat',
     designation: 'Construction Clerk',
@@ -212,7 +231,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 11 — Finance Officer / District Magistrate Approver
+  // Person 12 — Finance Officer / District Magistrate Approver
   // NEEDS VERIFICATION — see WARD28_VERIFIED_DATA.md Section 2
   // One name with two roles separated by "/". Cannot determine if one person or two.
   const [karmendrasingh] = await db.insert(persons).values({
@@ -232,7 +251,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 12 — RTI Applicant
+  // Person 13 — RTI Applicant
   // designation: NULL per document — schema requires NOT NULL — using descriptive placeholder.
   // department: NULL per document — schema requires NOT NULL — using descriptive placeholder.
   const [vidushi] = await db.insert(persons).values({
@@ -252,7 +271,7 @@ async function seed() {
     licenseNumber: null,
   }).returning();
 
-  // Person 13 — Lab Test Authorised Signatory
+  // Person 14 — Lab Test Authorised Signatory
   const [pranavDixit] = await db.insert(persons).values({
     fullName: 'Pranav Dixit',
     designation: 'Tech-Manager',
@@ -273,7 +292,7 @@ async function seed() {
   // karmendrasingh seeded but not linked to any event — ambiguous role, see Ward28 05 conflicts.md Conflict 7
   void karmendrasingh;
 
-  console.log('Persons seeded:', 13);
+  console.log('Persons seeded:', 14);
 
   // ============================================================
   // ROAD — Section 1, WARD28_VERIFIED_DATA.md
@@ -696,6 +715,8 @@ async function seed() {
     severity: null,
     evidence: {
       "netDisbursed": 354581,
+      "roadSurfaceBudget": 281125,
+      "drainBudget": 86878,
       "sanctionedBudget": 606000,
       "contractAmount": 387234,
       "scheduledRatesTotal": 512036.45,
@@ -802,14 +823,44 @@ async function seed() {
     segmentId: segment.id,
     eventType: 'drain_blocked',
     timestamp: new Date('2026-02-08'),
-    description: 'Drain condition documented by citizen field visit on 8 February 2026. Drain billed and certified complete — physical existence on site unverified.',
+    description: 'Partial structural damage observed on drain section. A portion of the drain is broken. Full drain construction on site unconfirmed — billed at ₹86,878 and certified complete but physical existence not fully verified.',
     severity: 'medium',
     evidence: null,
     evidenceSource: 'citizen',
     isFlagged: false,
   }).returning();
 
-  console.log('Events seeded:', 14);
+  // 14 additional crack events — total 15 surface cracks documented November 2025
+  const additionalCrackEvents = await db.insert(events).values(
+    Array.from({ length: 14 }, (_, i) => ({
+      roadId: road.id,
+      segmentId: segment.id,
+      eventType: 'crack_found' as const,
+      timestamp: new Date('2026-02-08'),
+      description: `Surface crack ${i + 2} of 15 documented by citizen field visit. Ward No. 28 interlocking tile surface.`,
+      severity: 'critical' as const,
+      evidence: null,
+      evidenceSource: 'citizen' as const,
+      isFlagged: false,
+    }))
+  ).returning();
+
+  // 9 additional pothole events — total 10 potholes documented November 2025
+  const additionalPotholeEvents = await db.insert(events).values(
+    Array.from({ length: 9 }, (_, i) => ({
+      roadId: road.id,
+      segmentId: segment.id,
+      eventType: 'pothole_found' as const,
+      timestamp: new Date('2026-02-08'),
+      description: `Pothole ${i + 2} of 10 documented by citizen field visit. Ward No. 28 interlocking tile surface.`,
+      severity: 'critical' as const,
+      evidence: null,
+      evidenceSource: 'citizen' as const,
+      isFlagged: false,
+    }))
+  ).returning();
+
+  console.log('Events seeded:', 14 + 14 + 9);
 
   // ============================================================
   // EVENT PARTICIPANTS — Section 4, WARD28_VERIFIED_DATA.md
@@ -823,8 +874,9 @@ async function seed() {
   await db.insert(eventParticipants).values([
     // docEvent2 — Tender Award 13.12.2024
     { eventId: docEvent2.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
-    { eventId: docEvent2.id, personId: juniorEngineer.id,   personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
-    { eventId: docEvent2.id, personId: assistantEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: gurubayal.id,        personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: premKumar.id,        personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    { eventId: docEvent2.id, personId: pSharma.id,          personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
     { eventId: docEvent2.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
     { eventId: docEvent2.id, personId: prashantKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
     { eventId: docEvent2.id, personId: jitendraKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
@@ -835,16 +887,16 @@ async function seed() {
 
     // docEvent4 — Agreement 01.02.2025
     { eventId: docEvent4.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
-    { eventId: docEvent4.id, personId: assistantEngineer.id,personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
+    { eventId: docEvent4.id, personId: pSharma.id,          personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
     { eventId: docEvent4.id, personId: jitendraKumar.id,    personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
 
     // docEvent6 — Lab Test 30.03.2025
     { eventId: docEvent6.id, personId: pranavDixit.id,      personType: 'official',   role: 'certifier',  dataConfidence: 'verified'   },
 
-    // docEvent7 — Completion 03.04.2025
-    { eventId: docEvent7.id, personId: juniorEngineer.id,   personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
-    { eventId: docEvent7.id, personId: assistantEngineer.id,personType: 'official',   role: 'certifier',  dataConfidence: 'unconfirmed' },
-    { eventId: docEvent7.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'unconfirmed' },
+    // docEvent7 — Completion 03.04.2025 — JE certifier, AE certifier, EE authoriser
+    { eventId: docEvent7.id, personId: premKumar.id,        personType: 'official',   role: 'certifier',  dataConfidence: 'verified'   },
+    { eventId: docEvent7.id, personId: pSharma.id,          personType: 'official',   role: 'certifier',  dataConfidence: 'verified'   },
+    { eventId: docEvent7.id, personId: executiveEngineer.id,personType: 'official',   role: 'authoriser', dataConfidence: 'verified'   },
     { eventId: docEvent7.id, personId: shubhamSharma.id,    personType: 'contractor', role: 'assignee',   dataConfidence: 'verified'   },
 
     // docEvent9 — Payment 30.06.2025
@@ -864,12 +916,30 @@ async function seed() {
     { eventId: drainEvent.id,   personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
   ]);
 
+  // Additional condition event participants — Vidushi as reporter for all 23 new events
+  await db.insert(eventParticipants).values([
+    ...additionalCrackEvents.map(e => ({
+      eventId: e.id,
+      personId: vidushi.id,
+      personType: 'citizen' as const,
+      role: 'reporter' as const,
+      dataConfidence: 'verified' as const,
+    })),
+    ...additionalPotholeEvents.map(e => ({
+      eventId: e.id,
+      personId: vidushi.id,
+      personType: 'citizen' as const,
+      role: 'reporter' as const,
+      dataConfidence: 'verified' as const,
+    })),
+  ]);
+
   // suppress unused-variable warnings for events with no participants in Section 4
   void docEvent1;
   void docEvent5;
   void docEvent8;
 
-  console.log('Event participants seeded:', 24);
+  console.log('Event participants seeded:', 26 + 23);
 
   // ============================================================
   // PAY SCALES — 7th Pay Commission official values
@@ -880,8 +950,9 @@ async function seed() {
   console.log('Seeding pay scales...');
 
   await Promise.all([
-    db.update(persons).set({ payScale: '₹44,900 – ₹1,42,400',   salarySource: '7th Pay Commission, Level 7'  }).where(eq(persons.id, juniorEngineer.id)),
-    db.update(persons).set({ payScale: '₹47,600 – ₹1,51,100',   salarySource: '7th Pay Commission, Level 8'  }).where(eq(persons.id, assistantEngineer.id)),
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, gurubayal.id)),
+    db.update(persons).set({ payScale: '₹44,900 – ₹1,42,400',   salarySource: '7th Pay Commission, Level 7'  }).where(eq(persons.id, premKumar.id)),
+    db.update(persons).set({ payScale: '₹47,600 – ₹1,51,100',   salarySource: '7th Pay Commission, Level 8'  }).where(eq(persons.id, pSharma.id)),
     db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700',   salarySource: '7th Pay Commission, Level 11' }).where(eq(persons.id, executiveEngineer.id)),
     db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700',   salarySource: '7th Pay Commission, Level 11' }).where(eq(persons.id, prashantKumar.id)),
     db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, sachinKumar.id)),
@@ -890,9 +961,11 @@ async function seed() {
     db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200', salarySource: '7th Pay Commission, Level 14' }).where(eq(persons.id, jitendraKumar.id)),
   ]);
 
-  await db.update(persons)
-    .set({ monthlySalary: '55000' })
-    .where(eq(persons.id, juniorEngineer.id));
+  await Promise.all([
+    db.update(persons).set({ monthlySalary: '55000'  }).where(eq(persons.id, premKumar.id)),
+    db.update(persons).set({ monthlySalary: '70000'  }).where(eq(persons.id, pSharma.id)),
+    db.update(persons).set({ monthlySalary: '100000' }).where(eq(persons.id, executiveEngineer.id)),
+  ]);
 
   console.log('Pay scales seeded: 8');
 
@@ -949,13 +1022,13 @@ async function seed() {
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376855/001_oaou8t.png', capturedAt: new Date('2025-11-19T01:07:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376853/002_z65u22.jpg', capturedAt: new Date('2025-11-19T01:06:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779397018/003_tu5j2z.jpg', capturedAt: new Date('2025-11-19T01:05:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376855/004_dm3thu.jpg', capturedAt: new Date('2025-11-19T01:04:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779376856/005_hotbxc.jpg', capturedAt: new Date('2025-11-19T01:03:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377051/006_q7ue0a.jpg', capturedAt: new Date('2025-11-19T01:02:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: crackEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779377052/007_hjuleb.jpg', capturedAt: new Date('2025-11-19T01:01:00Z') },
@@ -971,15 +1044,15 @@ async function seed() {
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379125/003_o3cqss.jpg', capturedAt: new Date('2025-11-19T02:07:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379126/004_ezgj7z.jpg', capturedAt: new Date('2025-11-19T02:06:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379127/005_pvyx7q.jpg', capturedAt: new Date('2025-11-19T02:05:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379128/006_y42pkd.jpg', capturedAt: new Date('2025-11-19T02:04:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379130/007_a4afxu.jpg', capturedAt: new Date('2025-11-19T02:03:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379131/008_rhzmnw.jpg', capturedAt: new Date('2025-11-19T02:02:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379134/009_ezx4nk.jpg', capturedAt: new Date('2025-11-19T02:01:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: potholeEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379136/010_qnih91.png', capturedAt: new Date('2025-11-19T02:00:00Z') },
@@ -989,7 +1062,7 @@ async function seed() {
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379867/001_zna7gn.jpg', capturedAt: new Date('2025-11-19T03:10:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379867/002_pcwqrq.jpg', capturedAt: new Date('2025-11-19T03:09:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'critical', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379869/003_soa17v.png', capturedAt: new Date('2025-11-19T03:08:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379869/004_yelo45.jpg', capturedAt: new Date('2025-11-19T03:07:00Z') },
@@ -997,15 +1070,15 @@ async function seed() {
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379871/005_yhzmi5.jpg', capturedAt: new Date('2025-11-19T03:06:00Z') },
     { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379873/006_lqcsms.jpg', capturedAt: new Date('2025-11-19T03:05:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'good', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379875/007_lr50iz.jpg', capturedAt: new Date('2025-11-19T03:04:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'good', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379878/008_zvonba.jpg', capturedAt: new Date('2025-11-19T03:03:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'good', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379879/009_dt3j7y.jpg', capturedAt: new Date('2025-11-19T03:02:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'good', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379881/010_ul4re2.jpg', capturedAt: new Date('2025-11-19T03:01:00Z') },
-    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'warning', uploadedBy: 'founder', isHero: false,
+    { roadId: road.id, segmentId: segment.id, eventId: drainEvent.id, personId: null, source: 'citizen', status: 'good', uploadedBy: 'founder', isHero: false,
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379882/011_zax9pg.jpg', capturedAt: new Date('2025-11-19T03:00:00Z') },
   ]);
 

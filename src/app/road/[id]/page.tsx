@@ -4,6 +4,7 @@ import {
   builtMonthsAgo,
   daysLasted,
   formatCurrency,
+  formatLakh,
   section4Title,
   benchmarkBags,
   benchmarkJeMonths,
@@ -12,9 +13,12 @@ import {
   ISSUE_EVENT_TYPES,
   extractTenderEvidence,
   extractPaymentEvidence,
+  extractCompletionEvidence,
+  monthsApart,
+  isSameDay,
 } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
-import type { PersonData } from '@/types/road';
+import type { PersonData, PhotoData, ApprovedOfficial, ConditionCardData } from '@/types/road';
 import HeroSection from '@/components/section1/HeroSection';
 import ConditionSection from '@/components/section3/ConditionSection';
 import BetrayalSection from '@/components/section4/BetrayalSection';
@@ -47,8 +51,9 @@ export default async function RoadPage({
   const paymentEvent = events.find(e => e.eventType === EVENT_TYPES.PAYMENT_RELEASED);
 
   // Financial Values
-  const { netDisbursed } = extractPaymentEvidence(paymentEvent?.evidence);
+  const { netDisbursed, roadSurfaceBudget, drainBudget } = extractPaymentEvidence(paymentEvent?.evidence);
   const { estimatedValue: sanctionedBudget, contractValue } = extractTenderEvidence(tenderEvent?.evidence);
+  const { inspectionDate } = extractCompletionEvidence(completionEvent?.evidence);
 
   // Finding the Primary Certifier (Lowest rank official on completion)
   const completionParticipants = completionEvent?.participants ?? [];
@@ -63,6 +68,97 @@ export default async function RoadPage({
 
   const conditionEvents = events.filter(e => ISSUE_EVENT_TYPES.includes(e.eventType as any));
   const section1Photos = photos.filter(p => p.eventId === null);
+
+  // --- CONDITION CARDS ---
+
+  const crackEvents = events.filter(e => e.eventType === EVENT_TYPES.CRACK_FOUND);
+  const potholeEvents = events.filter(e => e.eventType === EVENT_TYPES.POTHOLE_FOUND);
+  const drainEvents = events.filter(e => e.eventType === EVENT_TYPES.DRAIN_BLOCKED);
+
+  const crackPhotos = photos.filter(p => crackEvents.some(e => e.id === p.eventId));
+  const potholePhotos = photos.filter(p => potholeEvents.some(e => e.id === p.eventId));
+  const drainPhotos = photos.filter(p => drainEvents.some(e => e.id === p.eventId));
+
+  const certifiedDate = completionEvent?.timestamp ?? null;
+  const inspectedSameDay = certifiedDate && inspectionDate
+    ? isSameDay(certifiedDate, inspectionDate)
+    : false;
+
+  const completionApprovers: ApprovedOfficial[] = (completionEvent?.participants ?? [])
+    .filter(p => (p.role === 'certifier' || p.role === 'authoriser') && p.person?.personCategory === 'official')
+    .sort((a, b) => {
+      const salA = a.person?.monthlySalary != null ? Number(a.person.monthlySalary) : Infinity;
+      const salB = b.person?.monthlySalary != null ? Number(b.person.monthlySalary) : Infinity;
+      return salA - salB;
+    })
+    .map(p => ({
+      name: p.person!.fullName,
+      designation: p.person!.designationPlain ?? p.person!.designation ?? '',
+    }));
+
+  const contractorPerson2 = events
+    .flatMap(e => e.participants)
+    .find(p => p.personType === 'contractor' && p.role === 'assignee')?.person;
+  const builtByName = contractorPerson2?.department?.split(',')[0]?.trim()
+    ?? contractorPerson2?.fullName
+    ?? null;
+
+  function firstPhotoDate(arr: PhotoData[]): Date | null {
+    const dates = arr.flatMap(p => p.capturedAt ? [new Date(p.capturedAt)] : []);
+    if (dates.length === 0) return null;
+    return new Date(Math.min(...dates.map(d => d.getTime())));
+  }
+
+  const conditionCards: ConditionCardData[] = [
+    {
+      type: 'cracks',
+      heading: 'Surface Cracks',
+      count: crackEvents.length,
+      photos: crackPhotos,
+      budgetAmount: roadSurfaceBudget,
+      budgetLabel: roadSurfaceBudget !== null ? 'Road surface' : null,
+      certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
+      inspectedDate: inspectionDate,
+      inspectedSameDay,
+      monthsAfterCertification: certifiedDate && crackPhotos.length > 0
+        ? monthsApart(new Date(certifiedDate), firstPhotoDate(crackPhotos) ?? new Date())
+        : null,
+      approvedBy: completionApprovers,
+      builtBy: builtByName,
+    },
+    {
+      type: 'potholes',
+      heading: 'Potholes',
+      count: potholeEvents.length,
+      photos: potholePhotos,
+      budgetAmount: roadSurfaceBudget,
+      budgetLabel: roadSurfaceBudget !== null ? 'Road surface' : null,
+      certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
+      inspectedDate: inspectionDate,
+      inspectedSameDay,
+      monthsAfterCertification: certifiedDate && potholePhotos.length > 0
+        ? monthsApart(new Date(certifiedDate), firstPhotoDate(potholePhotos) ?? new Date())
+        : null,
+      approvedBy: completionApprovers,
+      builtBy: builtByName,
+    },
+    {
+      type: 'drains',
+      heading: 'Drains',
+      count: drainEvents.length,
+      photos: drainPhotos,
+      budgetAmount: drainBudget,
+      budgetLabel: drainBudget !== null ? 'Drain construction' : null,
+      certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
+      inspectedDate: inspectionDate,
+      inspectedSameDay,
+      monthsAfterCertification: certifiedDate && drainPhotos.length > 0
+        ? monthsApart(new Date(certifiedDate), firstPhotoDate(drainPhotos) ?? new Date())
+        : null,
+      approvedBy: completionApprovers,
+      builtBy: builtByName,
+    },
+  ];
 
   // --- SECTION 5 DERIVATIONS ---
 
@@ -100,9 +196,9 @@ export default async function RoadPage({
   };
 
   const technicalChain: FaceCardData[] = [
-    toFaceCard(findPerson('Gurukesh Singh'),    'certifier',  EVENT_TYPES.COMPLETION_CLAIMED, true),
-    toFaceCard(findPerson('Prem Kumar Sharma'), 'certifier',  EVENT_TYPES.COMPLETION_CLAIMED, true),
-    toFaceCard(findPerson('Aashray Singh Mishra'), 'authoriser', EVENT_TYPES.COMPLETION_CLAIMED, true),
+    toFaceCard(findPerson('Prem Kumar Sharma'),     'certifier',  EVENT_TYPES.COMPLETION_CLAIMED, true),
+    toFaceCard(findPerson('P. Sharma'),             'certifier',  EVENT_TYPES.COMPLETION_CLAIMED, true),
+    toFaceCard(findPerson('Anand Singh Mishrawan'), 'authoriser', EVENT_TYPES.COMPLETION_CLAIMED, true),
   ].filter((c): c is FaceCardData => c !== null);
 
   const financialChain: FaceCardData[] = [
@@ -142,12 +238,11 @@ export default async function RoadPage({
 
       {/* SECTION 3: CURRENT CONDITION */}
       <ConditionSection
-        events={events}
-        photos={photos}
-        drains={drains}
+        cards={conditionCards}
         builtAgo={builtMonthsAgo(completionEvent)}
-        sanctionedBudget={formatCurrency(sanctionedBudget)}
-        contractValue={formatCurrency(contractValue)}
+        sanctionedBudget={formatLakh(sanctionedBudget)}
+        contractValue={formatLakh(contractValue)}
+        netDisbursed={formatLakh(netDisbursed)}
         healthStatus={road.healthStatus}
       />
 

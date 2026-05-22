@@ -77,10 +77,20 @@ export default function PhotoCarousel({
   }
 
   if (filtered.length === 0) {
+    if (isHero) {
+      return (
+        <div className={`${height} flex items-center justify-center bg-surface`}>
+          <Camera size={32} strokeWidth={1.5} className="text-text-muted opacity-20" />
+        </div>
+      );
+    }
     return (
-      <div className={`${height} flex items-center justify-center bg-surface`}>
-        <Camera size={32} strokeWidth={1.5} className="text-text-muted opacity-20" />
-      </div>
+      <>
+        <div className={`${height} flex items-center justify-center bg-surface`}>
+          <Camera size={32} strokeWidth={1.5} className="text-text-muted opacity-20" />
+        </div>
+        <div />
+      </>
     );
   }
 
@@ -174,25 +184,50 @@ export default function PhotoCarousel({
     </button>
   );
 
-  return (
-    <div className={`relative w-full ${height}`}>
-      {slides}
-      {badge}
-      {prevArrow}
-      {nextArrow}
+  if (isHero) {
+    return (
+      <div className={`relative w-full ${height}`}>
+        {slides}
+        {badge}
+        {prevArrow}
+        {nextArrow}
+        {filtered.length > 1 && (
+          <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex items-center gap-2xs">
+            {filtered.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => scrollToIndex(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`w-2 h-2 rounded-full transition-colors ${i === activeIndex ? 'bg-white' : 'bg-white/40'}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
-      {isHero && filtered.length > 1 && (
-        <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex items-center gap-2xs">
-          {filtered.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToIndex(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`w-2 h-2 rounded-full transition-colors ${i === activeIndex ? 'bg-white' : 'bg-white/40'}`}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+  // Card variant — fragment: photo div (row 1) + dots div (row 2) for subgrid alignment
+  return (
+    <>
+      <div className={`relative w-full ${height}`}>
+        {slides}
+        {badge}
+        {prevArrow}
+        {nextArrow}
+      </div>
+      <div className="flex items-center justify-center gap-2xs py-xs">
+        {filtered.length > 1 && filtered.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToIndex(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`h-1 rounded-full transition-all duration-200 ${
+              i === activeIndex ? 'w-sm bg-text-primary' : 'w-xs bg-text-muted/30'
+            }`}
+          />
+        ))}
+      </div>
+    </>
   );
 }
