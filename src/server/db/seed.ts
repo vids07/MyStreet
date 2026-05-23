@@ -860,7 +860,50 @@ async function seed() {
     }))
   ).returning();
 
-  console.log('Events seeded:', 14 + 14 + 9);
+  // REPAIR EVENTS — privately repaired by residents, observed May 2026
+  // Contractor never acted during DLP (April 2025 – April 2026). Residents paid out of pocket.
+  const repairPotholeEvents = await db.insert(events).values([
+    {
+      roadId: road.id, segmentId: segment.id, eventType: 'repair_done' as const,
+      timestamp: new Date('2026-05-23'),
+      description: 'Pothole privately repaired by resident. Contractor did not act during DLP. Exact repair date unknown — observed repaired 23 May 2026.',
+      severity: null, evidence: { privatelyFunded: true, repairDateUnknown: true, observedRepairedDate: '23.05.2026', contractorDLPFailed: true },
+      evidenceSource: 'citizen' as const, isFlagged: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventType: 'repair_done' as const,
+      timestamp: new Date('2026-05-23'),
+      description: 'Pothole privately repaired by resident. Contractor did not act during DLP. Exact repair date unknown — observed repaired 23 May 2026.',
+      severity: null, evidence: { privatelyFunded: true, repairDateUnknown: true, observedRepairedDate: '23.05.2026', contractorDLPFailed: true },
+      evidenceSource: 'citizen' as const, isFlagged: false,
+    },
+  ]).returning();
+
+  const repairCrackEvents = await db.insert(events).values([
+    {
+      roadId: road.id, segmentId: segment.id, eventType: 'repair_done' as const,
+      timestamp: new Date('2026-05-23'),
+      description: 'Surface crack privately repaired by resident. Contractor did not act during DLP. Exact repair date unknown — observed repaired 23 May 2026.',
+      severity: null, evidence: { privatelyFunded: true, repairDateUnknown: true, observedRepairedDate: '23.05.2026', contractorDLPFailed: true },
+      evidenceSource: 'citizen' as const, isFlagged: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventType: 'repair_done' as const,
+      timestamp: new Date('2026-05-23'),
+      description: 'Surface crack privately repaired by resident. Contractor did not act during DLP. Exact repair date unknown — observed repaired 23 May 2026.',
+      severity: null, evidence: { privatelyFunded: true, repairDateUnknown: true, observedRepairedDate: '23.05.2026', contractorDLPFailed: true },
+      evidenceSource: 'citizen' as const, isFlagged: false,
+    },
+    {
+      roadId: road.id, segmentId: segment.id, eventType: 'repair_done' as const,
+      timestamp: new Date('2026-05-23'),
+      description: 'Surface crack privately repaired by resident. Contractor did not act during DLP. Exact repair date unknown — observed repaired 23 May 2026.',
+      severity: null, evidence: { privatelyFunded: true, repairDateUnknown: true, observedRepairedDate: '23.05.2026', contractorDLPFailed: true },
+      evidenceSource: 'citizen' as const, isFlagged: false,
+    },
+  ]).returning();
+
+  console.log('Events seeded:', 14 + 14 + 9 + 5);
 
   // ============================================================
   // EVENT PARTICIPANTS — Section 4, WARD28_VERIFIED_DATA.md
@@ -939,7 +982,18 @@ async function seed() {
   void docEvent5;
   void docEvent8;
 
-  console.log('Event participants seeded:', 26 + 23);
+  // Repair event participants — Vidushi as observer/reporter
+  await db.insert(eventParticipants).values([
+    ...[...repairPotholeEvents, ...repairCrackEvents].map(e => ({
+      eventId: e.id,
+      personId: vidushi.id,
+      personType: 'citizen' as const,
+      role: 'reporter' as const,
+      dataConfidence: 'verified' as const,
+    })),
+  ]);
+
+  console.log('Event participants seeded:', 26 + 23 + 5);
 
   // ============================================================
   // PAY SCALES — 7th Pay Commission official values
@@ -1082,7 +1136,34 @@ async function seed() {
       url: 'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779379882/011_zax9pg.jpg', capturedAt: new Date('2025-11-19T03:00:00Z') },
   ]);
 
-  console.log(`Photos seeded: ${section1PhotoValues.length} section 1 + 29 section 3 = ${section1PhotoValues.length + 29} total`);
+  const REPAIR_POTHOLE_URLS = [
+    'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779532139/001_rnpgdk.jpg',
+    'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779532139/002_jncfhy.jpg',
+  ];
+  const REPAIR_CRACK_URLS = [
+    'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779532167/001_ivldya.jpg',
+    'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779532167/002_gboh73.jpg',
+    'https://res.cloudinary.com/dkgaihpyp/image/upload/q_auto/f_auto/v1779532169/003_yk1x7x.jpg',
+  ];
+
+  await db.insert(photos).values([
+    ...repairPotholeEvents.map((e, i) => ({
+      roadId: road.id, segmentId: segment.id, eventId: e.id, personId: null,
+      url: REPAIR_POTHOLE_URLS[i],
+      thumbnailUrl: withTransform(REPAIR_POTHOLE_URLS[i], 'c_fill,ar_3:4,g_auto'),
+      source: 'citizen' as const, status: 'good' as const,
+      locationLabel: null, capturedAt: new Date('2026-05-23'), uploadedBy: 'founder', isHero: false,
+    })),
+    ...repairCrackEvents.map((e, i) => ({
+      roadId: road.id, segmentId: segment.id, eventId: e.id, personId: null,
+      url: REPAIR_CRACK_URLS[i],
+      thumbnailUrl: withTransform(REPAIR_CRACK_URLS[i], 'c_fill,ar_3:4,g_auto'),
+      source: 'citizen' as const, status: 'good' as const,
+      locationLabel: null, capturedAt: new Date('2026-05-23'), uploadedBy: 'founder', isHero: false,
+    })),
+  ]);
+
+  console.log(`Photos seeded: ${section1PhotoValues.length} section 1 + 29 section 3 + 5 repairs = ${section1PhotoValues.length + 29 + 5} total`);
   console.log('');
   console.log('Seeding complete. Database is ready.');
 }

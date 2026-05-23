@@ -53,6 +53,7 @@ export type ConditionCardData = {
   type: 'cracks' | 'potholes' | 'drains';
   heading: string;
   count: number;
+  countLabel: string | null;
   photos: PhotoData[];
   budgetAmount: number | null;
   budgetLabel: string | null;

@@ -79,7 +79,7 @@ src/
     queries/road.ts             ← All DB queries. Single source of data.
     db/                         ← Drizzle schema and seed files.
   types/road.ts                 ← All shared TypeScript types. Never define types inline in components.
-  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, builtMonthsAgo, daysLasted, getHeroCrops, etc.
+  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, formatLakh, formatSalary, builtMonthsAgo, daysLasted, getHeroCrops, extractCompletionEvidence, extractPaymentEvidence, extractTenderEvidence, monthsApart, isSameDay, abbreviateDesignation, benchmarkBags, benchmarkJeMonths, section4Title, photoSourceLabel, getAccountabilityLabel, getActionLabel, getInitials, dlpStatusLabel, formatFailureDuration
 all .md files/
   design_system.md              ← Visual bible. Parts 1–6 locked. Part 7 = shared components.
   MAPPING.md                    ← DB schema → component data map.
@@ -207,21 +207,27 @@ For any 3-column section where card rows must align horizontally:
 // Parent — items-start prevents stretching
 <div className="grid grid-cols-1 md:grid-cols-3 gap-md items-start" style={{ gridTemplateRows: 'auto' }}>
 
-// Card — participates in parent rows via subgrid
-<div className="bg-card rounded-md shadow-card ... grid" style={{ gridRow: 'span 6', gridTemplateRows: 'subgrid' }}>
+// Card — participates in parent rows via subgrid. span 8 = 2 photo rows + 6 body rows.
+<div className="bg-card rounded-md shadow-card ... grid" style={{ gridRow: 'span 8', gridTemplateRows: 'subgrid' }}>
   <PhotoCarousel ... />  {/* rows 1–2: photo area + dots (fragment = 2 direct children) */}
 
-  // Card body — rows 3–6
-  <div className="p-sm grid gap-sm" style={{ gridTemplateRows: 'subgrid', gridRow: 'span 4' }}>
-    {/* ROW 1 */ } <h3>headline</h3>
-    {/* ROW 2 */ } <p>body sentence</p>
-    {/* ROW 3 */ } <div>{/* grouped detail lines */}</div>
-    {/* ROW 4 */ } <div>{type === 'drains' ? <DrainStats /> : null}</div>  {/* MUST render a div even if empty */}
+  // Card body — rows 3–8 (span 6, subgrid)
+  <div className="p-sm grid gap-sm" style={{ gridTemplateRows: 'subgrid', gridRow: 'span 6' }}>
+    {/* ROW 1 */ } <h3>heading</h3>
+    {/* ROW 2 */ } <div>{/* budget / financial line */}</div>
+    {/* ROW 3 */ } <div>{/* count line — uses countLabel ?? `${heading} found` */}</div>
+    {/* ROW 4 */ } <div>{/* timeline / date line */}</div>
+    {/* ROW 5 */ } <div>{/* approved by — sorted JE→AE→EE by monthlySalary, inline abbreviation */}</div>
+    {/* ROW 6 */ } <div>{type === 'drains' ? <DrainStats /> : null}</div>  {/* MUST render a div even if empty */}
   </div>
 </div>
 ```
 
-ROW 4 MUST always render a `<div>` — even when empty — or the row collapses and cards misalign.
+- ROW 6 MUST always render a `<div>` — even when empty — or the row collapses and cards misalign.
+- `countLabel` on `ConditionCardData` overrides the default `{heading} found` text. Pass `null` for cracks/potholes, `'Sections damaged'` for drains.
+- Approved by sort order: ascending `monthlySalary` (JE=55000, AE=70000, EE=100000). Abbreviation via `abbreviateDesignation()`.
+- Budget amounts: always `formatLakh()` — ≥₹1 lakh shows `₹X.XX Lakh`, below shows full `₹X,XXX`.
+- Summary strip above cards: 5 columns — BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING. No DOCUMENTED column.
 
 ---
 

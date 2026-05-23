@@ -1,6 +1,9 @@
 # WARD 28 — PERSONS DATA
 ## Source: RTI Application No. 35 | File No. 39557 | 41 Pages
-## All 13 persons. Every field traced to source page.
+## All 14 persons. Every field traced to source page.
+## CORRECTION (May 2026): Technical chain names corrected from RTI Page 11.
+##   Gurukesh Singh was misidentified as JE — he is Nirman Lipik (Construction Clerk).
+##   Prem Kumar Sharma is JE, P. Sharma is AE, Anand Singh Mishrawan is EE.
 
 ---
 
@@ -60,38 +63,35 @@ Documents absent     → EPFO registration — required for payment (Page 10, Te
 
 # TECHNICAL CHAIN — NAGAR NIGAM ROORKEE
 
-## Gurukesh Singh — Junior Engineer
+## Gurubayal Singh — Nirman Lipik (Construction Clerk)
+
+> CORRECTION: Previously listed as "Gurukesh Singh, Junior Engineer." Corrected from RTI Page 11 — he is a Nirman Lipik (Construction Clerk), not an engineer. Name also corrected.
 
 ```
-Full name            → Gurukesh Singh
+Full name            → Gurubayal Singh
 Source               → Page 11 (signed elimination sheet)
 DB: persons → full_name
 Confidence           → HIGH
 
-Designation (Hindi)  → अवर अभियंता
-Designation (English)→ Junior Engineer
-Source               → Pages 11, 12
+Designation          → Nirman Lipik (Construction Clerk)
+Source               → Page 11
 DB: persons → designation
 Confidence           → HIGH
 
 Department           → Nagar Nigam Roorkee
-DB: persons → department
-Confidence           → HIGH
-
 Person category      → official
-Accountability status → response_pending (founder-set)
-Job description      → Responsible for on-site quality verification and signing off
-                        construction as complete and standard-compliant.
+Accountability status → waiting_for_audit (founder-set)
+Job description      → Construction clerk responsible for administrative
+                        documentation of the project.
+monthlySalary        → null (clerk-level, pay scale 7th CPC Level 2: ₹19,900–₹63,200)
 
 Documents signed:
-  Page 10  → Work order (copy forwarded to)
   Page 11  → Elimination sheet
-  Page 12  → Work completion certificate (inspected after completion)
-  Page 13  → Payment register
-  Page 16  → Winning contractor's BOQ
 ```
 
-## Prem Kumar Sharma — Assistant Engineer
+## Prem Kumar Sharma — Junior Engineer (JE)
+
+> CORRECTION: Previously listed as Assistant Engineer. Corrected from RTI Page 11.
 
 ```
 Full name            → Prem Kumar Sharma
@@ -99,8 +99,7 @@ Source               → Page 11 (signed elimination sheet)
 DB: persons → full_name
 Confidence           → HIGH
 
-Designation (Hindi)  → सहायक अभियंता
-Designation (English)→ Assistant Engineer
+Designation          → Junior Engineer
 Source               → Pages 11, 12
 DB: persons → designation
 Confidence           → HIGH
@@ -108,23 +107,54 @@ Confidence           → HIGH
 Department           → Nagar Nigam Roorkee
 Person category      → official
 Accountability status → response_pending (founder-set)
+monthlySalary        → 55000 (used for approvedBy sort order in Section 3)
+Pay scale            → 7th CPC Level 7: ₹44,900–₹1,42,400
+Job description      → Responsible for on-site quality verification and signing off
+                        construction as complete and standard-compliant.
+
+Documents signed:
+  Page 10  → Work order (copy forwarded to)
+  Page 11  → Elimination sheet
+  Page 12  → Work completion certificate (certifier — signed same day as completion)
+  Page 13  → Payment register
+```
+
+## P. Sharma — Assistant Engineer (AE)
+
+> NEW PERSON (added May 2026). Full first name not fully spelled out in all RTI stamps.
+
+```
+Full name            → P. Sharma
+Source               → Page 11 (signed elimination sheet), Page 12
+DB: persons → full_name
+Confidence           → HIGH (designation confirmed, first name abbreviated in document)
+
+Designation          → Assistant Engineer
+Source               → Pages 11, 12
+DB: persons → designation
+Confidence           → HIGH
+
+Department           → Nagar Nigam Roorkee
+Person category      → official
+Accountability status → response_pending (founder-set)
+monthlySalary        → 70000 (used for approvedBy sort order in Section 3)
+Pay scale            → 7th CPC Level 8: ₹47,600–₹1,51,100
 Job description      → Responsible for supervising the Junior Engineer and verifying
                         technical compliance before signing off.
 
 Documents signed:
-  Pages 7, 8, 9 → Contract bond (as witness/approver)
-  Page 10        → Work order (copy forwarded to)
+  Pages 7, 8, 9 → Contract bond (certifier)
   Page 11        → Elimination sheet
-  Page 12        → Work completion certificate
-  Page 13        → Payment register
-  Pages 15, 24, 35 → Tender forms (all five bidders)
+  Page 12        → Work completion certificate (certifier)
 ```
 
-## Aashray Singh Mishra — Executive Engineer
+## Anand Singh Mishrawan — Executive Engineer (EE)
+
+> CORRECTION: Previously listed as "Aashray Singh Mishra." Corrected from RTI Page 11.
 
 ```
-Full name            → Aashray Singh Mishra
-Source               → Page 11 (signed elimination sheet)
+Full name            → Anand Singh Mishrawan
+Source               → Pages 10, 11, 12 (signed all three)
 DB: persons → full_name
 Confidence           → HIGH
 
@@ -137,13 +167,15 @@ Confidence           → HIGH
 Department           → Nagar Nigam Roorkee
 Person category      → official
 Accountability status → waiting_for_audit (founder-set)
+monthlySalary        → 100000 (used for approvedBy sort order in Section 3)
+Pay scale            → 7th CPC Level 11: ₹67,700–₹2,08,700
 Job description      → Responsible for final administrative authorisation of project
                         completion and quality sign-off.
 
 Documents signed:
   Page 10 → Work order (issued by)
   Page 11 → Elimination sheet
-  Page 12 → Work completion certificate (countersigned)
+  Page 12 → Work completion certificate (authoriser/countersigned)
 ```
 
 ---

@@ -75,7 +75,7 @@ function ConditionCard({ card }: { card: ConditionCardData }) {
 
         {/* ROW 5 — Count */}
         <div>
-          <p className="text-label roboto uppercase text-text-muted">{card.heading} found</p>
+          <p className="text-label roboto uppercase text-text-muted">{card.countLabel ?? `${card.heading} found`}</p>
           <p className="text-headline mona font-extrabold text-failure mt-2xs">{card.count}</p>
         </div>
 

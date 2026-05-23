@@ -714,24 +714,40 @@ Used in Section 3. Apply this pattern to any future 3-column card grid where row
      style={{ gridTemplateRows: 'auto' }}>
 ```
 
-**Card wrapper:**
+**Card wrapper (8 rows: 2 photo rows + 6 body rows):**
 ```tsx
 <div className="bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow overflow-hidden grid"
-     style={{ gridRow: 'span 6', gridTemplateRows: 'subgrid' }}>
-```
-
-**Card body (spans 4 of the 6 rows — rows 3–6, after photo and dots):**
-```tsx
-<div className="p-sm grid gap-sm"
-     style={{ gridTemplateRows: 'subgrid', gridRow: 'span 4' }}>
-  {/* ROW 1: headline */}
-  {/* ROW 2: body sentence */}
-  {/* ROW 3: location + reported lines grouped in one div */}
-  {/* ROW 4: drain stats OR empty <div /> — always present to hold the row */}
+     style={{ gridRow: 'span 8', gridTemplateRows: 'subgrid' }}>
+  <PhotoCarousel ... />  {/* ROWS 1–2: fragment = photo div + dots div */}
+  {/* card body below */}
 </div>
 ```
 
-**Rule:** ROW 4 must always render a div (even if empty) so all three cards occupy the same 4 rows. Without it, the subgrid collapses that row and the cards misalign.
+**Card body (spans rows 3–8):**
+```tsx
+<div className="p-sm grid gap-sm"
+     style={{ gridTemplateRows: 'subgrid', gridRow: 'span 6' }}>
+  {/* ROW 3: heading — h3, mona, text-body-bold */}
+  {/* ROW 4: budget — label (ROAD SURFACE MONEY SPENT) + formatLakh amount */}
+  {/* ROW 5: count — countLabel ?? "{heading} found" + large number in text-failure */}
+  {/* ROW 6: timeline — Certified / Inspected (same day?) / Damage found X months later */}
+  {/* ROW 7: approved by — officials with inline abbreviation: "Name (JE)" sorted by salary */}
+  {/* ROW 8: built by — contractor name */}
+</div>
+```
+
+**Rules:**
+- Every row div must always render — even if empty (`<div />`) — or the subgrid collapses that row and cards misalign.
+- PhotoCarousel card variant returns a React fragment (2 direct children = rows 1 and 2).
+- `countLabel` on `ConditionCardData` overrides the default `"{heading} found"` label. Use for drain card ("Sections damaged").
+- Approved by officials sorted by `monthlySalary` ascending so JE → AE → EE order is guaranteed.
+- Budget amounts use `formatLakh` (≥1 lakh → `₹X.XX Lakh`, below → full format).
+
+**Section 3 summary strip (above cards):**
+```
+BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING
+```
+5-column grid (`md:grid-cols-5`). Amounts formatted with `formatLakh`. DOCUMENTED column was intentionally removed — defect counts are in the cards below.
 
 ---
 

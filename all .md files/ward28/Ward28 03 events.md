@@ -413,6 +413,103 @@ Confidence   → HIGH
 
 ---
 
+## EVENTS 12–14 — citizen field observations (crack_found, pothole_found, drain_blocked)
+
+> These are the primary condition events. One event per type, each linked to the single segment. Photos are attached to these events and display in Section 3 cards.
+
+```
+crack_found (EVENT 12)
+Timestamp    → 2026-02-08
+Severity     → critical
+Description  → Surface cracks documented by citizen field visit on 8 February 2026.
+               Multiple cracks visible across interlocking tile surface in Ward No. 28.
+Photos       → 8 photos (001–008). Status per photo:
+               critical: 001, 002, 004, 005, 007, 008
+               warning:  003, 006
+Participants → Vidushi (reporter, verified)
+
+pothole_found (EVENT 13)
+Timestamp    → 2026-02-08
+Severity     → critical
+Description  → Potholes documented by citizen field visit on 8 February 2026.
+               Tile surface breaking up in multiple locations in Ward No. 28.
+Photos       → 10 photos (001–010). Status per photo:
+               critical: 001, 002, 003, 004, 006, 010
+               warning:  005, 007, 008, 009
+Participants → Vidushi (reporter, verified)
+
+drain_blocked (EVENT 14)
+Timestamp    → 2026-02-08
+Severity     → medium
+Description  → Partial structural damage observed on drain section. A portion of the
+               drain is broken. Full drain construction on site unconfirmed — billed
+               at ₹86,878 and certified complete but physical existence not fully verified.
+Photos       → 11 photos (001–011). Status per photo:
+               critical: 003
+               warning:  001, 002, 004, 005, 006
+               good:     007, 008, 009, 010, 011
+Participants → Vidushi (reporter, verified)
+```
+
+---
+
+## EVENTS 15–28 — additional crack_found (counts 2–15)
+
+> November 2025 field observation documented 15 surface cracks total. Events 15–28 represent cracks 2–15. No photos attached — photos are all on Event 12 (crack 1). Count in Section 3 = number of crack_found events = 15.
+
+```
+Timestamp    → 2026-02-08 (all)
+Severity     → critical (all)
+evidenceSource → citizen (all)
+Participants → Vidushi (reporter, verified) on each
+```
+
+---
+
+## EVENTS 29–37 — additional pothole_found (counts 2–10)
+
+> November 2025 field observation documented 10 potholes total. Events 29–37 represent potholes 2–10. No photos attached — photos are all on Event 13 (pothole 1). Count in Section 3 = number of pothole_found events = 10.
+
+```
+Timestamp    → 2026-02-08 (all)
+Severity     → critical (all)
+evidenceSource → citizen (all)
+Participants → Vidushi (reporter, verified) on each
+```
+
+---
+
+## EVENTS 38–42 — repair_done (privately funded, May 2026)
+
+> Contractor did not act during DLP (April 2025 – April 2026). Residents paid privately to repair damage in front of their homes. Exact repair dates unknown — observed repaired 23 May 2026. These events are NOT reflected in Section 3 (which is frozen at November 2025). They belong to the Section 4 betrayal narrative.
+
+```
+repair_done × 2 (EVENTS 38–39) — potholes
+Timestamp    → 2026-05-23 (observation date)
+Evidence:
+  privatelyFunded      → true
+  repairDateUnknown    → true
+  observedRepairedDate → "23.05.2026"
+  contractorDLPFailed  → true
+Photos       → 2 photos (Cloudinary: v1779532139/001_rnpgdk.jpg, 002_jncfhy.jpg)
+               status: good
+Participants → Vidushi (reporter, verified)
+
+repair_done × 3 (EVENTS 40–42) — surface cracks
+Timestamp    → 2026-05-23 (observation date)
+Evidence:
+  privatelyFunded      → true
+  repairDateUnknown    → true
+  observedRepairedDate → "23.05.2026"
+  contractorDLPFailed  → true
+Photos       → 3 photos (Cloudinary: v1779532167/001_ivldya.jpg, 002_gboh73.jpg,
+                                      v1779532169/003_yk1x7x.jpg)
+               status: good
+Participants → Vidushi (reporter, verified)
+```
+
+---
+
 ## EVENT 11 — rti_response_received
 
 ```

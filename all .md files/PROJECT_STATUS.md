@@ -1,6 +1,6 @@
 # MyStreet — Project Status
 
-Last updated: May 2026
+Last updated: May 2026 (v2 — Section 3 complete)
 Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 
 ---
@@ -39,26 +39,30 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - `EVENT_TYPES` constants in `src/types/road.ts` — `WHISTLEBLOWER_REPORT` typo fixed (was `WHISTLEBOWER_REPORT`)
 - `HEALTH_STATUS` and `SEVERITY` constants
 - All inferred types from Drizzle schema
-- New exported types: `PersonData`, `DrainData` (added May 2026)
+- New exported types: `PersonData`, `DrainData`, `ApprovedOfficial`, `ConditionCardData` (added May 2026)
+- `ConditionCardData.countLabel` — optional override for the count row label (e.g. drains show "Sections damaged" instead of "Drains found")
 
 ### Real Data Seeded ✓
 - **Reseeded from verified RTI data. Source: `all .md files/ward28/` (5 files). ward28skill.md is the routing guide.**
 - Ward 28, Roorkee — `UK-RKE-29.8723-77.8813`
-- 13 persons — all verified against RTI documents. Names for JE (Gurukesh Singh), AE (Prem Kumar Sharma), EE (Aashray Singh Mishra) are HIGH confidence per Ward28 02 persons.md. PIO name confirmed absent from all 41 pages — placeholder used intentionally.
+- 14 persons — all verified against RTI documents. Technical chain corrected from RTI Page 11: Gurubayal Singh (Nirman Lipik/Construction Clerk — not an engineer), Prem Kumar Sharma (JE), P. Sharma (AE), Anand Singh Mishrawan (EE). PIO name confirmed absent from all 41 pages — placeholder used intentionally.
 - 1 road — displayName exactly as written in RTI: "Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee"
 - 1 segment — area 363.30 SQM, thickness 80mm. Length and width null (not in RTI documents).
-- 1 drain — all dimension fields null (not in RTI documents). Status null — physical existence not yet field verified.
-- 14 events — 11 original RTI events + 3 citizen field observation events added May 2026 (crack_found, pothole_found, drain_blocked — 8 Feb 2026, linked to segment).
-- 24 event participants — 21 original + Vidushi added as reporter on all 3 condition events.
-- 31 photos seeded — hosted on Cloudinary. 10 Section 1 (eventId null, re-uploaded with corrected URLs), 6 crack, 3 pothole, 12 drain. All captured 19 Nov 2025.
+- 1 drain — all dimension fields null (not in RTI documents). Status null — physical existence not yet field verified. Partial structural damage observed.
+- 42 events — 11 original RTI events + 1 crack_found (8 photos) + 1 pothole_found (10 photos) + 1 drain_blocked (11 photos) + 14 additional crack_found (no photos, counts 2–15) + 9 additional pothole_found (no photos, counts 2–10) + 5 repair_done (May 2026: 2 pothole repairs + 3 crack repairs, privately funded by residents, contractor never acted during DLP).
+- 54 event participants.
+- 44 photos — 10 Section 1 + 8 crack + 10 pothole + 11 drain (all Nov 2025) + 5 repair photos (May 2026, status: good).
+- Photo statuses individually assigned per photo. See seed.ts section 3 photo block for status per numbered photo. Repair photos: all `good`.
 - Section 1 photos use hardcoded `SECTION1_PHOTOS` array in seed.ts — `status` and `locationLabel` are required typed fields per entry, enforced by TypeScript. No defaults. See SEED_GUIDE.md Step 8.
 - `locationLabel` format: `"street name — ward, city, pincode"`. Split on ` — ` in HeroSection display.
-- Sachin Kumar: jobDescription populated, accountabilityStatus set to waiting_for_audit, participant role corrected to reporter on payment_released.
-- Gurukesh Singh: monthlySalary set to ₹55,000 — required for Section 4 JE benchmark calculation.
+- monthlySalary set: premKumar=55000, pSharma=70000, executiveEngineer=100000 — used for approvedBy sort order (JE→AE→EE) in Section 3 cards.
 
 ### Utility Functions ✓
 - `src/lib/utils/road-display.ts` — all computed value logic lives here, not in `page.tsx`
-- Functions: `formatCurrency`, `formatSalary`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`, `formatFailureDuration`, `getHeroCrops`
+- Functions: `formatCurrency`, `formatLakh`, `formatSalary`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`, `formatFailureDuration`, `getHeroCrops`, `extractCompletionEvidence`, `monthsApart`, `isSameDay`, `abbreviateDesignation`
+- `formatLakh(amount)` — ≥1 lakh shows `₹X.XX Lakh`, below 1 lakh shows full `₹X,XXX` format. Used in Section 3 summary strip.
+- `extractCompletionEvidence(evidence)` — parses `inspectionDate` from completion event evidence. Handles both ISO (YYYY-MM-DD) and Indian RTI format (DD.MM.YYYY).
+- `abbreviateDesignation(designation)` — maps full designation to abbreviation: JE, AE, EE, MC.
 - `getHeroCrops(url)` — generates 3 Cloudinary crop URLs from a stored photo URL. Mobile: original (no crop). Laptop: `c_fill,ar_1.6,g_auto`. Desktop: `c_fill,ar_1.78,g_auto`. Handles both `q_auto/f_auto` (slash) and `q_auto,f_auto` (comma) URL formats.
 - `ISSUE_EVENT_TYPES` constant exported — used to derive `conditionEvents` count
 - Every placeholder in MAPPING.md Part 2 has a corresponding function or direct accessor
@@ -160,4 +164,4 @@ All locked in DESIGN_SYSTEM.md (in progress — being locked now).
 
 | Road System ID | Display Name | Health Status | Events | Drains |
 |----------------|-------------|---------------|--------|--------|
-| UK-RKE-29.8723-77.8813 | Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee | critical | 14 (incl. 3 citizen field observations) | 1 (status null — field verification required) |
+| UK-RKE-29.8723-77.8813 | Ward No. 28, from Vijendra's shop towards the house of Ajay Raj, Roorkee | critical | 42 (11 RTI + 15 crack + 10 pothole + 1 drain + 5 repair_done) | 1 (status null — field verification required) |

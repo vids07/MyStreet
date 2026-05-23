@@ -159,6 +159,30 @@ Format: Decision | Why | Tradeoff Accepted | Revisit Trigger
 - **Tradeoff**: System growth depends on one person.
 - **Revisit**: When trust mechanisms are built — verified journalist tier, citizen reporter tier.
 
+### Section 3 summary strip columns
+- **Decision**: Strip shows BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING. DOCUMENTED column was removed.
+- **Why**: DOCUMENTED (defect counts) was redundant — the three cards directly below show the same counts with more context. The strip tells a financial accountability chain: when built → govt estimate → contracted amount → what actually left the account → resulting condition.
+- **Tradeoff**: Defect counts only visible by scrolling to cards.
+- **Revisit**: Never — the strip is a financial summary, not a defect summary.
+
+### Section 3 amounts use formatLakh not formatCurrency
+- **Decision**: Summary strip amounts (ALLOCATED, CONTRACTED, NET PAID) use `formatLakh` (e.g. ₹6.06 Lakh). Individual card budget amounts also use `formatLakh`.
+- **Why**: Full rupee format (₹6,06,000) is harder to scan at a glance. Lakh format is the natural unit Indians use when discussing public works budgets.
+- **Tradeoff**: Amounts below ₹1 lakh (e.g. drain budget ₹86,878) show full format — `formatLakh` only abbreviates ≥ ₹1 lakh.
+- **Revisit**: Never.
+
+### Section 3 is frozen at November 2025 documentation
+- **Decision**: Section 3 condition cards show the November 2025 field observation permanently. Private repairs (May 2026) and current state changes do not update Section 3.
+- **Why**: Section 3 is the DLP-period evidence record. The defects existed while the contractor was legally obligated to fix them. That record must be preserved regardless of what happened after.
+- **Tradeoff**: "Current condition" heading is technically inaccurate after May 2026 repairs.
+- **Revisit**: When Section 4 surfaces the private repair story — consider relabelling Section 3 as "Condition during DLP period."
+
+### Private repairs recorded as repair_done events, not Section 3 updates
+- **Decision**: Privately-funded repairs by residents are stored as `repair_done` events with `privatelyFunded: true` in evidence. They are not reflected in Section 3.
+- **Why**: The private repair story (contractor failed DLP, residents paid out of pocket) belongs in Section 4 as part of the betrayal narrative. Updating Section 3 would hide the original damage evidence.
+- **Tradeoff**: Users in Section 3 don't see that some damage has since been repaired.
+- **Revisit**: When Section 4 is built — surface private repair count there.
+
 ### Map section shown only when multiple roads exist
 - **Decision**: Section 2 — the map comparison — is hidden until the database has more than one road.
 - **Why**: A map with one road colored red has no comparison value. The emotional impact requires seeing your road among many others.
