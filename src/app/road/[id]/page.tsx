@@ -73,6 +73,12 @@ export default async function RoadPage({
   const conditionEvents = events.filter(e => (ISSUE_EVENT_TYPES as readonly string[]).includes(e.eventType));
   const section1Photos = photos.filter(p => p.eventId === null);
 
+  // Street name for citizen-facing messages — hero photo label before " — ", fallback to ward/city
+  const firstLabelledPhoto = [heroPhoto, ...section1Photos].find(p => p?.locationLabel);
+  const streetName = firstLabelledPhoto?.locationLabel
+    ? firstLabelledPhoto.locationLabel.split(' — ')[0]
+    : [road.ward, road.city].filter(Boolean).join(', ') || road.roadDisplayName;
+
   // --- CONDITION CARDS ---
 
   const crackEvents = events.filter(e => e.eventType === EVENT_TYPES.CRACK_FOUND);
@@ -389,9 +395,10 @@ export default async function RoadPage({
       />
 
       {/* SECTION 6: EMPOWERMENT */}
-      <EmpowermentSection 
-        confirmationCount={confirmationCount} 
-        roadId={road.id} 
+      <EmpowermentSection
+        confirmationCount={confirmationCount}
+        roadSystemId={road.roadSystemId}
+        streetName={streetName}
       />
     </main>
   );

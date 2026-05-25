@@ -79,7 +79,7 @@ src/
     queries/road.ts             ← All DB queries. Single source of data.
     db/                         ← Drizzle schema and seed files.
   types/road.ts                 ← All shared TypeScript types. Never define types inline in components.
-  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, formatLakh, formatSalary, builtMonthsAgo, daysLasted, getHeroCrops, extractCompletionEvidence, extractPaymentEvidence, extractTenderEvidence, monthsApart, isSameDay, abbreviateDesignation, benchmarkBags, benchmarkJeMonths, section4Title, photoSourceLabel, getAccountabilityLabel, getActionLabel, getInitials, dlpStatusLabel, formatFailureDuration
+  lib/utils/road-display.ts    ← Display helpers: formatDate, formatCurrency, formatLakh, formatSalary, formatSalaryPerDay, builtMonthsAgo, daysLasted, getHeroCrops, extractCompletionEvidence, extractPaymentEvidence, extractTenderEvidence, extractDlpEvidence, extractRepairEvidence, extractRtiEvidence, extractAppealEvidence, monthsApart, isSameDay, abbreviateDesignation, benchmarkBags, benchmarkMeals, benchmarkJeMonths, section4Title, photoSourceLabel, getAccountabilityLabel, getActionLabel, getInitials, dlpStatusLabel, formatFailureDuration
 all .md files/
   design_system.md              ← Visual bible. Parts 1–6 locked. Part 7 = shared components.
   MAPPING.md                    ← DB schema → component data map.

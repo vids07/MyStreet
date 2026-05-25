@@ -298,24 +298,24 @@ export function getAccountabilityLabel(status: string | null | undefined): strin
 export function getActionLabel(role: string, eventType: string): string {
   const key = `${role}::${eventType}`;
   const map: Record<string, string> = {
-    'certifier::completion_claimed': 'Signed completion certificate',
-    'certifier::lab_test_report_submitted': 'Certified lab test results',
-    'certifier::inspection_conducted': 'Signed inspection report',
-    'certifier::third_party_inspection_conducted': 'Certified third-party inspection',
-    'authoriser::payment_released': 'Authorised payment disbursement',
-    'authoriser::budget_sanctioned': 'Sanctioned project budget',
-    'authoriser::budget_released': 'Released project funds',
-    'authoriser::completion_claimed': 'Authorised project completion',
-    'authoriser::work_order_issued': 'Authorised work order',
-    'assignee::work_order_issued': 'Assigned as lead contractor',
-    'assignee::repair_done': 'Assigned to carry out repairs',
-    'reporter::payment_released': 'Drafted and submitted the payment request note sheet',
+    'certifier::completion_claimed': 'Signed off that the work was done',
+    'certifier::lab_test_report_submitted': 'Signed off on the lab test results',
+    'certifier::inspection_conducted': 'Signed off on the site inspection',
+    'certifier::third_party_inspection_conducted': 'Signed off on the third-party inspection',
+    'authoriser::payment_released': 'Cleared the payment to the contractor',
+    'authoriser::budget_sanctioned': 'Approved the project budget',
+    'authoriser::budget_released': 'Released the project funds',
+    'authoriser::completion_claimed': 'Gave the final sign-off on this road',
+    'authoriser::work_order_issued': 'Approved the work order',
+    'assignee::work_order_issued': 'Took the contract to build this road',
+    'assignee::repair_done': 'Took the contract to carry out repairs',
+    'reporter::payment_released': 'Wrote and filed the payment request',
     'reporter::rti_filed': 'Filed RTI application',
     'reporter::pothole_found': 'Reported pothole',
     'reporter::crack_found': 'Reported surface crack',
     'reporter::flooding_reported': 'Reported road flooding',
-    'witness::completion_claimed': 'Witnessed completion sign-off',
-    'witness::inspection_conducted': 'Witnessed inspection',
+    'witness::completion_claimed': 'Was present at the completion sign-off',
+    'witness::inspection_conducted': 'Was present at the site inspection',
   };
   return map[key] ?? 'Involved in this project';
 }

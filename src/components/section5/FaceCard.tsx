@@ -91,11 +91,11 @@ export default function FaceCard({
       <div>
         <p className="text-label roboto uppercase text-text-muted">What happened</p>
         {isFailureChain ? (
-          <p className="text-body mona text-failure mt-2xs">
+          <p className="text-title mona text-failure mt-2xs">
             {actionLabel}. This road failed in months.
           </p>
         ) : (
-          <p className="text-body mona text-text-primary mt-2xs">
+          <p className="text-body-bold mona text-text-primary mt-2xs">
             {actionLabel}.
           </p>
         )}

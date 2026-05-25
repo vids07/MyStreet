@@ -435,9 +435,28 @@ Use `getHeroCrops(photo.url)` from `road-display.ts` to generate all three URLs.
 
 ---
 
-### SECTIONS 2–6 — PATTERNS LOCKED IN SEPARATE DOCUMENT
+### SECTION 5 — THE FACES — LOCKED ✅
 
-Section patterns for Map Comparison, Current Condition, The Betrayal, The Faces, and Empowerment are locked in the MyStreet Product Specification document. Cross-reference that document for section-level decisions.
+**Purpose:** Put every person who signed off on this road on permanent public record. Names, designations, what they were supposed to do, what happened on their watch, and what the public pays them.
+
+**Layout:** `section#section5`, `py-xl bg-surface`. Inner container: `max-w-7xl mx-auto px-sm md:px-md`.
+
+**Section heading:** `text-headline mona text-text-primary` — "The Faces"
+**Subhead:** `text-body mona text-text-muted mt-xs` — "{N} people signed off on this road." (N = total across all chains)
+
+**Chain groups** — three groups rendered in order:
+
+| Group label | Subtitle | Chain prop |
+|---|---|---|
+| THE ENGINEERS | Each had to certify the work before money could move. | `technicalChain` |
+| THE FINANCE TEAM | They verified the numbers and cleared the payment. | `financialChain` |
+| THE COMMISSIONER | The final signature. The one that released your money. | `administrativeChain` |
+
+Each group: `mt-xl mb-sm` header block with label (`text-label roboto uppercase text-text-muted`) + subtitle (`text-meta roboto text-text-muted mt-2xs`). Cards rendered in `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md`. If a chain has 0 cards, the group renders nothing.
+
+**Contractor block** — separated from chains by a full-width divider: `mt-xl pt-xl border-t border-border`. Label: `text-label roboto uppercase text-text-muted mb-sm` — "CONTRACTOR". Card grid identical to chain groups. Only renders when `contractor` prop is non-null.
+
+**FaceCard anatomy** — see Part 7 for the component spec.
 
 ---
 
@@ -748,6 +767,86 @@ Used in Section 3. Apply this pattern to any future 3-column card grid where row
 BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING
 ```
 5-column grid (`md:grid-cols-5`). Amounts formatted with `formatLakh`. DOCUMENTED column was intentionally removed — defect counts are in the cards below.
+
+---
+
+### FaceCard — LOCKED ✅
+
+**File:** `src/components/section5/FaceCard.tsx`
+**Purpose:** One card per official or contractor in Section 5. Shows identity, role, accountability status, what they were paid to do, what happened, and their public salary.
+
+**Props:**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `fullName` | `string` | Always displayed in full — never truncated |
+| `designation` | `string \| null` | Full designation string from DB |
+| `jobDescription` | `string \| null` | Plain-language description of their role |
+| `actionLabel` | `string` | What they actually did — from `getActionLabel()` |
+| `isFailureChain` | `boolean` | If true, "What happened" renders in `text-failure` with appended sentence |
+| `payScale` | `string \| null` | Formatted salary range string, e.g. `"₹55,000–₹60,000"` |
+| `salaryPerDay` | `string \| null` | Formatted per-day minimum from `formatSalaryPerDay()` |
+| `salarySource` | `string \| null` | Attribution string, e.g. `"Source: 7th Pay Commission"` |
+| `accountabilityStatus` | `string \| null` | One of: `waiting_for_audit`, `response_pending`, `responded`, `charged` |
+| `photoUrl` | `string \| null` | Optional official photo URL |
+
+**Card structure — top to bottom:**
+
+```
+┌─────────────────────────────────────┐
+│  Avatar (w-16 h-16 rounded-full)    │  [Accountability badge — right-aligned]
+│  ← photo if photoUrl, else text     │  ← text-label roboto uppercase
+│                                     │
+│  Full Name                          │  ← text-title mona text-text-primary
+│  Designation (ABBREV)               │  ← text-meta roboto text-text-muted
+│                                     │
+│  ─────────────────────────────────  │  ← border-t-[0.5px] border-border
+│                                     │
+│  SUPPOSED TO DO          [label]    │
+│  {jobDescription}        [body]     │
+│                                     │
+│  WHAT HAPPENED           [label]    │
+│  {actionLabel}.          [title]    │  ← text-title mona text-failure if isFailureChain
+│  This road failed in months.        │  ← appended only when isFailureChain; text-body-bold mona if not failure
+│                                     │
+│  ─────────────────────────────────  │  ← border-t-[0.5px] border-border
+│                                     │
+│  PUBLIC SALARY SCALE     [label]    │
+│  {payScale} per month    [body-bold]│
+│  {salaryPerDay} minimum  [meta]     │
+│  {salarySource}          [meta]     │
+└─────────────────────────────────────┘
+```
+
+**Avatar text fallback logic:**
+```ts
+const abbrev = designation ? abbreviateDesignation(designation) : null;
+const avatarText = (abbrev !== null && abbrev !== designation)
+  ? abbrev          // e.g. "JE", "AE", "EE", "MC"
+  : getInitials(fullName);  // e.g. "PS"
+```
+If `photoUrl` is present, renders `<img>` instead of text.
+
+**Designation display:** Full designation text always shown. If `abbrev` differs from full designation, append `(ABBREV)` in parentheses: `"Junior Engineer (JE)"`.
+
+**Accountability badge colors:**
+
+| Status | Background | Text |
+|---|---|---|
+| `waiting_for_audit` | `bg-warning-bg` | `text-warning` |
+| `response_pending` | `bg-warning-bg` | `text-warning` |
+| `responded` | `bg-evidence-bg` | `text-evidence` |
+| `charged` | `bg-failure-bg` | `text-failure` |
+| null / unknown | `bg-surface` | `text-text-muted` |
+
+Badge label text comes from `getAccountabilityLabel(accountabilityStatus)` — plain language, never raw status codes.
+
+**Pay scale rules:**
+- `payScale` not null → `"{payScale} per month"` in `text-body-bold mona`
+- `payScale` null → `"Not applicable"` in `text-body-bold mona`
+- `salaryPerDay` and `salarySource` render only when non-null
+
+**Card shell:** `bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow p-sm flex flex-col gap-sm`
 
 ---
 
