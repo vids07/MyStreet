@@ -1,0 +1,21 @@
+
+> mystreet@1.0.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.8:3000
+- Environments: .env.local
+✓ Ready in 660ms
+
+◇ injected env (0) from .env.local // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+◇ injected env (0) from .env.local // tip: ⌘ suppress logs { quiet: true }
+ GET /road/UK-RKE-29.8723-77.8813 200 in 3.2s (next.js: 713ms, application-code: 2.4s)
+◇ injected env (0) from .env.local // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+ GET /road/UK-RKE-29.8723-77.8813 200 in 1202ms (next.js: 9ms, application-code: 1193ms)
+✓ Compiled in 151ms
+✓ Compiled in 47ms
+◇ injected env (0) from .env.local // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env.local // tip: ⌘ suppress logs { quiet: true }
+ GET /road/UK-RKE-29.8723-77.8813 200 in 1599ms (next.js: 90ms, application-code: 1510ms)
+[?25h

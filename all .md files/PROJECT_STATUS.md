@@ -1,6 +1,6 @@
 # MyStreet — Project Status
 
-Last updated: May 2026 (v2 — Section 3 complete)
+Last updated: May 2026 (v3 — Sections 1, 3, 4, 5, 6 complete)
 Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 
 ---
@@ -39,8 +39,10 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 - `EVENT_TYPES` constants in `src/types/road.ts` — `WHISTLEBLOWER_REPORT` typo fixed (was `WHISTLEBOWER_REPORT`)
 - `HEALTH_STATUS` and `SEVERITY` constants
 - All inferred types from Drizzle schema
-- New exported types: `PersonData`, `DrainData`, `ApprovedOfficial`, `ConditionCardData` (added May 2026)
+- New exported types: `PersonData`, `DrainData`, `ApprovedOfficial`, `ConditionCardData`, `FaceCardData` (all now in `src/types/road.ts` — not in component files)
 - `ConditionCardData.countLabel` — optional override for the count row label (e.g. drains show "Sections damaged" instead of "Drains found")
+- `FaceCardData.salaryPerDay` — formatted cost-per-day string derived from lower bound of payScale range via `formatSalaryPerDay()`
+- `FaceCardData.salarySource` — source attribution string for the salary figure (nullable)
 
 ### Real Data Seeded ✓
 - **Reseeded from verified RTI data. Source: `all .md files/ward28/` (5 files). ward28skill.md is the routing guide.**
@@ -59,7 +61,7 @@ Current phase: Theme 1 — Truth Layer, Epic 1 — Road Identity System
 
 ### Utility Functions ✓
 - `src/lib/utils/road-display.ts` — all computed value logic lives here, not in `page.tsx`
-- Functions: `formatCurrency`, `formatLakh`, `formatSalary`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`, `formatFailureDuration`, `getHeroCrops`, `extractCompletionEvidence`, `monthsApart`, `isSameDay`, `abbreviateDesignation`
+- Functions: `formatCurrency`, `formatLakh`, `formatSalary`, `formatSalaryPerDay`, `builtMonthsAgo`, `daysLasted`, `formatDate`, `benchmarkBags`, `benchmarkMeals`, `benchmarkJeMonths`, `section4Title`, `photoSourceLabel`, `getAccountabilityLabel`, `getActionLabel`, `getInitials`, `dlpStatusLabel`, `formatFailureDuration`, `getHeroCrops`, `extractCompletionEvidence`, `extractPaymentEvidence`, `extractTenderEvidence`, `extractDlpEvidence`, `extractRepairEvidence`, `extractRtiEvidence`, `extractAppealEvidence`, `monthsApart`, `isSameDay`, `abbreviateDesignation`
 - `formatLakh(amount)` — ≥1 lakh shows `₹X.XX Lakh`, below 1 lakh shows full `₹X,XXX` format. Used in Section 3 summary strip.
 - `extractCompletionEvidence(evidence)` — parses `inspectionDate` from completion event evidence. Handles both ISO (YYYY-MM-DD) and Indian RTI format (DD.MM.YYYY).
 - `abbreviateDesignation(designation)` — maps full designation to abbreviation: JE, AE, EE, MC.

@@ -39,6 +39,59 @@ export function extractPaymentEvidence(evidence: unknown): {
   };
 }
 
+export function extractDlpEvidence(evidence: unknown): {
+  dlpEndDate: Date | null;
+} {
+  const e = asRecord(evidence);
+  const raw = typeof e.dlpEndDate === 'string' ? e.dlpEndDate : null;
+  if (!raw) return { dlpEndDate: null };
+  // ISO format: YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+    const d = new Date(raw);
+    if (!isNaN(d.getTime())) return { dlpEndDate: d };
+  }
+  // DD.MM.YYYY format (Indian RTI documents): "03.04.2026"
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
+    const [day, month, year] = raw.split('.').map(Number);
+    const d = new Date(year, month - 1, day);
+    if (!isNaN(d.getTime())) return { dlpEndDate: d };
+  }
+  return { dlpEndDate: null };
+}
+
+export function extractAppealEvidence(evidence: unknown): {
+  appealNumber: number | null;
+  sentMode: string | null;
+  replyStatus: string | null;
+} {
+  const e = asRecord(evidence);
+  return {
+    appealNumber: typeof e.appealNumber === 'number' ? e.appealNumber : null,
+    sentMode: typeof e.sentMode === 'string' ? e.sentMode : null,
+    replyStatus: typeof e.replyStatus === 'string' ? e.replyStatus : null,
+  };
+}
+
+export function extractRtiEvidence(evidence: unknown): {
+  rtiFiledDate: string | null;
+} {
+  const e = asRecord(evidence);
+  return {
+    rtiFiledDate: typeof e.rtiFiledDate === 'string' ? e.rtiFiledDate : null,
+  };
+}
+
+export function extractRepairEvidence(evidence: unknown): {
+  privatelyFunded: boolean;
+  contractorDLPFailed: boolean;
+} {
+  const e = asRecord(evidence);
+  return {
+    privatelyFunded: e.privatelyFunded === true,
+    contractorDLPFailed: e.contractorDLPFailed === true,
+  };
+}
+
 export function extractCompletionEvidence(evidence: unknown): {
   inspectionDate: Date | null;
 } {
@@ -76,7 +129,11 @@ export function monthsApart(from: Date, to: Date): string {
 
 export function formatLakh(amount: number): string {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} Lakh`;
-  return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+  // toLocaleString is unreliable in Node.js without full ICU — format manually.
+  // Sub-lakh: up to 5 digits → XX,XXX (same as western for this range).
+  const rounded = Math.round(amount).toString();
+  if (rounded.length <= 3) return `₹${rounded}`;
+  return `₹${rounded.slice(0, rounded.length - 3)},${rounded.slice(rounded.length - 3)}`;
 }
 
 const DESIGNATION_ABBREVS: Record<string, string> = {
@@ -115,6 +172,18 @@ export function formatSalary(monthly: number | string | null | undefined): strin
   const n = Number(monthly);
   if (isNaN(n) || n === 0) return 'Salary not disclosed';
   return '₹' + n.toLocaleString('en-IN') + '/month';
+}
+
+// Parses the lower bound of a payScale range string like "₹44,900 – ₹1,42,400"
+// and returns a formatted cost-per-day string like "~₹1,497/day".
+export function formatSalaryPerDay(payScale: string | null | undefined): string | null {
+  if (!payScale) return null;
+  const raw = payScale.split('–')[0]?.replace(/[₹,\s]/g, '');
+  if (!raw) return null;
+  const lower = parseInt(raw, 10);
+  if (isNaN(lower) || lower === 0) return null;
+  const perDay = Math.round(lower / 30);
+  return '~₹' + perDay.toLocaleString('en-IN') + '/day';
 }
 
 // ============================================================
@@ -170,6 +239,15 @@ export function benchmarkBags(netDisbursed: number): string {
   return Math.round(netDisbursed / SCHOOL_BAG_COST).toLocaleString('en-IN');
 }
 
+// PM POSHAN (mid-day meal scheme) cooking cost per child per day — primary schools.
+// Central government rate 2024-25: ₹5.45/meal. Source: MoE notification.
+const MIDDAY_MEAL_COST = 5.45;
+
+export function benchmarkMeals(netDisbursed: number): string {
+  if (!netDisbursed) return '0';
+  return Math.round(netDisbursed / MIDDAY_MEAL_COST).toLocaleString('en-IN');
+}
+
 export function benchmarkJeMonths(
   netDisbursed: number,
   certifierPerson: PersonData | undefined,
@@ -207,10 +285,10 @@ export function photoSourceLabel(source: string | null | undefined): string {
 
 export function getAccountabilityLabel(status: string | null | undefined): string {
   const map: Record<string, string> = {
-    waiting_for_audit: 'WAITING FOR AUDIT',
-    response_pending: 'RESPONSE PENDING',
-    responded: 'RESPONDED',
-    charged: 'CHARGED',
+    waiting_for_audit: 'NOT YET REVIEWED',
+    response_pending:  'NO REPLY YET',
+    responded:         'RESPONDED',
+    charged:           'CHARGED',
   };
   return map[status ?? ''] ?? 'STATUS UNKNOWN';
 }
@@ -282,15 +360,13 @@ export function getHeroCrops(url: string): { mobile: string; laptop: string; des
 // Uses dlpEndDate from evidence (field name per DATA_MODEL.md and seed).
 export function dlpStatusLabel(dlpEvent: EventData | undefined): string {
   if (!dlpEvent) return 'No DLP recorded';
-  const evidence = dlpEvent.evidence as Record<string, unknown> | null;
-  const expiryDate = evidence?.dlpEndDate as string | undefined;
-  if (!expiryDate) return 'DLP active';
-  const expiry = new Date(expiryDate);
+  const { dlpEndDate } = extractDlpEvidence(dlpEvent.evidence);
+  if (!dlpEndDate) return 'DLP active';
   const now = new Date();
-  const formatted = expiry.toLocaleDateString('en-IN', {
+  const formatted = dlpEndDate.toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   });
-  return expiry > now ? `DLP active until ${formatted}` : `DLP expired ${formatted}`;
+  return dlpEndDate > now ? `DLP active until ${formatted}` : `DLP expired ${formatted}`;
 }

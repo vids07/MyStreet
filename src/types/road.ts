@@ -72,6 +72,8 @@ export type FaceCardData = {
   actionLabel: string;
   isFailureChain: boolean;
   payScale: string | null;
+  salaryPerDay: string | null;
+  salarySource: string | null;
   accountabilityStatus: string | null;
   photoUrl?: string | null;
 };

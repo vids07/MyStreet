@@ -1,4 +1,3 @@
-import React from 'react';
 import FaceCard from './FaceCard';
 import type { FaceCardData } from '@/types/road';
 
@@ -9,20 +8,22 @@ type FacesSectionProps = {
   financialChain: FaceCardData[];
   administrativeChain: FaceCardData[];
   contractor: FaceCardData | null;
-  failureDuration: string;
 };
 
 type ChainGroupProps = {
   label: string;
+  subtitle: string;
   cards: FaceCardData[];
-  failureDuration: string;
 };
 
-function ChainGroup({ label, cards, failureDuration }: ChainGroupProps) {
+function ChainGroup({ label, subtitle, cards }: ChainGroupProps) {
   if (cards.length === 0) return null;
   return (
     <div>
-      <p className="text-label roboto uppercase text-text-muted mt-xl mb-sm">{label}</p>
+      <div className="mt-xl mb-sm">
+        <p className="text-label roboto uppercase text-text-muted">{label}</p>
+        <p className="text-meta roboto text-text-muted mt-2xs">{subtitle}</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
         {cards.map((card) => (
           <FaceCard
@@ -31,8 +32,10 @@ function ChainGroup({ label, cards, failureDuration }: ChainGroupProps) {
             designation={card.designation}
             jobDescription={card.jobDescription}
             actionLabel={card.actionLabel}
-            failureDuration={card.isFailureChain ? failureDuration : null}
+            isFailureChain={card.isFailureChain}
             payScale={card.payScale}
+            salaryPerDay={card.salaryPerDay}
+            salarySource={card.salarySource}
             accountabilityStatus={card.accountabilityStatus}
             photoUrl={card.photoUrl}
           />
@@ -47,33 +50,36 @@ export default function FacesSection({
   financialChain,
   administrativeChain,
   contractor,
-  failureDuration,
 }: FacesSectionProps) {
+  const totalCount =
+    technicalChain.length +
+    financialChain.length +
+    administrativeChain.length +
+    (contractor ? 1 : 0);
+
   return (
     <section id="section5" className="py-xl bg-surface">
       <div className="max-w-7xl mx-auto px-sm md:px-md">
 
         <h2 className="text-headline mona text-text-primary">The Faces</h2>
         <p className="text-body mona text-text-muted mt-xs">
-          Every person whose signature is on this project.
+          {totalCount} people signed off on this road.
         </p>
 
         <ChainGroup
-          label="Technical Chain"
+          label="The Engineers"
+          subtitle="Each had to certify the work before money could move."
           cards={technicalChain}
-          failureDuration={failureDuration}
         />
-
         <ChainGroup
-          label="Financial Chain"
+          label="The Finance Team"
+          subtitle="They verified the numbers and cleared the payment."
           cards={financialChain}
-          failureDuration={failureDuration}
         />
-
         <ChainGroup
-          label="Administrative Chain"
+          label="The Commissioner"
+          subtitle="The final signature. The one that released your money."
           cards={administrativeChain}
-          failureDuration={failureDuration}
         />
 
         {contractor && (
@@ -85,8 +91,10 @@ export default function FacesSection({
                 designation={contractor.designation}
                 jobDescription={contractor.jobDescription}
                 actionLabel={contractor.actionLabel}
-                failureDuration={contractor.isFailureChain ? failureDuration : null}
+                isFailureChain={contractor.isFailureChain}
                 payScale={contractor.payScale}
+                salaryPerDay={contractor.salaryPerDay}
+                salarySource={contractor.salarySource}
                 accountabilityStatus={contractor.accountabilityStatus}
                 photoUrl={contractor.photoUrl}
               />

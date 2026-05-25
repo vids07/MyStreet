@@ -770,7 +770,11 @@ BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING
 | Icon Library — Lucide | LOCKED | v1.1 |
 | Motion | OPEN | v1.3 pending |
 | Section 1 Hero | LOCKED | v1.3 |
-| Sections 2–6 | See product spec | — |
+| Section 2 (Map) | NOT BUILT — requires multiple roads | — |
+| Section 3 (Condition) | LOCKED | v1.2 |
+| Section 4 (Betrayal) | LOCKED | v1.2 |
+| Section 5 (Faces) | LOCKED | v1.3 |
+| Section 6 (Empowerment) | LOCKED | v1.1 |
 | PhotoCarousel component | LOCKED | v1.3 |
 | StatusBadge component | LOCKED | v1.2 |
 | ConditionCard subgrid pattern | LOCKED | v1.2 |

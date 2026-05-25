@@ -419,9 +419,9 @@ Confidence   → HIGH
 
 ```
 crack_found (EVENT 12)
-Timestamp    → 2026-02-08
+Timestamp    → 2025-11-19
 Severity     → critical
-Description  → Surface cracks documented by citizen field visit on 8 February 2026.
+Description  → Surface cracks documented by citizen field visit on 19 November 2025.
                Multiple cracks visible across interlocking tile surface in Ward No. 28.
 Photos       → 8 photos (001–008). Status per photo:
                critical: 001, 002, 004, 005, 007, 008
@@ -429,9 +429,9 @@ Photos       → 8 photos (001–008). Status per photo:
 Participants → Vidushi (reporter, verified)
 
 pothole_found (EVENT 13)
-Timestamp    → 2026-02-08
+Timestamp    → 2025-11-19
 Severity     → critical
-Description  → Potholes documented by citizen field visit on 8 February 2026.
+Description  → Potholes documented by citizen field visit on 19 November 2025.
                Tile surface breaking up in multiple locations in Ward No. 28.
 Photos       → 10 photos (001–010). Status per photo:
                critical: 001, 002, 003, 004, 006, 010
@@ -439,11 +439,12 @@ Photos       → 10 photos (001–010). Status per photo:
 Participants → Vidushi (reporter, verified)
 
 drain_blocked (EVENT 14)
-Timestamp    → 2026-02-08
+Timestamp    → 2025-11-19
 Severity     → medium
 Description  → Partial structural damage observed on drain section. A portion of the
                drain is broken. Full drain construction on site unconfirmed — billed
                at ₹86,878 and certified complete but physical existence not fully verified.
+               Observed by citizen field visit on 19 November 2025.
 Photos       → 11 photos (001–011). Status per photo:
                critical: 003
                warning:  001, 002, 004, 005, 006
@@ -458,7 +459,7 @@ Participants → Vidushi (reporter, verified)
 > November 2025 field observation documented 15 surface cracks total. Events 15–28 represent cracks 2–15. No photos attached — photos are all on Event 12 (crack 1). Count in Section 3 = number of crack_found events = 15.
 
 ```
-Timestamp    → 2026-02-08 (all)
+Timestamp    → 2025-11-19 (all)
 Severity     → critical (all)
 evidenceSource → citizen (all)
 Participants → Vidushi (reporter, verified) on each
@@ -471,7 +472,7 @@ Participants → Vidushi (reporter, verified) on each
 > November 2025 field observation documented 10 potholes total. Events 29–37 represent potholes 2–10. No photos attached — photos are all on Event 13 (pothole 1). Count in Section 3 = number of pothole_found events = 10.
 
 ```
-Timestamp    → 2026-02-08 (all)
+Timestamp    → 2025-11-19 (all)
 Severity     → critical (all)
 evidenceSource → citizen (all)
 Participants → Vidushi (reporter, verified) on each

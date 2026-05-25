@@ -175,13 +175,13 @@ Format: Decision | Why | Tradeoff Accepted | Revisit Trigger
 - **Decision**: Section 3 condition cards show the November 2025 field observation permanently. Private repairs (May 2026) and current state changes do not update Section 3.
 - **Why**: Section 3 is the DLP-period evidence record. The defects existed while the contractor was legally obligated to fix them. That record must be preserved regardless of what happened after.
 - **Tradeoff**: "Current condition" heading is technically inaccurate after May 2026 repairs.
-- **Revisit**: When Section 4 surfaces the private repair story — consider relabelling Section 3 as "Condition during DLP period."
+- **Revisit**: Section 4 is now built and surfaces the private repair story via `privateRepairCount`. Section 3 heading is still "Current Condition" — relabelling to "Condition during DLP period" remains an open decision for the owner.
 
 ### Private repairs recorded as repair_done events, not Section 3 updates
 - **Decision**: Privately-funded repairs by residents are stored as `repair_done` events with `privatelyFunded: true` in evidence. They are not reflected in Section 3.
 - **Why**: The private repair story (contractor failed DLP, residents paid out of pocket) belongs in Section 4 as part of the betrayal narrative. Updating Section 3 would hide the original damage evidence.
 - **Tradeoff**: Users in Section 3 don't see that some damage has since been repaired.
-- **Revisit**: When Section 4 is built — surface private repair count there.
+- **Revisit**: Done. Section 4 surfaces private repair count via `privateRepairCount` prop in `BetrayalSection` ("X of Y issues — Paid by residents. No reimbursement.").
 
 ### Map section shown only when multiple roads exist
 - **Decision**: Section 2 — the map comparison — is hidden until the database has more than one road.
@@ -204,6 +204,18 @@ Format: Decision | Why | Tradeoff Accepted | Revisit Trigger
 - **Why**: Serverless, free tier generous, works perfectly with Vercel and Next.js. PostgreSQL gives us full relational power, JSONB for flexible evidence storage, and enums for type safety.
 - **Tradeoff**: Serverless cold starts on free tier. Acceptable for current stage.
 - **Revisit**: Upgrade to paid tier when traffic warrants.
+
+### FaceCardData type lives in types/road.ts, not the component file
+- **Decision**: `FaceCardData` is defined in `src/types/road.ts` and imported into both `page.tsx` and `FacesSection.tsx`.
+- **Why**: Shared types that cross the page → component boundary must live in the central types file. Defining a type inside a component file and then importing it back into `page.tsx` breaks the one-direction data flow rule and creates a circular dependency risk.
+- **Tradeoff**: One extra import in page.tsx.
+- **Revisit**: Never — all cross-boundary types belong in `src/types/road.ts`.
+
+### Accountability labels use plain language, not status codes
+- **Decision**: `getAccountabilityLabel()` maps `waiting_for_audit` → "NOT YET REVIEWED" and `response_pending` → "NO REPLY YET".
+- **Why**: Status codes read like admin jargon. Sunita sees these labels on official cards. "NO REPLY YET" is what actually happened — the official has not responded. Plain language is the truth; code-speak is a filter over it.
+- **Tradeoff**: Labels are slightly longer.
+- **Revisit**: Never — plain language is locked in the Design DNA.
 
 ### Monorepo — frontend and backend together
 - **Decision**: Frontend, API routes, and database all in one Next.js project.

@@ -41,7 +41,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Responsible for material quality, construction standards, and delivery timeline as per contract terms.',
+    jobDescription: 'Built the road under contract.',
     licenseNumber: null,
   }).returning();
 
@@ -60,7 +60,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Construction clerk responsible for administrative documentation of the project.',
+    jobDescription: 'Handled the paperwork when other bidders were rejected.',
     licenseNumber: null,
   }).returning();
 
@@ -79,7 +79,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'response_pending',
-    jobDescription: 'Responsible for on-site quality verification and signing off construction as complete and standard-compliant.',
+    jobDescription: 'Checked the road on-site and signed off that the work was complete.',
     licenseNumber: null,
   }).returning();
 
@@ -98,7 +98,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'response_pending',
-    jobDescription: 'Responsible for supervising the Junior Engineer and verifying technical compliance before signing off.',
+    jobDescription: 'Inspected the construction and countersigned the completion papers.',
     licenseNumber: null,
   }).returning();
 
@@ -117,7 +117,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Responsible for final administrative authorisation of project completion and quality sign-off.',
+    jobDescription: 'Gave final approval on completion and led the team that chose the contractor.',
     licenseNumber: null,
   }).returning();
 
@@ -135,7 +135,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Responsible for verifying financial records and authorising payment disbursement.',
+    jobDescription: 'Checked the discount and tax figures, then cleared the payment.',
     licenseNumber: null,
   }).returning();
 
@@ -153,7 +153,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Municipal Commissioner. Ultimate administrative authority over all ward-level public works.',
+    jobDescription: 'Approved the final payment and signed off on the contractor selection.',
     licenseNumber: null,
   }).returning();
 
@@ -171,7 +171,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: 'waiting_for_audit',
-    jobDescription: 'Drafted and submitted the official note sheet to the Municipal Commissioner, formally initiating the payment release process after work completion.',
+    jobDescription: 'Wrote the official note requesting the payment.',
     licenseNumber: null,
   }).returning();
 
@@ -209,13 +209,14 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: null,
-    jobDescription: null,
+    jobDescription: 'Processed the payment deduction records.',
     licenseNumber: null,
   }).returning();
 
   // Person 11 — Construction Clerk (Elimination Sheet)
-  const [narendraSinghRawat] = await db.insert(persons).values({
-    fullName: 'Narendra Singh Rawat',
+  // fullName: Shailendra Singh Rawat — verified from RTI documents. Previously misread as Narendra Singh Rawat — corrected.
+  const [shailendraSinghRawat] = await db.insert(persons).values({
+    fullName: 'Shailendra Singh Rawat',
     designation: 'Construction Clerk',
     designationPlain: null,
     department: 'Nagar Nigam Roorkee',
@@ -227,7 +228,7 @@ async function seed() {
     photoUrl: null,
     photoSource: null,
     accountabilityStatus: null,
-    jobDescription: null,
+    jobDescription: 'Handled the paperwork when other bidders were rejected.',
     licenseNumber: null,
   }).returning();
 
@@ -791,38 +792,77 @@ async function seed() {
     isFlagged: false,
   }).returning();
 
-  // crackEvent — Surface Cracks Documented — 08.02.2026
+  // docEvent12 — RTI 1st Appeal — 22.01.2026
+  const [docEvent12] = await db.insert(events).values({
+    roadId: road.id,
+    segmentId: null,
+    eventType: 'escalation_triggered',
+    timestamp: new Date('2026-01-22'),
+    description: "First appeal under RTI Act 2005 filed online. Appeal Registration No. UDDUK/A/2026/60014. PIO failed to respond within 30-day statutory deadline. Forwarded to First Appellate Authority, Directorate of Urban Development.",
+    severity: null,
+    evidence: {
+      "appealNumber": 1,
+      "appealRegistrationNo": "UDDUK/A/2026/60014",
+      "rtiRequestNo": "UDDUK/R/2025/60014",
+      "appealAuthority": "Directorate of Urban Development",
+      "portalStatus": "APPEAL FORWARDED TO CONCERNED FIRST APPELLATE AUTHORITY",
+      "replyStatus": "nil",
+      "sentMode": "online"
+    },
+    evidenceSource: 'citizen',
+    isFlagged: false,
+  }).returning();
+
+  // docEvent13 — RTI 2nd Appeal — 25.02.2026
+  const [docEvent13] = await db.insert(events).values({
+    roadId: road.id,
+    segmentId: null,
+    eventType: 'escalation_triggered',
+    timestamp: new Date('2026-02-25'),
+    description: "Second appeal filed after no substantive response to first appeal. Filed online and sent via speed post (hard copy). No reply received as of May 2026.",
+    severity: null,
+    evidence: {
+      "appealNumber": 2,
+      "appealAuthority": "State Information Commission",
+      "sentMode": "online_and_speed_post",
+      "replyStatus": "pending"
+    },
+    evidenceSource: 'citizen',
+    isFlagged: false,
+  }).returning();
+
+  // crackEvent — Surface Cracks Documented — 19.11.2025
   const [crackEvent] = await db.insert(events).values({
     roadId: road.id,
     segmentId: segment.id,
     eventType: 'crack_found',
-    timestamp: new Date('2026-02-08'),
-    description: 'Surface cracks documented by citizen field visit on 8 February 2026. Multiple cracks visible across interlocking tile surface in Ward No. 28.',
+    timestamp: new Date('2025-11-19'),
+    description: 'Surface cracks documented by citizen field visit on 19 November 2025. Multiple cracks visible across interlocking tile surface in Ward No. 28.',
     severity: 'critical',
     evidence: null,
     evidenceSource: 'citizen',
     isFlagged: false,
   }).returning();
 
-  // potholeEvent — Potholes Documented — 08.02.2026
+  // potholeEvent — Potholes Documented — 19.11.2025
   const [potholeEvent] = await db.insert(events).values({
     roadId: road.id,
     segmentId: segment.id,
     eventType: 'pothole_found',
-    timestamp: new Date('2026-02-08'),
-    description: 'Potholes documented by citizen field visit on 8 February 2026. Tile surface breaking up in multiple locations in Ward No. 28.',
+    timestamp: new Date('2025-11-19'),
+    description: 'Potholes documented by citizen field visit on 19 November 2025. Tile surface breaking up in multiple locations in Ward No. 28.',
     severity: 'critical',
     evidence: null,
     evidenceSource: 'citizen',
     isFlagged: false,
   }).returning();
 
-  // drainEvent — Drain Condition Documented — 08.02.2026
+  // drainEvent — Drain Condition Documented — 19.11.2025
   const [drainEvent] = await db.insert(events).values({
     roadId: road.id,
     segmentId: segment.id,
     eventType: 'drain_blocked',
-    timestamp: new Date('2026-02-08'),
+    timestamp: new Date('2025-11-19'),
     description: 'Partial structural damage observed on drain section. A portion of the drain is broken. Full drain construction on site unconfirmed — billed at ₹86,878 and certified complete but physical existence not fully verified.',
     severity: 'medium',
     evidence: null,
@@ -830,14 +870,14 @@ async function seed() {
     isFlagged: false,
   }).returning();
 
-  // 14 additional crack events — total 15 surface cracks documented November 2025
+  // 14 additional crack events — total 15 surface cracks documented 19 November 2025
   const additionalCrackEvents = await db.insert(events).values(
     Array.from({ length: 14 }, (_, i) => ({
       roadId: road.id,
       segmentId: segment.id,
       eventType: 'crack_found' as const,
-      timestamp: new Date('2026-02-08'),
-      description: `Surface crack ${i + 2} of 15 documented by citizen field visit. Ward No. 28 interlocking tile surface.`,
+      timestamp: new Date('2025-11-19'),
+      description: `Surface crack ${i + 2} of 15 documented by citizen field visit on 19 November 2025. Ward No. 28 interlocking tile surface.`,
       severity: 'critical' as const,
       evidence: null,
       evidenceSource: 'citizen' as const,
@@ -845,14 +885,14 @@ async function seed() {
     }))
   ).returning();
 
-  // 9 additional pothole events — total 10 potholes documented November 2025
+  // 9 additional pothole events — total 10 potholes documented 19 November 2025
   const additionalPotholeEvents = await db.insert(events).values(
     Array.from({ length: 9 }, (_, i) => ({
       roadId: road.id,
       segmentId: segment.id,
       eventType: 'pothole_found' as const,
-      timestamp: new Date('2026-02-08'),
-      description: `Pothole ${i + 2} of 10 documented by citizen field visit. Ward No. 28 interlocking tile surface.`,
+      timestamp: new Date('2025-11-19'),
+      description: `Pothole ${i + 2} of 10 documented by citizen field visit on 19 November 2025. Ward No. 28 interlocking tile surface.`,
       severity: 'critical' as const,
       evidence: null,
       evidenceSource: 'citizen' as const,
@@ -953,7 +993,7 @@ async function seed() {
     // docEvent11 — RTI Response 05.02.2026 — role verified, name not disclosed in RTI
     { eventId: docEvent11.id, personId: pio.id,             personType: 'official',   role: 'authoriser', dataConfidence: 'probable'   },
 
-    // Condition events — first-hand citizen field observations 08.02.2026
+    // Condition events — first-hand citizen field observations 19.11.2025
     { eventId: crackEvent.id,   personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
     { eventId: potholeEvent.id, personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
     { eventId: drainEvent.id,   personId: vidushi.id,       personType: 'citizen',    role: 'reporter',   dataConfidence: 'verified'   },
@@ -1011,7 +1051,7 @@ async function seed() {
     db.update(persons).set({ payScale: '₹67,700 – ₹2,08,700',   salarySource: '7th Pay Commission, Level 11' }).where(eq(persons.id, prashantKumar.id)),
     db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, sachinKumar.id)),
     db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, mohanSingh.id)),
-    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, narendraSinghRawat.id)),
+    db.update(persons).set({ payScale: '₹19,900 – ₹63,200',     salarySource: '7th Pay Commission, Level 2'  }).where(eq(persons.id, shailendraSinghRawat.id)),
     db.update(persons).set({ payScale: '₹1,44,200 – ₹2,18,200', salarySource: '7th Pay Commission, Level 14' }).where(eq(persons.id, jitendraKumar.id)),
   ]);
 

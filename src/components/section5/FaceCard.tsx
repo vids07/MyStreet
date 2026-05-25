@@ -1,13 +1,14 @@
-import React from 'react';
-import { getInitials, getAccountabilityLabel } from '@/lib/utils/road-display';
+import { getInitials, getAccountabilityLabel, abbreviateDesignation } from '@/lib/utils/road-display';
 
 export type FaceCardProps = {
   fullName: string;
   designation: string | null;
   jobDescription: string | null;
   actionLabel: string;
-  failureDuration: string | null;
+  isFailureChain: boolean;
   payScale: string | null;
+  salaryPerDay: string | null;
+  salarySource: string | null;
   accountabilityStatus: string | null;
   photoUrl?: string | null;
 };
@@ -24,8 +25,10 @@ export default function FaceCard({
   designation,
   jobDescription,
   actionLabel,
-  failureDuration,
+  isFailureChain,
   payScale,
+  salaryPerDay,
+  salarySource,
   accountabilityStatus,
   photoUrl,
 }: FaceCardProps) {
@@ -33,6 +36,11 @@ export default function FaceCard({
     bg: 'bg-surface',
     text: 'text-text-muted',
   };
+
+  const abbrev = designation ? abbreviateDesignation(designation) : null;
+  const avatarText = abbrev !== null && abbrev !== designation
+    ? abbrev
+    : getInitials(fullName);
 
   return (
     <div className="bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow p-sm flex flex-col gap-sm">
@@ -48,7 +56,7 @@ export default function FaceCard({
             />
           ) : (
             <span className="text-title mona font-bold text-text-primary">
-              {getInitials(fullName)}
+              {avatarText}
             </span>
           )}
         </div>
@@ -63,7 +71,10 @@ export default function FaceCard({
       {/* Name + designation */}
       <div>
         <h3 className="text-title mona text-text-primary">{fullName}</h3>
-        <p className="text-meta roboto text-text-muted">{designation ?? '—'}</p>
+        <p className="text-meta roboto text-text-muted">
+          {designation ?? '—'}
+          {abbrev !== null && abbrev !== designation && ` (${abbrev})`}
+        </p>
       </div>
 
       <div className="border-t-[0.5px] border-border" />
@@ -79,9 +90,9 @@ export default function FaceCard({
       {/* What happened */}
       <div>
         <p className="text-label roboto uppercase text-text-muted">What happened</p>
-        {failureDuration !== null ? (
+        {isFailureChain ? (
           <p className="text-body mona text-failure mt-2xs">
-            {actionLabel}. This road failed in {failureDuration}.
+            {actionLabel}. This road failed in months.
           </p>
         ) : (
           <p className="text-body mona text-text-primary mt-2xs">
@@ -96,8 +107,14 @@ export default function FaceCard({
       <div>
         <p className="text-label roboto uppercase text-text-muted">Public Salary Scale</p>
         <p className="text-body-bold mona text-text-primary mt-2xs">
-          {payScale !== null ? `${payScale}/month` : 'Not applicable'}
+          {payScale !== null ? `${payScale} per month` : 'Not applicable'}
         </p>
+        {salaryPerDay !== null && (
+          <p className="text-meta roboto text-text-muted mt-2xs">{salaryPerDay} minimum</p>
+        )}
+        {salarySource !== null && (
+          <p className="text-meta roboto text-text-muted mt-2xs">{salarySource}</p>
+        )}
       </div>
 
     </div>

@@ -5,8 +5,8 @@ import {
   daysLasted,
   formatCurrency,
   formatLakh,
+  formatDate,
   section4Title,
-  benchmarkBags,
   benchmarkJeMonths,
   formatFailureDuration,
   getActionLabel,
@@ -14,16 +14,20 @@ import {
   extractTenderEvidence,
   extractPaymentEvidence,
   extractCompletionEvidence,
+  extractDlpEvidence,
+  extractRepairEvidence,
+  extractRtiEvidence,
+  extractAppealEvidence,
   monthsApart,
   isSameDay,
+  formatSalaryPerDay,
 } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
-import type { PersonData, PhotoData, ApprovedOfficial, ConditionCardData } from '@/types/road';
+import type { PersonData, PhotoData, ApprovedOfficial, ConditionCardData, FaceCardData } from '@/types/road';
 import HeroSection from '@/components/section1/HeroSection';
 import ConditionSection from '@/components/section3/ConditionSection';
 import BetrayalSection from '@/components/section4/BetrayalSection';
 import FacesSection from '@/components/section5/FacesSection';
-import type { FaceCardData } from '@/components/section5/FacesSection';
 import EmpowermentSection from '@/components/section6/EmpowermentSection';
 
 export const dynamic = 'force-dynamic';
@@ -66,7 +70,7 @@ export default async function RoadPage({
   })[0];
   const certifierPerson = primaryCertifierParticipant?.person;
 
-  const conditionEvents = events.filter(e => ISSUE_EVENT_TYPES.includes(e.eventType as any));
+  const conditionEvents = events.filter(e => (ISSUE_EVENT_TYPES as readonly string[]).includes(e.eventType));
   const section1Photos = photos.filter(p => p.eventId === null);
 
   // --- CONDITION CARDS ---
@@ -163,9 +167,100 @@ export default async function RoadPage({
     },
   ];
 
+  // --- SECTION 4 DERIVATIONS ---
+
+  const dlpEvent = events.find(e => e.eventType === EVENT_TYPES.DLP_STARTED);
+  const { dlpEndDate } = extractDlpEvidence(dlpEvent?.evidence);
+  const dlpExpired = dlpEndDate !== null && dlpEndDate < new Date();
+  const dlpExpiryDate = dlpEndDate ? formatDate(dlpEndDate) : null;
+
+  // Private repairs: repair_done events where evidence.privatelyFunded === true
+  const privateRepairEvents = events.filter(
+    e => e.eventType === EVENT_TYPES.REPAIR_DONE && extractRepairEvidence(e.evidence).privatelyFunded,
+  );
+
+  // Days from certification to first recorded damage
+  const firstConditionEvent = conditionEvents.length > 0
+    ? [...conditionEvents].sort(
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+      )[0]
+    : null;
+  const daysToFirstIssue = completionEvent && firstConditionEvent
+    ? Math.floor(
+        (new Date(firstConditionEvent.timestamp).getTime() - new Date(completionEvent.timestamp).getTime())
+        / (1000 * 60 * 60 * 24),
+      )
+    : null;
+
+  const costPerDay =
+    daysToFirstIssue !== null && daysToFirstIssue > 0 && netDisbursed > 0
+      ? formatCurrency(Math.round(netDisbursed / daysToFirstIssue))
+      : null;
+
+  // ((estimatedValue - contractValue) / estimatedValue) * 100, rounded to 1dp
+  const underbidPercent =
+    sanctionedBudget > 0 && contractValue > 0
+      ? ((1 - contractValue / sanctionedBudget) * 100).toFixed(1)
+      : null;
+
+  // Rupee difference between estimate and contract — shown in money block for Sunita
+  const underbidAmount =
+    sanctionedBudget > 0 && contractValue > 0
+      ? formatLakh(sanctionedBudget - contractValue)
+      : null;
+
+  const completionDateFormatted = completionEvent ? formatDate(completionEvent.timestamp) : null;
+
+  // RTI: filed date + days the response was overdue (30-day legal window)
+  const rtiEvent = events.find(e => e.eventType === EVENT_TYPES.RTI_FILED);
+  const rtiResponseEvent = events.find(e => e.eventType === EVENT_TYPES.RTI_RESPONSE_RECEIVED);
+  const rtiFiledDate = rtiEvent ? formatDate(rtiEvent.timestamp) : null;
+  const rtiDaysOverdue =
+    rtiEvent && rtiResponseEvent
+      ? Math.max(
+          0,
+          Math.floor(
+            (new Date(rtiResponseEvent.timestamp).getTime() - new Date(rtiEvent.timestamp).getTime())
+            / (1000 * 60 * 60 * 24),
+          ) - 30,
+        )
+      : null;
+  // RTI appeals — from DB escalation_triggered events, sorted by timestamp
+  const appealEvents = events
+    .filter(e => e.eventType === EVENT_TYPES.ESCALATION_TRIGGERED)
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const appeal1Event = appealEvents[0] ?? null;
+  const appeal2Event = appealEvents[1] ?? null;
+  const appeal1Date = appeal1Event ? formatDate(appeal1Event.timestamp) : null;
+  const appeal2Date = appeal2Event ? formatDate(appeal2Event.timestamp) : null;
+  const appeal1Evidence = extractAppealEvidence(appeal1Event?.evidence);
+  const appeal2Evidence = extractAppealEvidence(appeal2Event?.evidence);
+  const appeal1SentMode = appeal1Evidence.sentMode;
+  const appeal1ReplyStatus = appeal1Evidence.replyStatus;
+  const appeal2SentMode = appeal2Evidence.sentMode;
+  const appeal2ReplyStatus = appeal2Evidence.replyStatus;
+  const appealCount = appealEvents.length;
+  const daysSilent = rtiEvent
+    ? Math.floor((new Date().getTime() - new Date(rtiEvent.timestamp).getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+
+  // First condition event date — for "First documented:" in card 2
+  const firstConditionDate = firstConditionEvent ? formatDate(firstConditionEvent.timestamp) : null;
+
+  // Months from certification to first recorded damage — dynamic "Failed in X months" label
+  const failedInMonths: string | null = daysToFirstIssue !== null
+    ? daysToFirstIssue < 30
+      ? 'less than a month'
+      : daysToFirstIssue < 60
+        ? '1 month'
+        : `${Math.floor(daysToFirstIssue / 30.44)} months`
+    : null;
+
+  // Road location string for Netherlands comparison block
+  const roadLocation = [road.ward, 'Roorkee'].filter(Boolean).join(', ');
+
   // --- SECTION 5 DERIVATIONS ---
 
-  const failureDuration = formatFailureDuration(completionEvent?.timestamp);
 
   // All persons that appear in any event's participant list.
   // Persons seeded but not linked to an event (Mohan Singh, Narendra Singh Rawat,
@@ -187,12 +282,14 @@ export default async function RoadPage({
   ): FaceCardData | null => {
     if (!person) return null;
     return {
-      fullName: person.fullName,
+      fullName:  person.fullName,
       designation: person.designationPlain ?? person.designation,
       jobDescription: person.jobDescription,
       actionLabel: getActionLabel(role, eventType),
       isFailureChain,
       payScale: person.payScale ?? null,
+      salaryPerDay: formatSalaryPerDay(person.payScale),
+      salarySource: person.salarySource ?? null,
       accountabilityStatus: person.accountabilityStatus ?? null,
       photoUrl: null,
     };
@@ -208,7 +305,7 @@ export default async function RoadPage({
     toFaceCard(findPerson('Prashant Kumar'), 'authoriser', EVENT_TYPES.PAYMENT_RELEASED, false),
     toFaceCard(findPerson('Sachin Kumar'),   'reporter',   EVENT_TYPES.PAYMENT_RELEASED, false),
     toFaceCard(findPerson('Mohan Singh'),    'certifier',  EVENT_TYPES.PAYMENT_RELEASED, false),
-    toFaceCard(findPerson('Narendra Singh Rawat'), 'certifier', EVENT_TYPES.PAYMENT_RELEASED, false),
+    toFaceCard(findPerson('Shailendra Singh Rawat'), 'certifier', EVENT_TYPES.PAYMENT_RELEASED, false),
   ].filter((c): c is FaceCardData => c !== null);
 
   const administrativeChain: FaceCardData[] = [
@@ -225,6 +322,8 @@ export default async function RoadPage({
         actionLabel: getActionLabel('assignee', EVENT_TYPES.WORK_ORDER_ISSUED),
         isFailureChain: true,
         payScale: null,
+        salaryPerDay: null,
+        salarySource: null,
         accountabilityStatus: contractorPerson.accountabilityStatus ?? null,
         photoUrl: null,
       }
@@ -250,16 +349,35 @@ export default async function RoadPage({
       />
 
       {/* SECTION 4: THE BETRAYAL */}
-      <BetrayalSection 
+      <BetrayalSection
         title={section4Title(road.healthStatus)}
-        netDisbursed={formatCurrency(netDisbursed)}
-        sanctionedBudget={formatCurrency(sanctionedBudget)}
-        contractValue={formatCurrency(contractValue)}
-        builtAgo={builtMonthsAgo(completionEvent)}
-        daysLasted={daysLasted(completionEvent, road.healthStatus)}
+        netDisbursed={formatLakh(netDisbursed)}
+        sanctionedBudget={formatLakh(sanctionedBudget)}
+        contractValue={formatLakh(contractValue)}
         issuesCount={conditionEvents.length}
-        benchmarkBags={benchmarkBags(netDisbursed)}
         benchmarkJeMonths={benchmarkJeMonths(netDisbursed, certifierPerson)}
+        crackCount={crackEvents.length}
+        potholeCount={potholeEvents.length}
+        drainCount={drainEvents.length}
+        underbidPercent={underbidPercent}
+        underbidAmount={underbidAmount}
+        failedInMonths={failedInMonths}
+        firstConditionDate={firstConditionDate}
+        costPerDay={costPerDay}
+        dlpExpired={dlpExpired}
+        dlpExpiryDate={dlpExpiryDate}
+        rtiFiledDate={rtiFiledDate}
+        rtiDaysOverdue={rtiDaysOverdue}
+        appeal1Date={appeal1Date}
+        appeal1SentMode={appeal1SentMode}
+        appeal1ReplyStatus={appeal1ReplyStatus}
+        appeal2Date={appeal2Date}
+        appeal2SentMode={appeal2SentMode}
+        appeal2ReplyStatus={appeal2ReplyStatus}
+        appealCount={appealCount}
+        daysSilent={daysSilent}
+        roadLocation={roadLocation}
+        privateRepairCount={privateRepairEvents.length}
       />
 
       {/* SECTION 5: THE FACES */}
@@ -268,7 +386,6 @@ export default async function RoadPage({
         financialChain={financialChain}
         administrativeChain={administrativeChain}
         contractor={contractorCard}
-        failureDuration={failureDuration}
       />
 
       {/* SECTION 6: EMPOWERMENT */}

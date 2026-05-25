@@ -81,8 +81,7 @@ src/
 │   │   └── BetrayalSection.tsx
 │   ├── section5/               ← Section 5: The Faces
 │   │   ├── FacesSection.tsx
-│   │   ├── OfficialCard.tsx
-│   │   └── ContractorCard.tsx
+│   │   └── FaceCard.tsx
 │   ├── section6/               ← Section 6: Empowerment
 │   │   └── EmpowermentSection.tsx
 │   └── shared/                 ← Reusable components used across sections
@@ -251,10 +250,12 @@ All derived values (`builtMonthsAgo`, `netDisbursed`, `certifierPerson`, `sectio
 
 import { getFullRoadData } from '@/server/queries/road';
 import {
-  builtMonthsAgo, daysLasted, formatCurrency, formatSalary,
-  section4Title, benchmarkBags, benchmarkJeMonths,
-  getInitials, getActionLabel, getAccountabilityLabel,
-  dlpStatusLabel, formatDate, ISSUE_EVENT_TYPES,
+  builtMonthsAgo, daysLasted, formatCurrency, formatLakh, formatDate,
+  section4Title, benchmarkJeMonths, formatFailureDuration,
+  getActionLabel, ISSUE_EVENT_TYPES, formatSalaryPerDay,
+  extractTenderEvidence, extractPaymentEvidence, extractCompletionEvidence,
+  extractDlpEvidence, extractRepairEvidence, extractRtiEvidence, extractAppealEvidence,
+  monthsApart, isSameDay,
 } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
 import HeroSection from '@/components/section1/HeroSection';
