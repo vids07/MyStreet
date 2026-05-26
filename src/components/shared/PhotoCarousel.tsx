@@ -132,7 +132,7 @@ export default function PhotoCarousel({
             />
           )}
           {isHero ? (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
           ) : (
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           )}
@@ -150,9 +150,9 @@ export default function PhotoCarousel({
     </div>
   );
 
-  const badge = (
-    <div className={`absolute z-10 ${isHero ? 'top-sm right-sm' : 'top-xs left-xs'}`}>
-      <StatusBadge status={activePhoto?.status ?? null} variant={isHero ? 'solid' : undefined} />
+  const badge = !isHero && (
+    <div className="absolute z-10 top-sm right-sm">
+      <StatusBadge status={activePhoto?.status ?? null} variant="solid" />
     </div>
   );
 
@@ -192,13 +192,13 @@ export default function PhotoCarousel({
         {prevArrow}
         {nextArrow}
         {filtered.length > 1 && (
-          <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex items-center gap-2xs">
+          <div className="absolute bottom-sm left-1/2 -translate-x-1/2 z-20 flex items-center gap-xs">
             {filtered.map((_, i) => (
               <button
                 key={i}
                 onClick={() => scrollToIndex(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`w-2 h-2 rounded-full transition-colors ${i === activeIndex ? 'bg-white' : 'bg-white/40'}`}
+                className={`h-1 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-6 bg-white' : 'w-2 bg-white/40'}`}
               />
             ))}
           </div>

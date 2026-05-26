@@ -57,6 +57,8 @@ export type ConditionCardData = {
   photos: PhotoData[];
   budgetAmount: number | null;
   budgetLabel: string | null;
+  workOrderDate: string | null;
+  constructionStartDate: string | null;
   certifiedDate: Date | null;
   inspectedDate: Date | null;
   inspectedSameDay: boolean;

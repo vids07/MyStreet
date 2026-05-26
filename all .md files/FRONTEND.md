@@ -73,10 +73,7 @@ src/
 │   ├── section1/               ← Section 1: The Hero
 │   │   └── HeroSection.tsx
 │   ├── section3/               ← Section 3: Current Condition
-│   │   ├── ConditionSection.tsx
-│   │   ├── CrackCard.tsx
-│   │   ├── PotholeCard.tsx
-│   │   └── DrainCard.tsx
+│   │   └── ConditionSection.tsx
 │   ├── section4/               ← Section 4: The Betrayal
 │   │   └── BetrayalSection.tsx
 │   ├── section5/               ← Section 5: The Faces

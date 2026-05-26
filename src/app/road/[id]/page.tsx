@@ -42,7 +42,7 @@ export default async function RoadPage({
 
   if (!data) notFound();
 
-  const { road, events, photos, heroPhoto, confirmationCount, drains } = data;
+  const { road, events, photos, heroPhoto, confirmationCount, drains, segments } = data;
 
   // --- DATA DERIVATIONS ---
 
@@ -50,6 +50,12 @@ export default async function RoadPage({
   const tenderEvent = events.find(
     e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && extractTenderEvidence(e.evidence).isTender
   ) ?? events.find(e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED);
+
+  // Work order: latest non-tender work_order_issued (events are DESC so .find gives newest first)
+  const workOrderEvent = events.find(
+    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && !extractTenderEvidence(e.evidence).isTender,
+  );
+  const constructionStartEvent = events.find(e => e.eventType === EVENT_TYPES.CONSTRUCTION_STARTED);
 
   const completionEvent = events.find(e => e.eventType === EVENT_TYPES.COMPLETION_CLAIMED);
   const paymentEvent = events.find(e => e.eventType === EVENT_TYPES.PAYMENT_RELEASED);
@@ -69,6 +75,18 @@ export default async function RoadPage({
     return salA - salB;
   })[0];
   const certifierPerson = primaryCertifierParticipant?.person;
+
+  const workOrderDate = workOrderEvent ? formatDate(workOrderEvent.timestamp) : null;
+  const constructionStartDate = constructionStartEvent ? formatDate(constructionStartEvent.timestamp) : null;
+
+  // Segment specs — area (SQM) and surface thickness (mm)
+  const firstSegment = segments[0] ?? null;
+  const specsLabel = firstSegment
+    ? [
+        firstSegment.area ? `${Number(firstSegment.area).toFixed(2)} SQM` : null,
+        firstSegment.surfaceThickness ? `${firstSegment.surfaceThickness}mm thick` : null,
+      ].filter(Boolean).join(' · ') || null
+    : null;
 
   const conditionEvents = events.filter(e => (ISSUE_EVENT_TYPES as readonly string[]).includes(e.eventType));
   const section1Photos = photos.filter(p => p.eventId === null);
@@ -128,6 +146,8 @@ export default async function RoadPage({
       photos: crackPhotos,
       budgetAmount: roadSurfaceBudget,
       budgetLabel: roadSurfaceBudget !== null ? 'Road surface' : null,
+      workOrderDate,
+      constructionStartDate,
       certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
       inspectedDate: inspectionDate,
       inspectedSameDay,
@@ -145,6 +165,8 @@ export default async function RoadPage({
       photos: potholePhotos,
       budgetAmount: roadSurfaceBudget,
       budgetLabel: roadSurfaceBudget !== null ? 'Road surface' : null,
+      workOrderDate,
+      constructionStartDate,
       certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
       inspectedDate: inspectionDate,
       inspectedSameDay,
@@ -162,6 +184,8 @@ export default async function RoadPage({
       photos: drainPhotos,
       budgetAmount: drainBudget,
       budgetLabel: drainBudget !== null ? 'Drain construction' : null,
+      workOrderDate,
+      constructionStartDate,
       certifiedDate: certifiedDate ? new Date(certifiedDate) : null,
       inspectedDate: inspectionDate,
       inspectedSameDay,
@@ -179,6 +203,7 @@ export default async function RoadPage({
   const { dlpEndDate } = extractDlpEvidence(dlpEvent?.evidence);
   const dlpExpired = dlpEndDate !== null && dlpEndDate < new Date();
   const dlpExpiryDate = dlpEndDate ? formatDate(dlpEndDate) : null;
+  const dlpStartDate = dlpEvent ? formatDate(dlpEvent.timestamp) : null;
 
   // Private repairs: repair_done events where evidence.privatelyFunded === true
   const privateRepairEvents = events.filter(
@@ -263,7 +288,7 @@ export default async function RoadPage({
     : null;
 
   // Road location string for Netherlands comparison block
-  const roadLocation = [road.ward, 'Roorkee'].filter(Boolean).join(', ');
+  const roadLocation = "Purvi deen dayal, ward 28, roorkee";
 
   // --- SECTION 5 DERIVATIONS ---
 
@@ -352,6 +377,7 @@ export default async function RoadPage({
         contractValue={formatLakh(contractValue)}
         netDisbursed={formatLakh(netDisbursed)}
         healthStatus={road.healthStatus}
+        specsLabel={specsLabel}
       />
 
       {/* SECTION 4: THE BETRAYAL */}
@@ -371,6 +397,7 @@ export default async function RoadPage({
         firstConditionDate={firstConditionDate}
         costPerDay={costPerDay}
         dlpExpired={dlpExpired}
+        dlpStartDate={dlpStartDate}
         dlpExpiryDate={dlpExpiryDate}
         rtiFiledDate={rtiFiledDate}
         rtiDaysOverdue={rtiDaysOverdue}

@@ -76,6 +76,7 @@ export async function getParticipantsByEventId(eventId: string) {
         personCategory: persons.personCategory,
         jurisdiction: persons.jurisdiction,
         monthlySalary: persons.monthlySalary,
+        payScale: persons.payScale,
         salarySource: persons.salarySource,
         photoUrl: persons.photoUrl,
         photoSource: persons.photoSource,

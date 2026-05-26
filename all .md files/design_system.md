@@ -370,7 +370,11 @@ Health Status Badge Colors
 StatusBackgroundTextcritical#FDECEA#C0392Bwarning#FEF3C7#B45309good#EAF4E2#2D7A27dangerous#FCE8E8#7B1D1D
 
 Photo Status Badge Colors
-StatusBackgroundTextcritical#FDECEA#C0392Bwarning#FEF3C7#B45309good#EAF4E2#2D7A27informational#EFF6FF#1D4ED8
+StatusBackgroundTextcritical#FDECEA#C0392B
+warning#FEF3C7#B45309
+good#EAF4E2#2D7A27
+informational#EFF6FF#1D4ED8
+dangerous#FCE8E8#7B1D1D
 
 ---
 
@@ -399,39 +403,36 @@ If you are tempted to use glassmorphism in another section — do not. The hero 
 
 **Purpose:** In 5 seconds, Sunita must feel: "This is my road. Someone knows."
 
-**Implementation:** Full-bleed photo carousel. `h-screen`. `variant="hero"` on PhotoCarousel. Photos are citizen field photos with `eventId: null` in the database — this is the query join condition, not a convention.
+**Implementation:** Full-bleed photo carousel. `h-screen`. `variant="hero"` on PhotoCarousel. Photos are citizen field photos with `eventId: null` in the database.
 
 **Photo display — art-directed per device:**
-- Mobile (`< 768px`): original Cloudinary URL, no crop. Source photos are portrait (phone-shot) — they already match mobile aspect ratio. `object-cover` handles the minor fill.
-- Laptop (`768px–1279px`): Cloudinary `c_fill,ar_1.6,g_auto` crop. Landscape fill.
-- Desktop (`≥ 1280px`): Cloudinary `c_fill,ar_1.78,g_auto` crop. Landscape fill.
+- Mobile (`< 768px`): original Cloudinary URL, no crop. Source photos are portrait — `object-cover` handles the fill.
+- Laptop (`768px–1279px`): Cloudinary `c_fill,ar_1.6,g_auto` crop.
+- Desktop (`≥ 1280px`): Cloudinary `c_fill,ar_1.78,g_auto` crop.
 
-Use `getHeroCrops(photo.url)` from `road-display.ts` to generate all three URLs. Pass result via `renderPhoto` prop on PhotoCarousel.
+**Symmetrical Top Bar:**
+- **Top-Left**: `Photographed [Date]` capsule link. Rounded-full glass capsule (`px-3 py-1.5`).
+- **Top-Right**: **StatusBadge** `variant="solid"`. Shows photo-level status with a pulsing live beacon (`animate-ping`) for Critical/Warning states.
 
-**Gradient overlay:** `bg-gradient-to-t from-black/60 via-black/5 to-transparent` — darkens only near the bottom where text sits. Intentionally light so road damage is visible through most of the frame.
+**Bottom Overlay — 3-Line Cinematic Stack:**
+The address is broken into three lines for maximum clarity and forensic impact.
 
-**Bottom overlay — 4 lines, bottom-left, `pb-xl pl-sm`:**
+| Line | Content | Style |
+|---|---|---|
+| 1 | **Road Name** (e.g., Purvi Deen Dayal) | `text-title md:text-headline mona text-white font-extrabold` |
+| 2 | **Location/Ward** (e.g., Ward 28, Roorkee) | `text-body-bold md:text-title roboto text-white font-bold` + `MapPin` icon |
+| 3 | **Governing Body** (Under: Nagar Nigam) | `text-body-bold md:text-title roboto text-[#FF4D4D] font-bold` + `Landmark` icon |
 
-| Line | Content | Source | Style |
-|---|---|---|---|
-| 1 | Street name | `photo.locationLabel.split(' — ')[0]` | `text-headline mona text-white` |
-| 2 | Location | `photo.locationLabel.split(' — ')[1]` + `MapPin` icon | `text-label roboto text-white/60` |
-| 3 | Governing body | `road.governingBody` + `Landmark` icon, prefixed "Under:" | `text-label roboto text-white/80` — brighter than location, this is accountability data |
-| 4 | Photo date + verify link | `capturedAt` formatted + `ExternalLink` icon, opens original photo URL | `text-label roboto text-white/40 uppercase` — dimmed, verification affordance |
-
-**`locationLabel` format contract:** `"street name — ward, city, pincode"` — split on ` — `. Everything before = headline. Everything after = location line. This format is enforced in seed.ts via the `Section1Photo` type.
-
-**StatusBadge:** top-right, `variant="solid"`. Shows photo-level status (critical/warning/good/informational), not road health status.
+**Legibility & Atmosphere:**
+- **Text Shadow**: A deep `0 2px 4px rgba(0, 0, 0, 0.9)` shadow is applied to all text overlays to ensure readability on bright photos.
+- **Bottom Grounding**: `bg-gradient-to-t from-black/85 via-black/35 to-transparent` (h-1/3) provides a dark surface for the address text.
+- **Danger Accent**: The governing body (Line 3) is rendered in a vibrant danger red (`#FF4D4D`) to highlight accountability.
 
 **What does NOT appear in the hero:**
-- Navigation bar or header
-- Logo
-- Search bar
-- Grid or card layout
-- Glassmorphism panel (reserved for future video implementation)
-- Any rating, star, or social proof element
+- Navigation bar, logo, or search bar.
+- Any social proof, ratings, or "friendly" startup elements.
 
-**Fallback:** If `photo.locationLabel` is null, headline falls back to `road.ward` or `road.roadDisplayName`. Always render something.
+**Fallback:** If `photo.locationLabel` is missing, Line 1 falls back to `road.roadDisplayName`.
 
 ---
 
@@ -626,7 +627,7 @@ These components live in `src/components/shared/`. Use them in every section. Ne
 
 **variant="card"** — used inside ConditionCard and any future multi-card sections:
 - Photo area: `h-64 rounded-sm overflow-hidden`
-- Badge: top-left, default variant
+- Badge: top-right, `variant="solid"` (matches visual symmetry of Section 1)
 - Arrows: size 20, `p-2xs`, `left-xs` / `right-xs`, `hover:bg-black/60`
 - Gradient: `h-16 from-black/60` bottom only
 - Location label: `bottom-xs left-xs text-label roboto text-white/80 uppercase`
@@ -723,9 +724,9 @@ const [activePhoto, setActivePhoto] = useState<PhotoData | null>(
 
 ---
 
-### ConditionCard Subgrid Pattern — LOCKED ✅
+### ConditionCard Forensic Layout Pattern — LOCKED ✅
 
-Used in Section 3. Apply this pattern to any future 3-column card grid where rows must align horizontally.
+Used in Section 3. Apply this pattern to any 3-column card grid where visual consistency, height parity, and precise horizontal alignment are critical.
 
 **Parent grid container:**
 ```tsx
@@ -733,40 +734,32 @@ Used in Section 3. Apply this pattern to any future 3-column card grid where row
      style={{ gridTemplateRows: 'auto' }}>
 ```
 
-**Card wrapper (8 rows: 2 photo rows + 6 body rows):**
+**Card Wrapper (Flex column structure):**
 ```tsx
-<div className="bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow overflow-hidden grid"
-     style={{ gridRow: 'span 8', gridTemplateRows: 'subgrid' }}>
-  <PhotoCarousel ... />  {/* ROWS 1–2: fragment = photo div + dots div */}
-  {/* card body below */}
+<div className="bg-card rounded-md shadow-card hover:shadow-card-hover transition-shadow overflow-hidden flex flex-col h-full">
+  <PhotoCarousel ... />
+  {/* forensic diagnostic body */}
 </div>
 ```
 
-**Card body (spans rows 3–8):**
-```tsx
-<div className="p-sm grid gap-sm"
-     style={{ gridTemplateRows: 'subgrid', gridRow: 'span 6' }}>
-  {/* ROW 3: heading — h3, mona, text-body-bold */}
-  {/* ROW 4: budget — label (ROAD SURFACE MONEY SPENT) + formatLakh amount */}
-  {/* ROW 5: count — countLabel ?? "{heading} found" + large number in text-failure */}
-  {/* ROW 6: timeline — Certified / Inspected (same day?) / Damage found X months later */}
-  {/* ROW 7: approved by — officials with inline abbreviation: "Name (JE)" sorted by salary */}
-  {/* ROW 8: built by — contractor name */}
-</div>
-```
-
-**Rules:**
-- Every row div must always render — even if empty (`<div />`) — or the subgrid collapses that row and cards misalign.
-- PhotoCarousel card variant returns a React fragment (2 direct children = rows 1 and 2).
-- `countLabel` on `ConditionCardData` overrides the default `"{heading} found"` label. Use for drain card ("Sections damaged").
-- Approved by officials sorted by `monthlySalary` ascending so JE → AE → EE order is guaranteed.
-- Budget amounts use `formatLakh` (≥1 lakh → `₹X.XX Lakh`, below → full format).
+**Diagnostic Body Structure & Design Accents:**
+- **Technical HUD Texture Overlay**: Radial dots overlay (`radial-gradient(#000 1.2px, transparent 0)`) at extremely low opacity (`opacity-[0.03]`) combined with subtle, vintage border corner brackets (`border-text-muted/30`) to emphasize the analytical, record-like authenticity.
+- **Heading**: Mona Sans extra-bold (`text-xl font-black uppercase pb-2 border-b-2 border-text-primary/10`) for the card's file title (e.g. `SURFACE CRACKS`).
+- **Forensic Strip (The Truth Metrics)**: A horizontal, double-column box with centered, vertical dividers separating `ISSUES FOUND` and `TAX WASTED`.
+  - Values must use precise, single-line text formatting (`text-xl font-black`) to prevent multi-line overflow and maintain total visual parity across cards.
+- **Color-Softened Alert Ticker ("FAILED IN MONTHS")**:
+  - Background: Semi-transparent light red alert tint (`bg-failure-bg/80`).
+  - Outline: Solid red left-border accent stripe (`border-l-4 border-failure`).
+  - Text accents: `FAILED IN MONTHS` in bold red `text-failure`, pulsing `ALERT_FAILED` code tag in `text-failure/55`, and supporting narrative (`Evidence reported in 7 months`) in readable `text-failure/85`.
+- **Chain of Custody Timeline**: A clean, vertical timeline with an left border line (`w-[2px] bg-border/80`) and solid white node pins surrounded by a bold near-black border.
+- **Official Seal (Sign-Offs)**: Compact solid-tint container detailing officials sorted by salary ascending (Junior Engineer → Assistant Engineer → Executive Engineer).
+  - Uses an animated gradient scanline (`bg-gradient-to-b from-transparent via-text-primary/[0.02] to-transparent animate-pulse`) to mimic digital record terminals.
 
 **Section 3 summary strip (above cards):**
 ```
 BUILT · ALLOCATED · CONTRACTED · NET PAID · SAFETY RATING
 ```
-5-column grid (`md:grid-cols-5`). Amounts formatted with `formatLakh`. DOCUMENTED column was intentionally removed — defect counts are in the cards below.
+5-column grid (`md:grid-cols-5`). Values formatted with `formatLakh`. Includes a pulsing beacon beacon (`animate-ping`) on the live Safety Rating status.
 
 ---
 
