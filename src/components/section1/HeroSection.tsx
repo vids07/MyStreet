@@ -85,7 +85,7 @@ export default function HeroSection({ road, heroPhoto, section1Photos }: HeroSec
               )}
 
               <div 
-                className="absolute bottom-12 left-0 w-full pb-xl px-sm md:px-md flex flex-col gap-xs pointer-events-auto"
+                className="absolute bottom-[128px] left-0 w-full px-sm md:px-md flex flex-col gap-xs pointer-events-auto"
                 style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.9)' }}
               >
                 <h2 className="text-title md:text-headline mona text-white font-extrabold leading-tight tracking-wide">

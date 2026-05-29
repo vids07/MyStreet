@@ -3,6 +3,8 @@ import { getFullRoadData } from '@/server/queries/road';
 import {
   formatSalaryPerDay,
   getActionLabel,
+  formatLakh,
+  extractTenderEvidence,
 } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
 import type { PersonData, FaceCardData } from '@/types/road';
@@ -91,6 +93,10 @@ export default async function SignOffPage({
       }
     : null;
 
+  const tenderEvent = data.events.find(e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED);
+  const { contractValue: rawContractValue } = extractTenderEvidence(tenderEvent?.evidence);
+  const formattedContractValue = rawContractValue ? formatLakh(rawContractValue) : '0';
+
   return (
     <main className="bg-surface min-h-screen">
       {/* HERO CONTEXT */}
@@ -112,6 +118,7 @@ export default async function SignOffPage({
         financialChain={financialChain}
         administrativeChain={administrativeChain}
         contractor={contractorCard}
+        contractValue={formattedContractValue}
       />
     </main>
   );
