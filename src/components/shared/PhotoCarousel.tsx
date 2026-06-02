@@ -132,7 +132,10 @@ export default function PhotoCarousel({
             />
           )}
           {isHero ? (
-            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+            <>
+              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none z-10" />
+              <div className="absolute top-0 left-0 right-0 h-[200px] bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none z-10" />
+            </>
           ) : (
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           )}

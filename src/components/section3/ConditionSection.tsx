@@ -46,10 +46,10 @@ function ConditionCard({ card }: { card: ConditionCardData }) {
               href={photo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute bottom-xs left-xs flex items-center gap-1 bg-black/30 hover:bg-black/60 backdrop-blur-[2px] border border-white/10 text-white/60 hover:text-white rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase transition-all duration-200 z-10 w-fit"
+              className="absolute bottom-xs left-xs flex items-center gap-1 bg-black/55 hover:bg-black/75 backdrop-blur-[4px] border border-white/15 text-white/85 hover:text-white rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase transition-all duration-200 z-10 w-fit"
             >
               Photographed {formatDate(photo.capturedAt)}
-              <ExternalLink size={10} strokeWidth={1.5} className="opacity-70" />
+              <ExternalLink size={10} strokeWidth={1.5} className="opacity-80" />
             </a>
           ) : null
         }
@@ -191,7 +191,7 @@ export default function ConditionSection({
   ];
 
   return (
-    <section id="section3" className="py-xl bg-surface">
+    <section id="section3" className="py-xl bg-surface scroll-mt-24">
       <div className="max-w-7xl mx-auto px-sm md:px-md">
         <h2 className="text-headline mona text-text-primary uppercase tracking-tight font-black">Current Condition</h2>
         <p className="text-body mona text-text-muted mt-xs uppercase tracking-widest text-xs font-bold">

@@ -31,7 +31,7 @@ export default function HeroSection({ road, heroPhoto, section1Photos }: HeroSec
   if (allPhotos.length === 0) return null;
 
   return (
-    <section id="section1" className="w-full bg-black" style={{ minHeight: '100vh' }}>
+    <section id="section1" className="w-full bg-black relative overflow-hidden" style={{ minHeight: '100vh' }}>
       <PhotoCarousel
         photos={allPhotos}
         height="h-screen"
@@ -65,47 +65,78 @@ export default function HeroSection({ road, heroPhoto, section1Photos }: HeroSec
           }
 
           return (
-            <div className="absolute inset-0 z-10 pointer-events-none">
-              {photo.capturedAt && (
-                <a
-                  href={photo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute top-sm left-sm z-20 flex items-center gap-1.5 bg-black/40 hover:bg-black/60 backdrop-blur-sm border border-white/10 text-white/80 hover:text-white rounded-full px-3 py-1.5 text-xs font-semibold tracking-wider uppercase transition-all duration-200 pointer-events-auto shadow-lg"
-                >
-                  Photographed {formatDate(photo.capturedAt)}
-                  <ExternalLink className="shrink-0" size={12} strokeWidth={1.5} />
-                </a>
-              )}
-
-              {photo.status && (
-                <div className="absolute top-sm right-sm z-20 pointer-events-auto">
-                  <StatusBadge status={photo.status} variant="solid" />
-                </div>
-              )}
-
+            <div className="absolute inset-0 z-10 pointer-events-none flex items-end">
+              
+              {/* Premium Netflix-Style Floating Content (Bottom Left) */}
               <div 
-                className="absolute bottom-[128px] left-0 w-full px-sm md:px-md flex flex-col gap-xs pointer-events-auto"
-                style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.9)' }}
+                className="absolute bottom-[60px] md:bottom-[80px] left-sm md:left-md right-sm md:right-auto z-20 max-w-3xl flex flex-col gap-xs md:gap-sm text-left pointer-events-auto select-none"
               >
-                <h2 className="text-title md:text-headline mona text-white font-extrabold leading-tight tracking-wide">
-                  {line1}
-                </h2>
+                {/* 1. Status Tag & Date Row */}
+                <div className="flex items-center gap-xs">
+                  <div className="flex items-center gap-1.5 bg-failure text-white border border-white/10 px-2.5 py-0.5 rounded-xs text-[10px] font-black tracking-widest roboto uppercase shadow-[0_2px_8px_rgba(192,57,43,0.3)]">
+                    <span className="flex h-1.5 w-1.5 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                    </span>
+                    {photo.status ? `${photo.status.toUpperCase()} STATUS` : 'CRITICAL STATUS'}
+                  </div>
+                  {photo.capturedAt && (
+                    <>
+                      <span className="text-white/30 text-xs font-light">•</span>
+                      <span className="text-xs font-bold tracking-wider roboto text-white/70 uppercase">
+                        FILED: {formatDate(photo.capturedAt)}
+                      </span>
+                    </>
+                  )}
+                </div>
 
-                {line2 && (
-                  <p className="flex items-center gap-2xs text-body-bold md:text-title roboto text-white font-bold">
-                    <MapPin className="text-white/80" size={18} strokeWidth={2} />
-                    {line2}
-                  </p>
+                {/* 2. Immersive Title */}
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] roboto text-white/60 font-black tracking-[0.25em] uppercase leading-none">
+                    CITIZEN EVIDENCE FILE
+                  </span>
+                  <h1 className="text-headline md:text-display mona text-white font-black leading-[1.05] tracking-tight uppercase mt-1">
+                    {line1}
+                  </h1>
+                </div>
+
+                {/* 3. Horizontal Metadata Bullet Row */}
+                <div className="flex flex-wrap items-center gap-x-xs md:gap-x-sm gap-y-1.5 text-xs roboto text-white/80 font-semibold tracking-wide uppercase mt-1">
+                  {line2 && (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="text-white/40 shrink-0" size={13} />
+                      <span>{line2}</span>
+                    </span>
+                  )}
+                  
+                  {road.governingBody && (
+                    <>
+                      <span className="text-white/30 font-light">•</span>
+                      <span className="flex items-center gap-1 text-white/90">
+                        <Landmark className="text-red-400 shrink-0" size={13} />
+                        <span>UNDER: <span className="font-black text-white">{road.governingBody}</span></span>
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* 4. Elegant High-Contrast CTA Button */}
+                {photo.url && (
+                  <div className="mt-xs">
+                    <a
+                      href={photo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 bg-white hover:bg-white/90 active:scale-[0.98] text-black rounded px-md py-2.5 text-[11px] roboto font-black uppercase tracking-widest transition-all duration-200 pointer-events-auto text-center"
+                    >
+                      Inspect Raw Evidence Photo
+                      <ExternalLink size={13} strokeWidth={2.5} />
+                    </a>
+                  </div>
                 )}
-                
-                {road.governingBody && (
-                  <p className="flex items-center gap-2xs text-body-bold md:text-title roboto text-[#FF4D4D] font-bold">
-                    <Landmark className="text-[#FF4D4D]" size={18} strokeWidth={2} />
-                    Under: {road.governingBody}
-                  </p>
-                )}
+
               </div>
+
             </div>
           );
         }}

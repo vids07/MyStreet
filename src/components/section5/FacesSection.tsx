@@ -118,7 +118,7 @@ function DossierFolder({
         <div className="overflow-hidden">
           <div className="p-sm md:p-md bg-surface/35 flex flex-col gap-sm">
             {/* Folder description */}
-            <p className="text-body-bold roboto text-text-muted max-w-2xl leading-relaxed text-xs border-b border-border/30 pb-xs">
+            <p className="roboto text-text-muted max-w-2xl leading-relaxed text-xs border-b border-border/30 pb-xs">
               {description}
             </p>
 
@@ -168,7 +168,7 @@ export default function FacesSection({
   };
 
   return (
-    <section id="section5" className="py-xl bg-surface border-t border-border/40">
+    <section id="section5" className="py-xl bg-surface border-t border-border/40 scroll-mt-24">
       <div className="max-w-3xl mx-auto px-sm md:px-md flex flex-col gap-md">
 
         {/* Section Header (Forensic / Case File Style) */}

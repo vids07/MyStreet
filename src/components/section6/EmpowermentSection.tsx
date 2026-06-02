@@ -96,7 +96,7 @@ export default function EmpowermentSection({
   const witnessDisabled = witnessState === 'loading' || witnessState === 'done';
 
   return (
-    <section id="section6" className="py-xl bg-surface">
+    <section id="section6" className="py-xl bg-surface scroll-mt-24">
       <div className="max-w-4xl mx-auto px-sm md:px-md text-center space-y-md">
         <h2 className="text-headline mona text-text-primary">The Truth is Yours to Hold</h2>
         <p className="text-body mona text-text-muted">

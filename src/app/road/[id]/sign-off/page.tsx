@@ -99,17 +99,17 @@ export default async function SignOffPage({
 
   return (
     <main className="bg-surface min-h-screen">
+      {/* PORTAL NAVIGATION TAB */}
+      <AuditFolderTabs
+        roadId={road.roadSystemId}
+        activeTab="sign-off"
+      />
+
       {/* HERO CONTEXT */}
       <HeroSection
         road={road}
         heroPhoto={heroPhoto}
         section1Photos={section1Photos}
-      />
-
-      {/* PORTAL NAVIGATION TAB */}
-      <AuditFolderTabs
-        roadId={road.roadSystemId}
-        activeTab="sign-off"
       />
 
       {/* CORE SPECIFIC CONTENT */}

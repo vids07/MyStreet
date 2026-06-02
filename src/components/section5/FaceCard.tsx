@@ -74,7 +74,7 @@ export default function FaceCard({
                 className="w-full h-full rounded-full object-cover grayscale brightness-95 group-hover:grayscale-0 transition-all duration-300"
               />
             ) : (
-              <span className="text-body-bold roboto font-black text-text-primary text-xs">
+              <span className="roboto font-black text-text-primary text-xs">
                 {avatarText}
               </span>
             )}

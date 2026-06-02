@@ -56,7 +56,7 @@ export default function BetrayalSection({
   drainCount,
 }: BetrayalSectionProps) {
   return (
-    <section id="section4" className="py-xl bg-surface">
+    <section id="section4" className="py-xl bg-surface scroll-mt-24">
       <div className="max-w-5xl mx-auto px-sm md:px-md flex flex-col gap-md relative">
         
         {/* Section Header */}
