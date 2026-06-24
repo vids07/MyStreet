@@ -60,8 +60,8 @@ export default function AuditFolderTabs({ roadId, activeTab }: AuditFolderTabsPr
     },
     {
       id: 'shield' as TabId,
-      label: '05 // AI Inspector',
-      shortLabel: 'AI Inspector',
+      label: '05 // How It Can Be Better',
+      shortLabel: 'Better?',
       href: `/road/${roadId}/shield#audit-content`,
       icon: Shield,
     },

@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Eye, Share2, Camera, Check } from 'lucide-react';
+import { Eye, Share2, Camera, Check, ShieldCheck, ArrowRight } from 'lucide-react';
 
 type EmpowermentSectionProps = {
   confirmationCount: number;
   roadSystemId: string;
   streetName: string;
+  contractorName: string;
+  milestoneAmount: number;
+  roadDisplayName: string;
 };
 
 type WitnessState = 'idle' | 'loading' | 'done' | 'error';
@@ -32,10 +35,19 @@ export default function EmpowermentSection({
   confirmationCount,
   roadSystemId,
   streetName,
+  contractorName,
+  milestoneAmount,
+  roadDisplayName,
 }: EmpowermentSectionProps) {
   const [witnessState, setWitnessState] = useState<WitnessState>('idle');
   const [liveCount, setLiveCount] = useState(confirmationCount);
   const [shareState, setShareState] = useState<ShareState>('idle');
+
+  const formattedAmount = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(milestoneAmount);
 
   async function handleWitness() {
     if (witnessState !== 'idle' && witnessState !== 'error') return;
@@ -136,6 +148,40 @@ export default function EmpowermentSection({
         <p className="text-label roboto text-text-muted uppercase pt-md">
           Your identity is not recorded. Only your witness is.
         </p>
+
+        {/* ROADSHIELD AI CALL-TO-ACTION CARD */}
+        <div className="mt-xl text-left bg-gradient-to-br from-slate-900 via-slate-950 to-zinc-950 text-white rounded-md p-md md:p-lg border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative overflow-hidden group">
+          {/* Glowing Background Pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_45%)] pointer-events-none" />
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/8 transition-all duration-700" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-md">
+            <div className="space-y-sm max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+                <ShieldCheck size={14} className="animate-pulse" />
+                RoadShield AI Active
+              </div>
+              
+              <h3 className="text-title mona text-white font-black tracking-tight leading-tight">
+                How Can We Prevent This in the Future?
+              </h3>
+              
+              <p className="text-sm md:text-base text-slate-300 leading-relaxed font-normal">
+                Don't wait for roads to disintegrate. Use RoadShield AI to audit <strong className="text-white font-bold">{contractorName}</strong>'s work on <strong className="text-white font-bold">{roadDisplayName}</strong> before the next milestone payment of <strong className="text-emerald-400 font-bold">{formattedAmount}</strong> is released.
+              </p>
+            </div>
+
+            <div className="shrink-0 w-full md:w-auto">
+              <a
+                href={`/roadshield.html?id=${roadSystemId}&contractor=${encodeURIComponent(contractorName)}&amount=${milestoneAmount}&name=${encodeURIComponent(roadDisplayName)}`}
+                className="inline-flex items-center justify-center gap-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm md:text-base px-md py-sm rounded-sm transition-all duration-300 w-full md:w-auto shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_24px_rgba(16,185,129,0.45)] hover:-translate-y-[2px]"
+              >
+                <span>Run Quality Audit</span>
+                <ArrowRight size={18} strokeWidth={2.5} />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

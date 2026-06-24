@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getFullRoadData } from '@/server/queries/road';
 import { extractTenderEvidence } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
@@ -40,6 +40,15 @@ export default async function ShieldPage({
 
   const { contractValue } = extractTenderEvidence(tenderEvent?.evidence);
   const milestoneAmount = contractValue ? Math.round(contractValue * 0.15) : 2450000;
+
+  const queryParams = new URLSearchParams({
+    id: road.roadSystemId,
+    contractor: contractorName,
+    amount: milestoneAmount.toString(),
+    name: road.roadDisplayName,
+  });
+
+  redirect(`/roadshield.html?${queryParams.toString()}`);
 
   // Verify server-side Gemini API key configuration securely
   const hasSystemEnvKey = !!process.env.GEMINI_API_KEY;
