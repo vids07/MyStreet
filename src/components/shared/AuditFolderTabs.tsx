@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FileText, DollarSign, Users, ShieldAlert } from 'lucide-react';
+import { FileText, DollarSign, Users, ShieldAlert, Shield } from 'lucide-react';
 
-type TabId = 'condition' | 'betrayal' | 'sign-off' | 'action';
+type TabId = 'condition' | 'betrayal' | 'sign-off' | 'action' | 'shield';
 
 type AuditFolderTabsProps = {
   roadId: string;
@@ -58,6 +58,13 @@ export default function AuditFolderTabs({ roadId, activeTab }: AuditFolderTabsPr
       href: `/road/${roadId}/action#audit-content`,
       icon: ShieldAlert,
     },
+    {
+      id: 'shield' as TabId,
+      label: '05 // AI Inspector',
+      shortLabel: 'AI Inspector',
+      href: `/road/${roadId}/shield#audit-content`,
+      icon: Shield,
+    },
   ];
 
   const tabSectionIds = {
@@ -65,6 +72,7 @@ export default function AuditFolderTabs({ roadId, activeTab }: AuditFolderTabsPr
     'betrayal': 'section4',
     'sign-off': 'section5',
     'action': 'section6',
+    'shield': 'section7',
   };
 
   // Robust client-side scroll effect on mount and route changes
