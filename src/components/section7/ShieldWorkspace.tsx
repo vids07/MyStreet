@@ -15,7 +15,6 @@ import {
   Clock, 
   User, 
   FileText, 
-  AlertTriangle,
   FileCheck
 } from 'lucide-react';
 import { formatLakh } from '@/lib/utils/road-display';
@@ -84,6 +83,9 @@ export default function ShieldWorkspace({
     reason: ''
   });
   const [savedOverride, setSavedOverride] = useState<OverrideData | null>(null);
+
+  // Rules Drawer state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -198,7 +200,7 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
     setIsAutomatedApproved(false);
 
     if (!hasSystemEnvKey && !customApiKey.trim()) {
-      setErrorMsg('Authentication Missing: Please input your Gemini API Key in the panel uploader.');
+      setErrorMsg('Authentication Missing: Please input your Gemini API Key in the credentials panel.');
       return;
     }
 
@@ -274,12 +276,25 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
 
   return (
     <section id="section7" className="py-lg bg-surface scroll-mt-24">
+      
+      {/* CUSTOM HORIZONTAL SCANNING LASER CSS */}
+      <style>{`
+        @keyframes rs-scan {
+          0% { top: 0%; }
+          50% { top: 100%; }
+          100% { top: 0%; }
+        }
+        .animate-rs-scan {
+          animation: rs-scan 2.2s infinite ease-in-out;
+        }
+      `}</style>
+
       <div className="max-w-7xl mx-auto px-sm md:px-md space-y-md">
         
         {/* APP BRANDING HEADER */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-failure/10 border border-failure/20 text-failure font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest mona">
-            <Shield size={14} className="text-failure" />
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest mona">
+            <Shield size={14} className="text-emerald-400 animate-pulse" />
             RoadShield Quality Protocol
           </div>
           <h2 className="text-display mona text-text-primary uppercase tracking-tight">RoadShield AI Auditor</h2>
@@ -290,21 +305,20 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
 
         {/* API KEY & CREDENTIAL CONFIGURATION PANEL */}
         <div className="bg-card rounded-md border border-border shadow-card p-sm md:p-md relative overflow-hidden transition-all duration-300">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-failure" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-sm items-start">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500" />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-md">
             
-            <div className="space-y-sm">
+            <div className="space-y-sm max-w-xl">
               <h3 className="text-title mona text-text-primary flex items-center gap-xs">
-                <FileCheck size={20} className="text-failure" />
-                Audit Framework & Key Credentials
+                <FileCheck size={20} className="text-emerald-400" />
+                Audit Authentication & Credentials
               </h3>
               <p className="text-meta mona text-text-muted leading-relaxed text-sm">
-                To run the multi-modal road quality inspector, configure your credentials. The platform will call a secure, key-shielded server API route to protect secret values.
+                To run the multi-modal road quality auditor, configure your credentials. Active Model: <strong className="text-emerald-400">Gemini 1.5 Flash (Free Tier Active)</strong>.
               </p>
               
               {/* API Key Status / Input */}
-              <div className="space-y-1">
-                <label className="text-label roboto text-text-muted uppercase">Authentication Status</label>
+              <div className="space-y-1 w-full max-w-md">
                 {hasSystemEnvKey ? (
                   <div className="inline-flex items-center gap-2 bg-evidence-bg border border-evidence/20 text-evidence px-4 py-2.5 rounded-sm text-xs font-bold w-full mona shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-evidence animate-pulse" />
@@ -317,35 +331,50 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
                       placeholder="Paste your Gemini API Key here (e.g. AIzaSy...)"
                       value={customApiKey}
                       onChange={(e) => setCustomApiKey(e.target.value)}
-                      className="w-full text-sm bg-surface text-text-primary placeholder:text-text-muted/60 border border-border focus:border-failure focus:outline-none px-4 py-2.5 rounded-sm font-mono tracking-wider transition-colors shadow-sm"
+                      className="w-full text-sm bg-surface text-text-primary placeholder:text-text-muted/60 border border-border focus:border-emerald-500 focus:outline-none px-4 py-2.5 rounded-sm font-mono tracking-wider transition-colors shadow-sm"
                     />
-                    <p className="text-[10px] roboto text-text-muted/80 leading-normal">
-                      No key in server environment. Paste a temporary key above for local auditing. Your key is processed entirely on the server and is never exposed.
-                    </p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Target Specifications Area */}
-            <div className="space-y-xs">
-              <label className="text-label roboto text-text-muted uppercase">Active Target Inspection Rules</label>
-              <textarea 
-                value={rulesText}
-                onChange={(e) => setRulesText(e.target.value)}
-                className="w-full text-xs font-mono bg-surface text-text-primary border border-border focus:border-failure focus:outline-none p-3 rounded-sm leading-relaxed min-h-[160px] shadow-sm"
-                placeholder="Enter rules context here..."
-              />
+            {/* Quick Actions Panel */}
+            <div className="flex flex-col sm:flex-row gap-sm shrink-0">
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex items-center justify-center gap-xs bg-slate-900 border border-border hover:border-emerald-500/40 text-text-primary text-sm font-bold px-md py-sm rounded-sm transition-all shadow-sm active:scale-[0.98]"
+              >
+                <FileText size={18} className="text-emerald-400" />
+                <span>Configure Audit Rules</span>
+              </button>
+
+              <button
+                onClick={handleRunInspection}
+                disabled={isAuditing || !imagePreview}
+                className="flex items-center justify-center gap-xs bg-emerald-500 hover:bg-emerald-400 disabled:bg-border disabled:text-text-muted disabled:cursor-not-allowed text-slate-950 font-extrabold text-sm px-md py-sm rounded-sm transition-all shadow-md active:scale-95"
+              >
+                {isAuditing ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Auditing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield size={18} />
+                    <span>Run AI Inspection</span>
+                  </>
+                )}
+              </button>
             </div>
 
           </div>
         </div>
 
-        {/* THREE PANEL GRID SYSTEM */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-sm md:gap-md">
+        {/* TIER A: COMPARATIVE ESCROW PLAYGROUND (BEFORE VS AFTER) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-sm md:gap-md">
 
           {/* PANEL 1: CONVENTIONAL MANUAL SYSTEM */}
-          <div className="bg-card rounded-md border border-border shadow-card p-sm flex flex-col justify-between min-h-[500px] transition-all">
+          <div className="bg-card rounded-md border border-border shadow-card p-sm flex flex-col justify-between min-h-[480px] transition-all">
             <div className="space-y-sm">
               <div className="pb-sm border-b border-border">
                 <div className="text-label roboto text-text-muted uppercase tracking-widest mb-1">Panel 01 // Conventional Release</div>
@@ -411,186 +440,14 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
             </div>
           </div>
 
-
-          {/* PANEL 2: ROADSHIELD AI MULTIMODAL AUDITOR */}
-          <div className="bg-card rounded-md border border-border shadow-card p-sm flex flex-col justify-between min-h-[500px] relative transition-all duration-300">
-            
-            <div className="space-y-sm flex-1 flex flex-col">
-              <div className="pb-sm border-b border-border">
-                <div className="text-label roboto text-text-muted uppercase tracking-widest mb-1">Panel 02 // Multimodal Quality Audit</div>
-                <h3 className="text-title mona text-text-primary flex items-center gap-xs">
-                  AI Compliance Engine
-                </h3>
-                <p className="text-[11px] roboto text-text-muted leading-normal mt-1">
-                  Upload a photo of the completed interlocking paver construction milestone to audit texture, alignment, and drainage interfaces against Indian road codes.
-                </p>
-              </div>
-
-              {/* UPLOADER & PREVIEW HUB */}
-              <div className="flex-1 flex flex-col justify-center min-h-[220px]">
-                {!imagePreview ? (
-                  <div 
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                    className={`flex-1 border-2 border-dashed rounded-sm p-sm flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
-                      dragOver 
-                        ? 'border-failure bg-failure/5' 
-                        : 'border-border hover:border-failure/60 hover:bg-surface/60'
-                    }`}
-                  >
-                    <UploadCloud size={32} className={`mb-xs transition-colors ${dragOver ? 'text-failure' : 'text-text-muted/60'}`} />
-                    <span className="text-xs font-black mona text-text-primary uppercase tracking-wider">Drag & Drop Site Photo</span>
-                    <span className="text-[10px] roboto text-text-muted mt-1 leading-normal">or click to browse local files (JPEG, PNG)</span>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleFileChange} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
-                  </div>
-                ) : (
-                  <div className="space-y-xs animate-fadeIn flex flex-col h-full">
-                    {/* Visual Preview */}
-                    <div className="relative border border-border rounded-sm overflow-hidden h-[120px] bg-black shadow-sm group">
-                      <img 
-                        src={imagePreview} 
-                        alt="Inspection Site Milestone Preview" 
-                        className="w-full h-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <button 
-                        onClick={() => {
-                          setImageFile(null);
-                          setImagePreview(null);
-                          setImageBase64(null);
-                        }}
-                        className="absolute bottom-2 right-2 bg-black/80 hover:bg-black border border-white/25 text-white text-[9px] font-bold uppercase py-1 px-2.5 rounded-xs tracking-wider transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    {/* INTERACTIVE INSPECTION SCREEN */}
-                    <div className="flex-1 flex flex-col justify-center bg-surface border border-border rounded-sm p-sm overflow-hidden relative">
-                      
-                      {/* 1. IDLE STATE */}
-                      {!isAuditing && !report && !errorMsg && (
-                        <div className="text-center space-y-1 py-4">
-                          <Shield size={20} className="mx-auto text-text-muted/40" />
-                          <div className="text-xs font-black mona text-text-primary uppercase tracking-wider">Asset Loaded Successfully</div>
-                          <div className="text-[10px] roboto text-text-muted">Click "Run AI Inspection" below to trigger the multimodal audit.</div>
-                        </div>
-                      )}
-
-                      {/* 2. LOADING STATE */}
-                      {isAuditing && (
-                        <div className="space-y-xs text-center py-4 animate-pulse">
-                          <Loader2 size={24} className="mx-auto text-failure animate-spin" />
-                          <div className="text-xs font-black mona text-text-primary uppercase tracking-widest">AI Inspection in Progress</div>
-                          <div className="font-mono text-[9px] text-text-muted bg-white border border-border p-2 rounded-xs h-10 overflow-hidden flex items-center justify-center leading-normal">
-                            {telemetryLog}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 3. ERROR STATE */}
-                      {errorMsg && (
-                        <div className="text-center space-y-2 py-4">
-                          <AlertTriangle size={24} className="mx-auto text-failure" />
-                          <div className="text-xs font-black mona text-failure uppercase tracking-wider">Inspection Interrupted</div>
-                          <div className="text-[10px] roboto text-text-muted leading-relaxed px-2">
-                            {errorMsg}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 4. SUCCESS VERDICT AND REPORT PANELS */}
-                      {report && (
-                        <div className="space-y-xs h-full flex flex-col text-left">
-                          
-                          {/* Giant Verdict Badge */}
-                          <div className={`flex items-center justify-center gap-xs font-black text-sm uppercase py-1 px-4 rounded-sm tracking-widest border shadow-sm ${
-                            report.verdict === 'PASS'
-                              ? 'bg-evidence-bg border-evidence/20 text-evidence'
-                              : 'bg-failure-bg border-failure/20 text-failure'
-                          }`}>
-                            {report.verdict === 'PASS' ? <Check size={14} className="stroke-[3]" /> : <ShieldAlert size={14} />}
-                            Milestone Verdict: {report.verdict}
-                          </div>
-
-                          {/* Actionable Violations Feed */}
-                          <div className="flex-1 max-h-[120px] overflow-y-auto space-y-xs pr-1">
-                            {report.verdict === 'FAIL' && report.violations && report.violations.length > 0 ? (
-                              report.violations.map((v, idx) => (
-                                <div key={idx} className="bg-failure-bg border border-failure/10 border-l-2 border-l-failure p-2 rounded-xs space-y-0.5 shadow-sm text-[10px]">
-                                  <div className="flex justify-between items-start gap-xs">
-                                    <span className="font-black text-text-primary mona truncate max-w-[170px]">{v.rule}</span>
-                                    <span className={`text-[8px] roboto font-black px-1 py-0.2 rounded-xs uppercase ${
-                                      v.severity === 'CRITICAL' ? 'bg-failure text-white' : 'bg-warning-bg border border-warning/10 text-warning'
-                                    }`}>
-                                      {v.severity}
-                                    </span>
-                                  </div>
-                                  <p className="text-text-muted roboto leading-relaxed">{v.description}</p>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="flex flex-col items-center justify-center py-6 text-evidence space-y-1">
-                                <Check size={18} className="stroke-[3]" />
-                                <div className="text-xs font-black mona uppercase">All Rules Compliant</div>
-                                <div className="text-[9px] roboto text-text-muted">Digital image analysis found zero construct violations.</div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Short italicized brief */}
-                          <div className="bg-white border border-border p-2 rounded-xs text-[10px] roboto text-text-muted italic leading-normal border-t-2 border-t-border">
-                            {report.summary}
-                          </div>
-
-                        </div>
-                      )}
-
-                    </div>
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            {/* Run Audit Action Buttons */}
-            <div className="pt-sm border-t border-border mt-sm">
-              <button
-                onClick={handleRunInspection}
-                disabled={isAuditing || !imagePreview}
-                className="w-full text-xs uppercase tracking-wider font-black mona py-3 bg-failure hover:bg-failure/90 disabled:bg-border disabled:text-text-muted disabled:cursor-not-allowed text-white rounded-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-xs"
-              >
-                {isAuditing ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin" />
-                    Auditing Construction Site...
-                  </>
-                ) : (
-                  <>
-                    <Shield size={14} />
-                    Run AI Inspection
-                  </>
-                )}
-              </button>
-            </div>
-
-          </div>
-
-
           {/* PANEL 3: DECISION ESCROW & AUDIT LOGS */}
-          <div className="bg-card rounded-md border border-border shadow-card p-sm flex flex-col justify-between min-h-[500px] transition-all">
+          <div className="bg-card rounded-md border border-emerald-500/15 shadow-[0_10px_40px_rgba(16,185,129,0.03)] p-sm flex flex-col justify-between min-h-[480px] transition-all">
             <div className="space-y-sm flex-1 flex flex-col">
               
               <div className="pb-sm border-b border-border">
-                <div className="text-label roboto text-text-muted uppercase tracking-widest mb-1">Panel 03 // Algorithmic Escrow</div>
-                <h3 className="text-title mona text-text-primary flex items-center gap-xs">
+                <div className="text-label roboto text-emerald-400 uppercase tracking-widest mb-1">Panel 03 // Algorithmic Escrow</div>
+                <h3 className="text-title mona text-emerald-400 flex items-center gap-xs">
+                  <Lock size={18} />
                   Escrow Payment Gate
                 </h3>
                 <p className="text-[11px] roboto text-text-muted leading-normal mt-1">
@@ -604,13 +461,13 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
                 {/* 1. AWAITING AUDIT STATE */}
                 {!report && (
                   <div className="text-center space-y-sm py-8 border border-border border-dashed rounded-sm bg-surface/50">
-                    <div className="relative inline-flex items-center justify-center bg-text-primary text-white w-10 h-10 rounded-full shadow-md">
+                    <div className="relative inline-flex items-center justify-center bg-slate-900 border border-border text-emerald-400 w-10 h-10 rounded-full shadow-md">
                       <Lock size={18} />
                     </div>
                     <div className="space-y-1 px-4">
                       <div className="text-xs font-black mona text-text-primary uppercase tracking-wider">Awaiting Audit Verdict</div>
                       <div className="text-[10px] roboto text-text-muted leading-relaxed">
-                        Milestone finances are held in compliance escrow. Please run the AI inspector in Panel 02 to evaluate visual pavement compliance.
+                        Milestone finances are held in compliance escrow. Please run the AI inspector in Tier B to evaluate visual pavement compliance.
                       </div>
                     </div>
                   </div>
@@ -633,7 +490,7 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
 
                     <div className="space-y-xs">
                       {isAutomatedApproved ? (
-                        <div className="bg-evidence-bg border border-evidence/20 text-evidence rounded-sm p-sm text-center space-y-1 shadow-sm">
+                        <div className="bg-evidence-bg border border-evidence/20 text-evidence rounded-sm p-sm text-center space-y-1 shadow-sm animate-fadeIn">
                           <div className="text-xs font-black mona flex items-center justify-center gap-1 uppercase">
                             <Check size={14} className="stroke-[3]" />
                             Automated Funds Disbursed
@@ -680,6 +537,7 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
                           {/* Accordion Toggle Header */}
                           <button
                             onClick={() => setIsOverrideOpen(!isOverrideOpen)}
+                            type="button"
                             className="w-full text-[10px] uppercase font-black tracking-widest roboto border border-border py-2.5 px-3 rounded-sm flex items-center justify-between bg-surface text-text-primary hover:bg-white transition-colors"
                           >
                             <span>Administrative Override Request</span>
@@ -688,7 +546,7 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
 
                           {/* Accordion Body */}
                           {isOverrideOpen && (
-                            <form onSubmit={handleOverrideSubmit} className="space-y-2 bg-surface/50 border border-border border-t-0 p-3 rounded-b-sm animate-fadeIn space-y-2 text-left">
+                            <form onSubmit={handleOverrideSubmit} className="space-y-2 bg-surface/50 border border-border border-t-0 p-3 rounded-b-sm animate-fadeIn text-left">
                               
                               <div className="grid grid-cols-2 gap-2 text-[10px]">
                                 <div className="space-y-0.5">
@@ -804,12 +662,248 @@ Output the strict verdict: "PASS" or "FAIL" with the specific clause violated.`;
 
         </div>
 
+        {/* TIER B: NEURAL AUDIT INSPECTION CENTER (THE DYNAMIC STAGE) */}
+        <div id="panel2" className="bg-card rounded-md border border-border shadow-card p-sm md:p-md relative overflow-hidden transition-all duration-300">
+          <div className="pb-sm border-b border-border mb-md">
+            <div className="text-label roboto text-emerald-400 uppercase tracking-widest mb-1">Tier B // Active Quality Verification Laboratory</div>
+            <h3 className="text-title mona text-text-primary flex items-center gap-xs">
+              <Shield className="text-emerald-400" size={20} />
+              Neural Audit Inspection Center
+            </h3>
+            <p className="text-[11px] roboto text-text-muted leading-normal mt-1">
+              Real-time physical compliance evaluation of site photographs. Matches visual patterns against MoRTH and IRC construction standards.
+            </p>
+          </div>
+
+          <div className="min-h-[220px] flex flex-col justify-center">
+            
+            {/* 1. INITIAL NO-PHOTO / BUFFER EMPTY STATE */}
+            {!imagePreview ? (
+              <div 
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`flex flex-col items-center justify-center text-center cursor-pointer p-lg border-2 border-dashed rounded-sm transition-all min-h-[250px] ${
+                  dragOver 
+                    ? 'border-emerald-500 bg-emerald-500/5' 
+                    : 'border-border hover:border-emerald-500/60 hover:bg-surface/60'
+                }`}
+              >
+                <UploadCloud size={48} className={`mb-sm transition-colors ${dragOver ? 'text-emerald-400' : 'text-text-muted/60'}`} />
+                <span className="text-sm font-black mona text-text-primary uppercase tracking-wider">Drag & Drop Site Photo</span>
+                <span className="text-xs roboto text-text-muted mt-2 leading-normal max-w-sm">
+                  Upload a photograph of the completed construction segment (JPEG, PNG). We'll inspect interlocking paver alignment, drainage, and utility restoration.
+                </span>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
+              </div>
+            ) : (
+              
+              /* 2. SPLIT LAYOUT REPRESENTATION (IMAGE UPLOADED / PROCESSED) */
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-md md:gap-lg animate-fadeIn text-left">
+                
+                {/* Photo Viewer & Verdict Left Column (5 of 12) */}
+                <div className="md:col-span-5 flex flex-col gap-sm">
+                  <div className="relative border border-border rounded-sm overflow-hidden bg-black shadow-sm aspect-video md:aspect-[4/3] max-h-[350px]">
+                    <img 
+                      src={imagePreview} 
+                      alt="Inspection Site Milestone Preview" 
+                      className="w-full h-full object-contain mx-auto"
+                    />
+                    
+                    {/* Scanning Laser Line Overlay */}
+                    <div className={`absolute left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_#10b981,0_0_4px_#10b981] pointer-events-none transition-opacity duration-300 ${
+                      isAuditing ? 'opacity-100 animate-rs-scan' : 'opacity-0'
+                    }`} />
+                  </div>
+
+                  {/* Verdict Badge below image */}
+                  {report && (
+                    <div className={`flex items-center justify-center gap-xs font-black text-sm uppercase py-2.5 px-4 rounded-sm tracking-widest border shadow-sm animate-fadeIn ${
+                      report.verdict === 'PASS'
+                        ? 'bg-evidence-bg border-evidence/20 text-evidence'
+                        : 'bg-failure-bg border-failure/20 text-failure'
+                    }`}>
+                      {report.verdict === 'PASS' ? <Check size={16} className="stroke-[3]" /> : <ShieldAlert size={16} />}
+                      Milestone Verdict: {report.verdict}
+                    </div>
+                  )}
+                  
+                  {/* Remove Button if not active auditing */}
+                  {!isAuditing && (
+                    <button 
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreview(null);
+                        setImageBase64(null);
+                        setReport(null);
+                        setErrorMsg(null);
+                        setIsAutomatedApproved(false);
+                        setSavedOverride(null);
+                      }}
+                      className="w-full bg-slate-900 hover:bg-slate-800 border border-border text-text-primary text-[10px] font-bold uppercase py-2 rounded-sm tracking-wider transition-colors active:scale-[0.98]"
+                    >
+                      Clear / Upload Different Photo
+                    </button>
+                  )}
+                </div>
+
+                {/* Compliance Logs & Checklist Right Column (7 of 12) */}
+                <div className="md:col-span-7 flex flex-col justify-between min-h-[250px] bg-surface/50 border border-border p-sm md:p-md rounded-sm">
+                  <div className="space-y-sm flex-1 flex flex-col">
+                    <div className="text-[10px] roboto text-emerald-400 font-bold uppercase tracking-widest border-b border-border pb-xs flex items-center gap-xs">
+                      <FileText size={12} />
+                      Neural Compliance Audit Log
+                    </div>
+
+                    {/* Content Box */}
+                    <div className="flex-1 flex flex-col justify-center min-h-[180px]">
+                      
+                      {/* Loading Telemetry Feed */}
+                      {isAuditing && (
+                        <div className="space-y-sm text-center py-4 animate-pulse">
+                          <Loader2 size={24} className="mx-auto text-emerald-400 animate-spin" />
+                          <div className="text-xs font-black mona text-text-primary uppercase tracking-widest">AI Audit Processing...</div>
+                          <div className="font-mono text-[10px] text-text-muted bg-slate-900 border border-border/50 p-2.5 rounded-sm h-12 overflow-hidden flex items-center justify-center leading-normal">
+                            {telemetryLog}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Error Display */}
+                      {errorMsg && (
+                        <div className="text-center space-y-2 py-4">
+                          <AlertCircle size={28} className="mx-auto text-failure" />
+                          <div className="text-xs font-black mona text-failure uppercase tracking-wider">Audit Terminated</div>
+                          <p className="text-[10px] roboto text-text-muted leading-relaxed px-2">
+                            {errorMsg}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Idle loaded state */}
+                      {!isAuditing && !report && !errorMsg && (
+                        <div className="text-center space-y-sm py-4">
+                          <Shield size={24} className="mx-auto text-text-muted/30" />
+                          <div className="text-xs font-black mona text-text-primary uppercase tracking-wider">Asset Buffered & Secure</div>
+                          <p className="text-[10px] roboto text-text-muted max-w-xs mx-auto leading-normal">
+                            Click "Run AI Inspection" above to trigger multimodal compliance testing against MoRTH guidelines.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Compliant Report Render */}
+                      {report && (
+                        <div className="space-y-sm flex-1 flex flex-col text-left justify-between h-full">
+                          
+                          {/* Checklist Display */}
+                          <div className="flex-1 max-h-[160px] overflow-y-auto space-y-xs pr-1">
+                            {report.verdict === 'FAIL' && report.violations && report.violations.length > 0 ? (
+                              report.violations.map((v, idx) => (
+                                <div key={idx} className="bg-failure-bg border border-failure/10 border-l-2 border-l-failure p-2 rounded-sm space-y-1 shadow-sm text-xs animate-fadeIn">
+                                  <div className="flex justify-between items-start gap-xs">
+                                    <span className="font-black text-text-primary mona truncate max-w-[200px]">{v.rule}</span>
+                                    <span className={`text-[8px] roboto font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider ${
+                                      v.severity === 'CRITICAL' ? 'bg-failure text-white' : 'bg-warning-bg border border-warning/10 text-warning'
+                                    }`}>
+                                      {v.severity}
+                                    </span>
+                                  </div>
+                                  <p className="text-text-muted roboto text-[10px] leading-relaxed">{v.description}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex flex-col items-center justify-center py-6 text-evidence space-y-1 animate-fadeIn">
+                                <Check size={24} className="stroke-[3] text-evidence" />
+                                <div className="text-xs font-black mona uppercase tracking-wider">All Specifications Satisfied</div>
+                                <p className="text-[10px] roboto text-text-muted text-center max-w-xs">
+                                  Digital verification found zero structural defects, height settlement, or drainage interference.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Summary Paragraph */}
+                          <div className="bg-slate-900 border border-border p-2.5 rounded-sm text-[10px] roboto text-text-muted italic leading-normal">
+                            {report.summary}
+                          </div>
+
+                        </div>
+                      )}
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+          </div>
+        </div>
+
         {/* METADATA SYSTEM FOOTER */}
         <div className="text-center pt-sm text-text-muted text-[10px] roboto tracking-widest uppercase">
           RoadShield Verification Protocol v1.5.0 // Securing Public Infrastructure via Algorithmic Accountability
         </div>
 
       </div>
+
+      {/* AUDIT RULES DRAWER OVERLAY */}
+      <div 
+        className={`fixed inset-0 bg-black/65 backdrop-blur-sm z-[999] transition-opacity duration-300 ${
+          isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`} 
+        onClick={() => setIsDrawerOpen(false)}
+      />
+      
+      {/* AUDIT RULES SLIDE-OUT DRAWER */}
+      <div 
+        className={`fixed top-0 right-0 h-screen w-[480px] max-w-full bg-slate-950/98 backdrop-blur-xl border-l border-white/10 shadow-[-10px_0_40px_rgba(0,0,0,0.7)] z-[1000] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col p-8 ${
+          isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex justify-between items-center pb-sm border-b border-white/10 mb-md">
+          <h2 className="text-sm font-black text-text-primary uppercase tracking-wider flex items-center gap-2">
+            <FileText size={18} className="text-emerald-400" />
+            Configure Audit Rules
+          </h2>
+          <button 
+            onClick={() => setIsDrawerOpen(false)}
+            className="text-text-muted hover:text-white transition-colors text-2xl leading-none px-2 py-1"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-sm flex-1 overflow-y-auto pr-1">
+          <p className="text-[11px] text-text-muted leading-relaxed">
+            Configure specific MoRTH/IRC clauses or custom engineering guidelines to enforce during physical quality verification.
+          </p>
+          
+          <div className="flex-1 flex flex-col min-h-[300px]">
+            <textarea 
+              value={rulesText}
+              onChange={(e) => setRulesText(e.target.value)}
+              className="flex-1 w-full bg-black/40 text-xs font-mono text-text-primary border border-white/10 p-3 rounded-sm leading-relaxed focus:border-emerald-500 focus:outline-none resize-none"
+            />
+          </div>
+
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-sm shadow-sm transition-all"
+          >
+            Apply & Save Rules
+          </button>
+        </div>
+      </div>
+
     </section>
   );
 }

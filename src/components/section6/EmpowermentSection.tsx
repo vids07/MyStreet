@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Eye, Share2, Camera, Check, ShieldCheck, ArrowRight } from 'lucide-react';
 
 type EmpowermentSectionProps = {
@@ -172,13 +173,13 @@ export default function EmpowermentSection({
             </div>
 
             <div className="shrink-0 w-full md:w-auto">
-              <a
-                href={`/roadshield.html?id=${roadSystemId}&contractor=${encodeURIComponent(contractorName)}&amount=${milestoneAmount}&name=${encodeURIComponent(roadDisplayName)}`}
+              <Link
+                href={`/road/${roadSystemId}/shield#audit-content`}
                 className="inline-flex items-center justify-center gap-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm md:text-base px-md py-sm rounded-sm transition-all duration-300 w-full md:w-auto shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_24px_rgba(16,185,129,0.45)] hover:-translate-y-[2px]"
               >
                 <span>Run Quality Audit</span>
                 <ArrowRight size={18} strokeWidth={2.5} />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
