@@ -60,8 +60,8 @@ export default function AuditFolderTabs({ roadId, activeTab }: AuditFolderTabsPr
     },
     {
       id: 'shield' as TabId,
-      label: '05 // How It Can Be Better',
-      shortLabel: 'Better?',
+      label: '05 // Other',
+      shortLabel: 'Other',
       href: `/road/${roadId}/shield#audit-content`,
       icon: Shield,
     },
@@ -149,7 +149,7 @@ export default function AuditFolderTabs({ roadId, activeTab }: AuditFolderTabsPr
                 href={tab.href}
                 onClick={(e) => handleTabClick(e, tab.href, isActive)}
                 className={`
-                  group relative flex items-center gap-1.5 py-1 select-none transition-all duration-300 border-b-2
+                  group relative flex items-center gap-1.5 py-1 select-none transition-all duration-300 border-b-2 whitespace-nowrap
                   ${isActive 
                     ? isScrolled
                       ? 'text-failure border-failure font-black'

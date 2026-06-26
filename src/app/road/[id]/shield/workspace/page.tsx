@@ -1,14 +1,12 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getFullRoadData } from '@/server/queries/road';
 import { extractTenderEvidence } from '@/lib/utils/road-display';
 import { EVENT_TYPES } from '@/types/road';
-import HeroSection from '@/components/section1/HeroSection';
-import LegacyLeakageMap from '@/components/section7/LegacyLeakageMap';
-import AuditFolderTabs from '@/components/shared/AuditFolderTabs';
+import ShieldWorkspace from '@/components/section7/ShieldWorkspace';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ShieldPage({
+export default async function ShieldWorkspacePage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -18,9 +16,7 @@ export default async function ShieldPage({
 
   if (!data) notFound();
 
-  const { road, photos, heroPhoto, events } = data;
-
-  const section1Photos = photos.filter(p => p.eventId === null);
+  const { road, photos, events } = data;
 
   // --- DATA DERIVATIONS ---
 
@@ -40,30 +36,22 @@ export default async function ShieldPage({
 
   const { contractValue } = extractTenderEvidence(tenderEvent?.evidence);
   const milestoneAmount = contractValue ? Math.round(contractValue * 0.15) : 2450000;
+  
+  // Verify server-side Gemini API key configuration securely
+  const hasSystemEnvKey = !!process.env.GEMINI_API_KEY;
 
   return (
-    <main className="bg-surface min-h-screen">
-      {/* PORTAL NAVIGATION TAB */}
-      <AuditFolderTabs
-        roadId={road.roadSystemId}
-        activeTab="shield"
-      />
-
-      {/* HERO CONTEXT */}
-      <HeroSection
-        road={road}
-        heroPhoto={heroPhoto}
-        section1Photos={section1Photos}
-      />
-
-      {/* LEGACY LEAKAGE MAP */}
-      <LegacyLeakageMap
+    <main className="bg-surface min-h-screen text-slate-800">
+      
+      {/* SHIELD AI INSPECTOR WORKSPACE */}
+      <ShieldWorkspace
+        roadId={id}
         roadSystemId={road.roadSystemId}
         roadName={road.roadDisplayName}
         contractorName={contractorName}
         milestoneAmount={milestoneAmount}
+        hasSystemEnvKey={hasSystemEnvKey}
       />
     </main>
   );
 }
-

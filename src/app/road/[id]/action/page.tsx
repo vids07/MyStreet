@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
 import { getFullRoadData } from '@/server/queries/road';
-import { extractTenderEvidence } from '@/lib/utils/road-display';
-import { EVENT_TYPES } from '@/types/road';
 import HeroSection from '@/components/section1/HeroSection';
 import EmpowermentSection from '@/components/section6/EmpowermentSection';
 import AuditFolderTabs from '@/components/shared/AuditFolderTabs';
@@ -18,7 +16,7 @@ export default async function ActionPage({
 
   if (!data) notFound();
 
-  const { road, photos, heroPhoto, confirmationCount, events } = data;
+  const { road, photos, heroPhoto, confirmationCount } = data;
 
   const section1Photos = photos.filter(p => p.eventId === null);
 
@@ -27,25 +25,6 @@ export default async function ActionPage({
   const streetName = firstLabelledPhoto?.locationLabel
     ? firstLabelledPhoto.locationLabel.split(' — ')[0]
     : [road.ward, road.city].filter(Boolean).join(', ') || road.roadDisplayName;
-
-  // --- DATA DERIVATIONS ---
-
-  // Finding the Contractor Name
-  const contractorPerson = events
-    .flatMap(e => e.participants)
-    .find(p => p.personType === 'contractor' && p.role === 'assignee')?.person;
-  
-  const contractorName = contractorPerson?.fullName 
-    || contractorPerson?.department?.split(',')[0]?.trim() 
-    || 'Shri Ganesh Construction Co.';
-
-  // Finding the Milestone 3 Payment Amount (calculated as ~15% of contract value or default 24.5 Lakhs)
-  const tenderEvent = events.find(
-    e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED && extractTenderEvidence(e.evidence).isTender
-  ) ?? events.find(e => e.eventType === EVENT_TYPES.WORK_ORDER_ISSUED);
-
-  const { contractValue } = extractTenderEvidence(tenderEvent?.evidence);
-  const milestoneAmount = contractValue ? Math.round(contractValue * 0.15) : 2450000;
 
   return (
     <main className="bg-surface min-h-screen">
@@ -67,9 +46,6 @@ export default async function ActionPage({
         confirmationCount={confirmationCount}
         roadSystemId={road.roadSystemId}
         streetName={streetName}
-        contractorName={contractorName}
-        milestoneAmount={milestoneAmount}
-        roadDisplayName={road.roadDisplayName}
       />
     </main>
   );
